@@ -31,17 +31,71 @@
 
       <section id="about" class="section">
         <h2>About Me</h2>
-        <article class="card">
-          <h2>Education</h2>
-          <p>
-            I'm currently a second year Carleton computer science co-op student in the AI/ML stream. I've built and shipped projects across full-stack development and cybersecurity, and I’m always looking for chances to learn fast and build things that actually get used.
-          </p>
-        </article>
+        <div class="about-grid">
+          <article class="card about-card">
+            <img class="about-img" src="images/carleton_logo.png" alt="Carleton University Logo">
+            <div class="about-text">
+              <h2>Education</h2>
+              <p>
+                I'm currently a second year Carleton computer science co-op student in the AI/ML stream. I've built and shipped projects across full-stack development and cybersecurity, and I’m always looking for chances to learn fast and build things that actually get used.
+              </p>
+            </div>
+          </article>
+          <article class="card about-card">
+            <video class="about-img video-thumb" autoplay muted loop playsinline>
+              <source src="videos/soccer.mp4" type="video/mp4">
+            </video>
+
+            <div class="about-text">
+              <h2>Interests</h2>
+              <p>
+                Outside of coding, I love playing and watching soccer (my favourite team is Liverpool!), as well as going to the gym and staying active. I also enjoy reading about advancements in AI and technology in my free time.   
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="about" class="section">
+        <h2>Experience</h2>
+        <div class="about-grid">
+          <article class="card about-card">
+            <img class="about-img" src="images/hydro ottawa.png" alt="Carleton University Logo">
+            <div class="about-text">
+              <h2>Hydro Ottawa</h2>
+              <p>
+                During my May-August 2025 Cybersecurity Analyst internship at Hydro Ottawa, I developed incident response playbooks and performed white-hat security testing using MITRE ATT&CK and Caldera to simulate Living Off The Land techniques. I also built cloud security automations in AWS (GuardDuty IaC, IAM/S3 protections, Secrets Manager migration, Lambda quarantine + SNS alerts) and integrated Gemini's REST API and Cloudflare-based scripting to strengthen risk assessment and monitoring.
+              </p>
+            </div>
+          </article>
+          <article class="card about-card">
+            <img class="about-img" src="images/ciena.png" alt="Carleton University Logo">
+
+            <div class="about-text">
+              <h2>Ciena</h2>
+              <p>
+                During my Feb-Aug 2023 Software Developer co-op at Ciena, I built an automated Python report generator on Linux that processed data from Oracle databases. I also developed an Angular (HTML/CSS/TypeScript) web front end and gained hands-on DevOps experience working in Agile with Jira and Git.
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="about" class="section">
+        
       </section>
 
     <footer class="container footer">
       <small>© <span id="year"></span> Kishaan Gidda </small>
     </footer>
+
+    <div id="videoModal" class="video-modal" aria-hidden="true">
+      <div class="video-modal__backdrop"></div>
+
+      <div class="video-modal__content" role="dialog" aria-modal="true">
+        <video id="modalVideo" class="video-modal__video" playsinline autoplay muted loop></video>
+      </div>
+    </div>
 
     <script src="script.js"></script>
   </body>
