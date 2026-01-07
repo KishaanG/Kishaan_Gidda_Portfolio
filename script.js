@@ -15,7 +15,6 @@ copyBtn?.addEventListener("click", async () => {
 const modal = document.getElementById("videoModal");
 const modalVideo = document.getElementById("modalVideo");
 
-// open on click
 document.querySelectorAll(".video-thumb").forEach(v => {
   v.addEventListener("click", () => {
     const src = v.querySelector("source")?.getAttribute("src") || v.currentSrc;
@@ -30,9 +29,7 @@ document.querySelectorAll(".video-thumb").forEach(v => {
   });
 });
 
-// close when clicking the dim area (anywhere outside the video box)
 modal.addEventListener("click", (e) => {
-  // if you clicked the backdrop (not the video/content), close
   if (!e.target.closest(".video-modal__content")) closeModal();
 });
 
@@ -42,11 +39,32 @@ function closeModal() {
   document.body.style.overflow = "";
 
   modalVideo.pause();
-  modalVideo.removeAttribute("src"); // stops download/playback
+  modalVideo.removeAttribute("src");
   modalVideo.load();
 }
 
-// optional: ESC to close
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && modal.classList.contains("open")) closeModal();
+});
+
+const header = document.querySelector(".header");
+
+let lastY = window.scrollY;
+const shrinkAt = 60;
+const minDelta = 10;
+
+window.addEventListener("scroll", () => {
+  const y = window.scrollY;
+  const delta = y - lastY;
+
+  if (Math.abs(delta) < minDelta) return;
+
+  const down = delta > 0;
+
+  header.classList.toggle("shrunk", y > shrinkAt);
+
+  if (down && y > shrinkAt) header.classList.add("hidden");
+  else header.classList.remove("hidden");
+
+  lastY = y;
 });
