@@ -458,3 +458,30 @@ section{
   object-fit: contain;
   margin: 0;
 }
+
+@media (max-width: 520px){
+  .header{
+    width: calc(100% - 20px);
+    padding: 8px 10px;
+    border-radius: 16px;
+  }
+
+  .nav{
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 10px;
+    padding: 2px 4px;
+    white-space: nowrap;
+    scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar{ display:none; }
+
+  .button{
+    padding: 8px 10px;
+    font-size: 0.9rem;
+    flex: 0 0 auto;
+  }
+
+  .button:hover{ transform: none; }
+}
