@@ -25,11 +25,18 @@
     <main class="container">
       <section class="hero">
         <h1>Hi, I'm Kishaan!</h1>
-        <h2>Aspiring Cybersecurity Analayst and AI/ML Engineer</h2>
+        <h2>Aspiring Cybersecurity Analyst and AI/ML Engineer</h2>
         <p class="subtitle">
-          I'm a computer science student passionate about the intersection between AI and Cybersecurity.
+          I'm a computer science student passionate about the intersection between <strong>AI</strong> and <strong>Cybersecurity</strong>.
+          <div>
+            <a class="button ghost" href="https://github.com/kishaang" target="_blank" rel="noreferrer">
+              <img class="button-img" src="images/github.png" alt="GitHub Logo">
+            </a>
+            <a class="button ghost" href="https://www.linkedin.com/in/kishaan-gidda/" target="_blank" rel="noreferrer">
+              <img class="button-img" src="images/linkedin.jpg" alt="LinkedIn Logo">
+            </a>
+          </div>
         </p>
-        
       </section>
 
       <section id="about" class="section">
@@ -45,9 +52,30 @@
             </div>
           </article>
           <article class="card about-card">
-            <video class="about-img video-thumb" autoplay muted loop playsinline>
+            <video class="about-img video-thumb hover-play" muted loop playsinline preload="metadata">
               <source src="videos/soccer.mp4" type="video/mp4">
             </video>
+            <script>
+              document.querySelectorAll("video.hover-play").forEach(v => {
+                v.pause();
+                v.currentTime = 0;
+
+                const play = async () => {
+                  try { await v.play(); } catch (_) {}
+                };
+
+                const stop = () => {
+                  v.pause();
+                  v.currentTime = 0;
+                };
+
+                v.addEventListener("mouseenter", play);
+                v.addEventListener("mouseleave", stop);
+
+                v.addEventListener("focus", play);
+                v.addEventListener("blur", stop);
+              });
+            </script>
 
             <div class="about-text">
               <h2>Interests</h2>
@@ -63,52 +91,80 @@
         <h2>Experience</h2>
         <div class="about-grid">
           <article class="card about-card">
-            <img class="about-img" src="images/hydro ottawa.png" alt="Carleton University Logo">
-            <div class="about-text">
+            <img class="about-img" src="images/hydro ottawa.png" alt="Hydro Ottawa Logo">
+            <div class="about-head">
               <h2>Hydro Ottawa</h2>
-              <p>
-                During my May-August 2025 Cybersecurity Analyst internship at Hydro Ottawa, I developed incident response playbooks and performed white-hat security testing using MITRE ATT&CK and Caldera to simulate Living Off The Land techniques. I also built cloud security automations in AWS (GuardDuty IaC, IAM/S3 protections, Secrets Manager migration, Lambda quarantine + SNS alerts) and integrated Gemini's REST API and Cloudflare-based scripting to strengthen risk assessment and monitoring.
-              </p>
+              <h3>Cybersecurity Analyst Intern<br>(May - Aug 2025)</h3>
             </div>
+            <p class="about-body">
+              During my May-Aug 2025 Cybersecurity Analyst internship at Hydro Ottawa, I strengthened incident response and cloud security through hands-on testing, automation, and risk assessment tooling. I built playbooks and AWS-based detections/remediations, and validated threats using MITRE ATT&CK/Caldera simulations.
+            </p>
+            <ul class="about-list">
+                <li>Developed incident response playbooks for AI data leaks, web exploits, ransomware, and insider threats</li>
+                <li>Simulated Living Off The Land attacks using MITRE ATT&CK + Caldera on Linux</li>
+                <li>Implemented AWS GuardDuty as Infrastructure as Code and hardened S3 access with IAM policies</li>
+                <li>Integrated Gemini's REST API to analyze Google Workspace data and produce quantified risk assessments</li>
+                <li>Built an AWS Lambda quarantine workflow for malicious S3 files with SNS alerting</li>
+                <li>Tested DNS connections using a PowerShell script with Cloudflare API calls</li>
+            </ul>
           </article>
           <article class="card about-card">
-            <img class="about-img" src="images/ciena.png" alt="Carleton University Logo">
-
-            <div class="about-text">
+            <img class="about-img" src="images/ciena.png" alt="Ciena Logo">
+            <div class="about-head">
               <h2>Ciena</h2>
-              <p>
-                During my Feb-Aug 2023 Software Developer co-op at Ciena, I built an automated Python report generator on Linux that processed data from Oracle databases. I also developed an Angular (HTML/CSS/TypeScript) web front end and gained hands-on DevOps experience working in Agile with Jira and Git.
-              </p>
+              <h3>Software Developer Intern<br>(Feb - Aug 2023)</h3>
             </div>
+            <p class="about-body">
+              During my Feb-Aug 2023 Software Developer co-op at Ciena, I built an automated Python report generator on Linux that processed data from Oracle databases. I also developed an Angular (HTML/CSS/TypeScript) web front end and gained hands-on DevOps experience working in Agile with Jira and Git.
+            </p>
+            <ul class="about-list">
+                <li>Designed an automated Python report generation tool, processing data on Linux from Oracle databases</li>
+                <li>Developed the front end of a website using CSS, HTML and TypeScript with the Angular framework</li>
+                <li>Learned DevOps using Agile Jira and Git
+</li>
+            </ul>
           </article>
         </div>
       </section>
 
       <section id="projects" class="section">
-        <h2>Projects</h2>
-          <div class="grid">
-            <article class="card">
-              <h3>ClassNap</h3>
-              <p>Transcribes and provides AI overviews of a speech.</p>
-              <div class="links">
-                <a href="https://github.com/charifbahloul/classnap" target="_blank" rel="noreferrer">GitHub Repo</a>
-              </div>
-            </article>
+        <h2>Projects/Challenges</h2>
+        <div class="grid">
+          <article class="card">
+            <h3>ClassNap (AI Transcriber/Overview)</h3>
+            <p>Transcribes and provides AI overviews of speech. User can ask questions about the content</p>
+            <div class="links">
+              <a href="https://github.com/charifbahloul/classnap" target="_blank" rel="noreferrer">Repository</a>
+            </div>
+          </article>
 
-            <article class="card">
-              <h3>Maze Solver Game</h3>
-              <p>Console based game designed with C++.</p>
+          <article class="card">
+            <h3>Maze Solver Game</h3>
+            <p>Console based adventure game with an automatic maze solver, designed with C++.</p>
+            <div class="links">
+              <a href="https://github.com/KishaanG/Maze-solver-game/tree/main/Maze%20Final%20Project" target="_blank" rel="noreferrer">Repository</a>
+            </div>
+          </article>
+        </div>
+        <article class="card about-card">
+            <img class="about-img" src="images/CyberSci.png" alt="CyberSci Ottawa Winners">
+            <div class="about-text">
+              <h2>CyberSci Ottawa Region Winners</h2>
+              <p>
+                Competed in and placed first out of 13 teams in the Ottawa regional Cybersci Capture The Flag competition. Team name: <strong>The Off-By-Ones</strong>
+              </p>
               <div class="links">
-                <a href="https://github.com/KishaanG/Maze-solver-game/tree/main/Maze%20Final%20Project" target="_blank" rel="noreferrer">GitHub Repo</a>
+                <a href="https://cybersecuritychallenge.ca/en/" target="_blank" rel="noreferrer">CyberSci Winners</a>
               </div>
-            </article>
-          </div>
+            </div>
+          </article>
       </section>
 
       <section id="contact" class="section">
         <h2>Contact</h2>
         <article class="card">
           <p>
+            Feel free to reach out to me via email at:<br>
             <a href="mailto:kishaangidda@gmail.com">kishaangidda@gmail.com</a>
           </p>
         </article>
