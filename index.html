@@ -55,7 +55,10 @@
             <script>
               document.querySelectorAll("video.hover-play").forEach(v => {
                 v.pause();
-                v.currentTime = 0;
+                v.addEventListener("loadedmetadata", () => {
+                  v.currentTime = 0.01;
+                  v.pause();
+                });
 
                 const play = async () => {
                   try { await v.play(); } catch (_) {}
