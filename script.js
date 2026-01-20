@@ -3,23 +3,30 @@ document.getElementById("year").textContent = new Date().getFullYear();
 const modal = document.getElementById("videoModal");
 const modalVideo = document.getElementById("modalVideo");
 
-document.querySelectorAll(".video-thumb").forEach(v => {
-  v.addEventListener("click", () => {
-    const src = v.querySelector("source")?.getAttribute("src") || v.currentSrc;
+if (modal && modalVideo) {
+  document.querySelectorAll(".video-thumb").forEach(v => {
+    v.addEventListener("click", () => {
+      const src = v.querySelector("source")?.getAttribute("src") || v.currentSrc;
 
-    modal.classList.add("open");
-    modal.setAttribute("aria-hidden", "false");
-    document.body.style.overflow = "hidden";
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
 
-    modalVideo.src = src;
-    modalVideo.currentTime = 0;
-    modalVideo.play().catch(() => {});
+      modalVideo.src = src;
+      modalVideo.currentTime = 0;
+      modalVideo.play().catch(() => {});
+    });
   });
-});
 
-modal.addEventListener("click", (e) => {
-  if (!e.target.closest(".video-modal__content")) closeModal();
-});
+  modal.addEventListener("click", (e) => {
+    if (!e.target.closest(".video-modal__content")) closeModal();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal.classList.contains("open")) closeModal();
+  });
+}
+
 
 function closeModal() {
   modal.classList.remove("open");

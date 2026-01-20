@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kishaan Gidda</title>
+    <meta name="description" content="Personal website of Kishaan Gidda." />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="top"></div>
+    <header class="container header">
+      <nav class="nav">
+        <a class="button ghost" href="index.html#top">Home</a>
+        <a class="button ghost" href="index.html#about">About</a>
+        <a class="button ghost" href="index.html#experience">Experience</a>
+        <a class="button ghost" href="index.html#projects">Projects</a>
+        <a class="button ghost" href="#contact">Contact</a>
+        <a class="button ghost" href="#top">Blog</a>
+      </nav>
+    </header>
+    <main class="container">
+      <section class="section">
+        <article class="card blog-card">
+            <div class="blog-head">
+              <h2>Your Earbuds Are Not Private: Inside the WhisperPair Attack</h2>
+              <p>Right now, hundreds of millions of Bluetooth headphones and earbuds that support Google's Fast Pair may be vulnerable to silent hijacking in seconds.</p>
+            </div>
+            <h3>What WhisperPair Is</h3>
+            <p>WhisperPair is a script-based attack that uses a single, versatile script capable of targeting a wide range of Fast Pair-enabled Bluetooth devices. The attack exploits a flaw in how Bluetooth devices implement Google Fast Pair, a protocol designed to make Bluetooth pairing easier and faster for Android devices.</p>
+            <h3>Who's at Risk and Why Is It a Problem</h3>
+            <p>Although Fast Pair is designed to improve pairing on Android devices, iOS users are also at risk because the vulnerability lies in the accessory itself, as opposed to the phone. <br><br>Under normal circumstances, Fast Pair devices should ignore pairing and interaction requests unless they are explicitly in pairing mode; however, many devices fail to properly enforce this restriction. Researchers at KU Leuven University discovered that this allows unauthorized devices to interact with them even when pairing mode is not enabled. This allows attackers to:</p>
+            <ul class="blog-list">
+                <li>Hijack the device without the user being alerted</li>
+                <li>Control the audio device's functions such as playing audio or changing the volume</li>
+                <li>Access the built-in microphones to eavesdrop on conversations</li>
+                <li>Track the user's location by linking the device to a Google account controlled by the attacker (if this happens, you may receive notifications that you're being tracked by your own device)</li>
+            </ul>
+            <h3>What Devices Are Affected</h3>
+            <p>Many popular Bluetooth accessories from major brands may be vulnerable if their firmware doesn't properly follow the Fast Pair specifications. To determine if your headphones are vulnerable, visit the official website and search for your device at <a href="https://whisperpair.eu/vulnerable-devices" target="_blank" rel="noreferrer">whisperpair.eu/vulnerable-devices</a>. Be mindful that only devices tested so far are listed, which may not include yours. </p>
+            <h3>How to Protect Yourself</h3>
+            <p>Thankfully, the researchers have not released the script to the public, though these attacks are bound to be independently replicated. Since the attack is very recent, patches will begin rolling out soon, meaning it is very important to stay up-to-date and check for firmware patches as soon as they're released for your devices.</p>
+          </article>
+      </section>
+    </main>
+    <footer class="container footer">
+      <small>© <span id="year"></span> Kishaan Gidda </small>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
