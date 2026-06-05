@@ -403,3 +403,8 @@ section{
 .blog-card h3{
   margin-top: 12px;
 }
+
+.blog-card h5{
+  margin-top: 5px;
+  margin-bottom: 5px
+}
