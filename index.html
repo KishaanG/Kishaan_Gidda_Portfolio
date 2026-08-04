@@ -1,188 +1,536 @@
 <!doctype html>
+<!--
+  ============================================================
+  DIRECTION CONTRACT — see DESIGN.md
+  ------------------------------------------------------------
+  THESIS: A security portfolio that is calm. It refuses the
+    category default (dark terminal ground, neon accent,
+    monospace bravado) and the student default (bordered
+    cartoon cards). Quiet is the claim.
+  OWN-WORLD: White paper, one blue family, a fixed hairline
+    4-column grid, and a live WebGL silk light field that
+    appears exactly twice — the opening and the close.
+    Source Serif 4 at display size over Geist. [ Brackets ]
+    are the only affordance; there are no filled buttons.
+  STORY: He ships software and he breaks it. TrendAI, Hydro
+    Ottawa, Ciena, a CTF win. Then: email him.
+  FIRST VIEWPORT: Silk field full-bleed. One serif line at
+    ~7vw, low and left, over four hairline columns. Beneath
+    it two sentences, then "↳ Get in touch" and [ View work ].
+    Fixed wordmark and bracket nav above; © and socials below.
+  FORM: Reference world pinned by the user to the register of
+    sreedesigns.com — generative light field behind wide-set
+    serif on near-empty paper. Staging: index-and-viewer.
+  ============================================================
+-->
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kishaan Gidda</title>
-    <meta name="description" content="Personal website of Kishaan Gidda." />
-    <link rel="stylesheet" href="style.css" />
+    <title>Kishaan Gidda · Cybersecurity &amp; AI/ML</title>
+    <meta
+      name="description"
+      content="Kishaan Gidda builds AI systems and then goes looking for the way in. Computer science co-op student at Carleton University (AI/ML stream), currently shipping cloud security software at TrendAI. Claude Agent SDK, MCP, AWS, Terraform, MITRE ATT&amp;CK, and a 1st-place CyberSci CTF finish."
+    />
+    <meta name="theme-color" content="#dceaf8" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23dceaf8'/%3E%3Ctext x='32' y='45' font-family='Georgia,serif' font-size='38' fill='%2327517e' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&family=Geist+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,300..500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <link rel="stylesheet" href="home.css" />
   </head>
+
   <body>
-    <div id="top"></div>
-    <header class="container header">
-      <nav class="nav">
-        <a class="button ghost" href="#top">Home</a>
-        <a class="button ghost" href="#about">About</a>
-        <a class="button ghost" href="#experience">Experience</a>
-        <a class="button ghost" href="#projects">Projects</a>
-        <a class="button ghost" href="#contact">Contact</a>
-        <a class="button ghost" href="blog.html">Blog</a>
+    <a class="skip-link" href="#work">Skip to work</a>
+
+    <!-- the structural grid everything aligns to -->
+    <div class="col-grid" aria-hidden="true"><span></span></div>
+
+    <!-- ===================== TOP CHROME ===================== -->
+    <header class="bar bar--top">
+      <a class="wordmark" href="#top">Kishaan Gidda</a>
+      <nav class="site-nav" aria-label="Primary">
+        <a class="br" href="#work">[ Work ]</a>
+        <a class="br" href="#experience">[ Experience ]</a>
+        <a class="br" href="#about">[ About ]</a>
+        <a class="br" href="#contact">[ Contact ]</a>
+        <a class="br" href="blog.html">[ Blog ]</a>
       </nav>
     </header>
 
-    <main class="container">
-      <section class="hero">
-        <h1>Hi, I'm Kishaan!</h1>
-        <h2>Aspiring Cybersecurity Analyst and AI/ML Engineer</h2>
-        <p class="subtitle">
-          I'm a computer science student passionate about the intersection between <strong>AI</strong> and <strong>Cybersecurity</strong>.
-          <div>
-            <a class="button ghost" href="https://github.com/kishaang" target="_blank" rel="noreferrer">
-              <img class="button-img" src="images/github.png" alt="GitHub Logo">
+    <main id="top">
+      <!-- ============ HERO ============ -->
+      <section class="hero" aria-label="Introduction">
+        <div class="silk-host" aria-hidden="true">
+          <canvas data-silk="1"></canvas>
+        </div>
+
+        <div class="hero-inner">
+          <p class="label rise" style="--d: 0.05s">Cybersecurity &amp; AI/ML · Ottawa</p>
+
+          <h1 class="hero-line rise" style="--d: 0.12s">
+            I build the thing,<br />then I try to break it.
+          </h1>
+
+          <p class="hero-sub rise" style="--d: 0.22s">
+            Hello, I'm Kishaan. I'm a computer science co-op student at Carleton
+            University in the AI/ML stream, and right now I'm on a cloud security
+            product team at TrendAI, building agent tooling that triages security
+            alerts. I love both halves of this work: shipping the system, then
+            hunting for the way in.
+          </p>
+
+          <div class="hero-actions rise" style="--d: 0.3s">
+            <a class="turn" href="#contact">
+              <svg viewBox="0 0 12 12" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.1" aria-hidden="true">
+                <path d="M1.5 1v6.5h8M7 5l2.5 2.5L7 10" stroke-linecap="square" />
+              </svg>
+              Get in touch
             </a>
-            <a class="button ghost" href="https://www.linkedin.com/in/kishaan-gidda/" target="_blank" rel="noreferrer">
-              <img class="button-img" src="images/linkedin.jpg" alt="LinkedIn Logo">
-            </a>
+            <a class="br" href="#work">[ View work ]</a>
           </div>
+        </div>
+
+        <p class="hero-now rise" style="--d: 0.4s">
+          <span class="dot" aria-hidden="true"></span>
+          Currently · Product Team, AVTD at TrendAI
         </p>
       </section>
 
-      <section id="about" class="section">
-        <h2>About Me</h2>
-        <div class="about-grid">
-          <article class="card about-card">
-            <img class="about-img" src="images/carleton_logo.png" alt="Carleton University Logo">
-            <div class="about-text">
-              <h2>Education</h2>
-              <p>
-                I'm currently a second year Carleton computer science co-op student in the AI/ML stream. I've built and shipped projects across full-stack development and cybersecurity, and I’m always looking for chances to learn fast and build things that actually get used.
-              </p>
-            </div>
-          </article>
-          <article class="card about-card">
-            <video class="about-img video-thumb hover-play" muted loop playsinline preload="metadata">
-              <source src="videos/soccer.mp4" type="video/mp4">
-            </video>
-            <script>
-              document.querySelectorAll("video.hover-play").forEach(v => {
-                v.pause();
-                v.addEventListener("loadedmetadata", () => {
-                  v.currentTime = 0.01;
-                  v.pause();
-                });
-
-                const play = async () => {
-                  try { await v.play(); } catch (_) {}
-                };
-
-                const stop = () => {
-                  v.pause();
-                  v.currentTime = 0;
-                };
-
-                v.addEventListener("mouseenter", play);
-                v.addEventListener("mouseleave", stop);
-
-                v.addEventListener("focus", play);
-                v.addEventListener("blur", stop);
-              });
-            </script>
-
-            <div class="about-text">
-              <h2>Interests</h2>
-              <p>
-                Outside of coding, I love playing and watching soccer (my favourite team is Liverpool!), as well as going to the gym and staying active. I also enjoy reading about advancements in AI and technology in my free time.   
-              </p>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section id="experience" class="section">
-        <h2>Experience</h2>
-        <div class="about-grid">
-          <article class="card about-card">
-            <img class="about-img" src="images/hydro ottawa.png" alt="Hydro Ottawa Logo">
-            <div class="about-head">
-              <h2>Hydro Ottawa</h2>
-              <h3>Cybersecurity Analyst Intern<br>(May - Aug 2025)</h3>
-            </div>
-            <p class="about-body">
-              During my May-Aug 2025 Cybersecurity Analyst internship at Hydro Ottawa, I strengthened incident response and cloud security through hands-on testing, automation, and risk assessment tooling. I built playbooks and AWS-based detections/remediations, and validated threats using MITRE ATT&CK/Caldera simulations.
-            </p>
-            <ul class="about-list">
-                <li>Developed incident response playbooks for AI data leaks, web exploits, ransomware, and insider threats</li>
-                <li>Simulated Living Off The Land attacks using MITRE ATT&CK + Caldera on Linux</li>
-                <li>Implemented AWS GuardDuty as Infrastructure as Code and hardened S3 access with IAM policies</li>
-                <li>Integrated Gemini's REST API to analyze Google Workspace data and produce quantified risk assessments</li>
-                <li>Built an AWS Lambda quarantine workflow for malicious S3 files with SNS alerting</li>
-                <li>Tested DNS connections using a PowerShell script with Cloudflare API calls</li>
-            </ul>
-          </article>
-          <article class="card about-card">
-            <img class="about-img" src="images/ciena.png" alt="Ciena Logo">
-            <div class="about-head">
-              <h2>Ciena</h2>
-              <h3>Software Developer Intern<br>(Feb - Aug 2023)</h3>
-            </div>
-            <p class="about-body">
-              During my Feb-Aug 2023 Software Developer co-op at Ciena, I built an automated Python report generator on Linux that processed data from Oracle databases. I also developed an Angular (HTML/CSS/TypeScript) web front end and gained hands-on DevOps experience working in Agile with Jira and Git.
-            </p>
-            <ul class="about-list">
-                <li>Designed an automated Python report generation tool, processing data on Linux from Oracle databases</li>
-                <li>Developed the front end of a website using CSS, HTML and TypeScript with the Angular framework</li>
-                <li>Learned DevOps using Agile Jira and Git</li>
-            </ul>
-          </article>
-        </div>
-      </section>
-
-      <section id="projects" class="section">
-        <h2>Projects/Challenges</h2>
-        <div class="grid">
-          <article class="card">
-            <h3>ClassNap (AI Transcriber/Overview)</h3>
-            <p>Transcribes and provides AI overviews of speech. User can ask questions about the content</p>
-            <div class="links">
-              <a href="https://github.com/charifbahloul/classnap" target="_blank" rel="noreferrer">Repository</a>
-            </div>
-          </article>
-
-          <article class="card">
-            <h3>Maze Solver Game</h3>
-            <p>Console based adventure game with an automatic maze solver, designed with C++.</p>
-            <div class="links">
-              <a href="https://github.com/KishaanG/Maze-solver-game/tree/main/Maze%20Final%20Project" target="_blank" rel="noreferrer">Repository</a>
-            </div>
-          </article>
-        </div>
-        <article class="card about-card">
-            <img class="about-img" src="images/CyberSci.png" alt="CyberSci Ottawa Winners">
-            <div class="about-text">
-              <h2>CyberSci Ottawa Region Winners</h2>
-              <p>
-                Competed in and placed first out of 13 teams in the Ottawa regional Cybersci Capture The Flag competition. Team name: <strong>The Off-By-Ones</strong>
-              </p>
-              <div class="links">
-                <a href="https://cybersecuritychallenge.ca/en/" target="_blank" rel="noreferrer">CyberSci Winners</a>
-              </div>
-            </div>
-          </article>
-      </section>
-
-      <section id="contact" class="section">
-        <h2>Contact</h2>
-        <article class="card">
-          <p>
-            Feel free to reach out to me via email at:<br>
-            <a href="mailto:kishaangidda@gmail.com">kishaangidda@gmail.com</a>
+      <!-- ============ 01 · WORK ============ -->
+      <section class="sec" id="work" aria-labelledby="work-title">
+        <header class="sec-head">
+          <p class="label rise">01 · Selected work</p>
+          <h2 class="sec-title rise" id="work-title" style="--d: 0.06s">Work</h2>
+          <p class="sec-lede rise" style="--d: 0.12s">
+            Three things I've built or won: an optimal-control solver I couldn't
+            stop working on, an AI triage system with real stakes, and a
+            capture-the-flag weekend that ended first place.
           </p>
-        </article>
+        </header>
+
+        <!-- Pinned slideshow: the section holds still while you scroll
+             through it, the viewer cross-fades project to project, and
+             the index tracks whichever is showing. Each slide carries
+             its own plate colour (see home.css); the drawn visuals read
+             that plate so the diagram matches its ground. Below 900px
+             this degrades to a plain stack. -->
+        <div class="work" data-slideshow style="--slides: 3">
+          <div class="work-pin">
+            <!-- the index: names only, mirrors the reference -->
+            <nav class="work-index" aria-label="Work">
+              <ol>
+                <li>
+                  <a href="#work-racingline" data-index="0">
+                    <span class="work-index__name">Racing Line App</span>
+                    <span class="work-index__kind">Physics-optimal racing lines</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#work-carerouter" data-index="1">
+                    <span class="work-index__name">CareRouter</span>
+                    <span class="work-index__kind">AI mental-health triage</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#work-cybersci" data-index="2">
+                    <span class="work-index__name">CyberSci Ottawa</span>
+                    <span class="work-index__kind">Capture the flag &middot; 1st of 13</span>
+                  </a>
+                </li>
+              </ol>
+              <p class="work-count" aria-hidden="true">
+                <span data-count-now>01</span> / 03
+              </p>
+            </nav>
+
+            <!-- the viewer -->
+            <div class="work-stage">
+              <article class="slide" id="work-racingline" data-slide="0" data-plate="track">
+                <figure class="slide-figure">
+                  <canvas data-visual="racingline" aria-hidden="true"></canvas>
+                  <figcaption class="sr-only">
+                    A circuit drawn as two hairline track edges with a dotted
+                    geometric centreline, and over it the minimum-lap-time racing
+                    line (wide at entry, tight at the apex, wide at exit), with
+                    the apexes marked.
+                  </figcaption>
+                </figure>
+                <div class="slide-body">
+                  <p class="label">FastAPI &middot; CasADi/IPOPT &middot; React &middot; Three.js</p>
+                  <h3>Racing Line App</h3>
+                  <p class="slide-text">
+                    Draw a track on flat ground or real-world terrain and the
+                    solver returns the minimum-lap-time racing line. Then orbit
+                    it, or drive the optimal lap from a driver's-eye camera in 3D.
+                    Two solvers sit behind it: a fast curvature heuristic, and a
+                    periodic optimal-control problem over 360 collocation nodes
+                    solved with IPOPT through CasADi. 15K+ lines and 590+ tests
+                    later it also trains its own drivers in the browser, evolving
+                    neural-net policies with CMA-ES across parallel Web Workers.
+                  </p>
+                </div>
+              </article>
+
+              <article class="slide" id="work-carerouter" data-slide="1" data-plate="care">
+                <figure class="slide-figure">
+                  <canvas data-visual="routing" aria-hidden="true"></canvas>
+                  <figcaption class="sr-only">
+                    A diagram of CareRouter's routing: an intake is scored by a
+                    Gemini-based severity assessment, then routed down one of four
+                    bands: low to self-serve resources, moderate to a community
+                    clinic, elevated to matched urgent care, and crisis directly to
+                    a crisis line without queueing.
+                  </figcaption>
+                </figure>
+                <div class="slide-body">
+                  <p class="label">FastAPI &middot; Gemini 2.5 Flash &middot; 2026</p>
+                  <h3>CareRouter</h3>
+                  <p class="slide-text">
+                    An AI mental-health triage system that gets people to the
+                    right support fast. I was the sole backend developer on a
+                    four-person team: a rule-constrained Gemini pass scores
+                    severity, urgency and issue type from a six-question intake,
+                    a second pass filters real facilities on cost, transport and
+                    language, and crisis cases route deterministically to 9-1-1
+                    or 9-8-8 without ever touching the model. Safety-first by
+                    construction, not by policy.
+                  </p>
+                  <p class="slide-links">
+                    <a class="br" href="https://github.com/KishaanG/CareRouter" target="_blank" rel="noreferrer">[ Source &#8599; ]</a>
+                  </p>
+                </div>
+              </article>
+
+              <article class="slide" id="work-cybersci" data-slide="2" data-plate="ctf">
+                <figure class="slide-figure slide-figure--record">
+                  <img
+                    src="images/CyberSci.png"
+                    alt="CyberSci results listing: Ottawa Region, Carleton University, Team &quot;The Off-By-Ones&quot;"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <figcaption class="label">Competition results &middot; Ottawa region</figcaption>
+                </figure>
+                <div class="slide-body">
+                  <p class="label">Capture the flag &middot; 1st of 13 teams</p>
+                  <h3>CyberSci Ottawa Regional</h3>
+                  <p class="slide-text">
+                    A room full of people trying to break the same systems I
+                    spend my weeks defending, which is my favourite way to spend
+                    a weekend. <strong>The Off-By-Ones</strong> finished first
+                    out of thirteen teams at the Ottawa regional.
+                  </p>
+                  <p class="slide-links">
+                    <a class="br" href="https://cybersecuritychallenge.ca/en/" target="_blank" rel="noreferrer">[ CyberSci &#8599; ]</a>
+                  </p>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 02 · EXPERIENCE ============ -->
+      <section class="sec sec--tint" id="experience" aria-labelledby="xp-title">
+        <header class="sec-head sec-head--split">
+          <div>
+            <p class="label rise">02 · Experience</p>
+            <h2 class="sec-title rise" id="xp-title" style="--d: 0.06s">Experience</h2>
+          </div>
+          <!-- The work viewer counts projects (01 / 03); a career
+               counts years. Same face, same size, same tracking —
+               the two sections rhyme without repeating. Decorative:
+               every date it reports is written in the ledger below. -->
+          <p class="ledger-scale rise" style="--d: 0.12s" aria-hidden="true">
+            <span data-scale-now>2026</span> / 2023
+          </p>
+        </header>
+
+        <!-- Scroll here drives time, not a slideshow. A hairline is
+             drawn down the left grid line to the reading position,
+             each job's mark is a station on it, and because the mark
+             column sticks beside its own bullets the filled node
+             rides the spine like a pen tip. Desktop only; below 900px
+             the row collapses to one column and this falls back to
+             the plain ledger. See home.js. -->
+        <ol class="ledger">
+          <li class="ledger-row rise" data-year="2026">
+            <div class="ledger-when">
+              <span class="ledger-mark">
+                <img src="images/trendai.png" alt="" loading="lazy" decoding="async" />
+              </span>
+              <span class="ledger-date">
+                <span class="dot" aria-hidden="true"></span>Current
+              </span>
+            </div>
+            <div class="ledger-what">
+              <h3>TrendAI</h3>
+              <p class="ledger-role">Product Team, AVTD</p>
+              <ul class="ledger-list">
+                <li>Built a read-only SOC alert-triage agent on the Claude Agent SDK that chains multi-step tool calls across six custom MCP tools to triage alerts and correlate cloud-asset CVEs</li>
+                <li>Fixed a two-region production incident where Azure zonal-capacity failures left zombie VMs marked healthy and stranded 30+ scans, then killed the failure class for good with idempotent teardown and launch guards</li>
+                <li>Shipped AWS region eu-south-2 end to end for agentless vulnerability scanning and VPC Flow Logs (CloudFormation, pipelines, tests), then codified the 15-task runbook into a reusable Claude Code skill</li>
+                <li>Expanded weekly BlackDuck and Fortify SCA/SAST scans from 22 repos to all 52 with GitHub Actions, then remediated 270+ critical and high findings across 23 repos, driving the critical backlog to near zero</li>
+                <li>Cut a live nine-service disaster-recovery simulation from 10 hours to 5, orchestrating AI subagents through three end-to-end dry runs to clear every CI failure</li>
+              </ul>
+              <ul class="tags">
+                <li class="br br--mono">[ Claude Agent SDK ]</li>
+                <li class="br br--mono">[ MCP ]</li>
+                <li class="br br--mono">[ AWS ]</li>
+                <li class="br br--mono">[ Azure ]</li>
+                <li class="br br--mono">[ CloudFormation ]</li>
+                <li class="br br--mono">[ Vulnerability management ]</li>
+              </ul>
+            </div>
+          </li>
+
+          <li class="ledger-row rise" data-year="2025">
+            <div class="ledger-when">
+              <span class="ledger-mark">
+                <img src="images/hydro ottawa.png" alt="" loading="lazy" decoding="async" />
+              </span>
+              <span class="ledger-date">May – Aug 2025</span>
+            </div>
+            <div class="ledger-what">
+              <h3>Hydro Ottawa</h3>
+              <p class="ledger-role">Cybersecurity Analyst Intern</p>
+              <ul class="ledger-list">
+                <li>Built a third-party app-risk pipeline that scrapes Google Workspace Marketplace listings and scores each app's terms of service and security policies with Gemini's REST API</li>
+                <li>Wrote four incident-response playbooks, 20 to 30 pages each, covering AI data leaks, web exploits, ransomware and insider threats, then validated every one of them end to end in test environments</li>
+                <li>Deployed AWS GuardDuty with Terraform to secure S3, built a Lambda pipeline that auto-quarantines malicious files with SNS alerts, and migrated 20+ PGP secrets into Secrets Manager</li>
+                <li>Emulated Living-off-the-Land attacks by chaining 10 to 25 MITRE ATT&amp;CK abilities in Caldera, which is where I learned how quiet a real intrusion looks</li>
+                <li>Tested DNS connections with a PowerShell script driving Cloudflare API calls</li>
+              </ul>
+              <ul class="tags">
+                <li class="br br--mono">[ AWS ]</li>
+                <li class="br br--mono">[ Terraform ]</li>
+                <li class="br br--mono">[ MITRE ATT&amp;CK ]</li>
+                <li class="br br--mono">[ Gemini API ]</li>
+                <li class="br br--mono">[ IAM ]</li>
+                <li class="br br--mono">[ PowerShell ]</li>
+              </ul>
+            </div>
+          </li>
+
+          <li class="ledger-row rise" data-year="2023">
+            <div class="ledger-when">
+              <span class="ledger-mark">
+                <img src="images/ciena.png" alt="" loading="lazy" decoding="async" />
+              </span>
+              <span class="ledger-date">Feb – Aug 2023</span>
+            </div>
+            <div class="ledger-what">
+              <h3>Ciena</h3>
+              <p class="ledger-role">Software Developer Intern</p>
+              <ul class="ledger-list">
+                <li>Automated daily test-result reports with a cron-scheduled Python tool, writing SQL against Oracle and emailing formatted tables to every deploying team. It is still running today, which I am still quietly proud of</li>
+                <li>Built the Angular and TypeScript front end of an internal IAM permission-assignment tool</li>
+                <li>Learned DevOps and Agile in practice, with Jira and Git</li>
+              </ul>
+              <ul class="tags">
+                <li class="br br--mono">[ Python ]</li>
+                <li class="br br--mono">[ SQL ]</li>
+                <li class="br br--mono">[ Angular ]</li>
+                <li class="br br--mono">[ TypeScript ]</li>
+                <li class="br br--mono">[ Oracle ]</li>
+                <li class="br br--mono">[ Linux ]</li>
+              </ul>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <!-- ============ 03 · ABOUT ============ -->
+      <section class="sec" id="about" aria-labelledby="about-title">
+        <header class="sec-head">
+          <p class="label rise">03 · About</p>
+          <h2 class="sec-title rise" id="about-title" style="--d: 0.06s">About</h2>
+        </header>
+
+        <!-- The dossier. About takes the ledger's own 25 / 75 split and
+             hairline rows because it is the same kind of object: a record
+             you scan, not prose you read. There is deliberately no
+             standfirst — the hero already carries the one "who I am"
+             sentence this site needs (DESIGN.md §7). -->
+        <dl class="dossier rise">
+          <div class="dossier-row">
+            <dt class="label">Education</dt>
+            <dd>
+              Carleton University · Computer Science Co-op, AI/ML stream
+              <span class="dossier-meta">3.6 GPA · Dean's Honour List</span>
+            </dd>
+          </div>
+
+          <div class="dossier-row">
+            <dt class="label">Focus</dt>
+            <dd>
+              Agentic AI · optimal control · offensive security ·
+              capture-the-flag
+            </dd>
+          </div>
+
+          <div class="dossier-row">
+            <dt class="label">Languages</dt>
+            <dd>English · French, DELF B2</dd>
+          </div>
+
+          <div class="dossier-row">
+            <dt class="label">Off keyboard</dt>
+            <dd>
+              Soccer, playing and watching Liverpool · the gym, most days ·
+              reading on where AI is actually heading
+            </dd>
+          </div>
+        </dl>
+
+        <!-- Four groups on the page's four columns, so the toolkit sits on
+             the background grid's own rules rather than drawing new ones
+             (DESIGN.md §2). Marked entries are depth, carried by weight and
+             the display blue — never by a second hue (§3). -->
+        <div class="toolkit rise">
+          <div class="toolkit-head">
+            <p class="label">Toolkit</p>
+            <p class="label toolkit-note">Marked · what I use most</p>
+          </div>
+
+          <div class="toolkit-grid">
+            <div class="toolkit-group">
+              <p class="label">Languages</p>
+              <ul class="tags toolkit-tags">
+                <li class="br br--mono br--depth">[ Python ]</li>
+                <li class="br br--mono br--depth">[ TypeScript ]</li>
+                <li class="br br--mono">[ Go ]</li>
+                <li class="br br--mono">[ C++ ]</li>
+                <li class="br br--mono">[ Java ]</li>
+                <li class="br br--mono">[ SQL ]</li>
+              </ul>
+            </div>
+
+            <div class="toolkit-group">
+              <p class="label">AI &amp; optimisation</p>
+              <ul class="tags toolkit-tags">
+                <li class="br br--mono br--depth">[ Claude Agent SDK ]</li>
+                <li class="br br--mono">[ MCP ]</li>
+                <li class="br br--mono">[ Gemini API ]</li>
+                <li class="br br--mono">[ ONNX ]</li>
+                <li class="br br--mono">[ CMA-ES ]</li>
+                <li class="br br--mono">[ IPOPT ]</li>
+              </ul>
+            </div>
+
+            <div class="toolkit-group">
+              <p class="label">Cloud &amp; security</p>
+              <ul class="tags toolkit-tags">
+                <li class="br br--mono br--depth">[ AWS ]</li>
+                <li class="br br--mono br--depth">[ MITRE ATT&amp;CK ]</li>
+                <li class="br br--mono br--depth">[ Linux ]</li>
+                <li class="br br--mono">[ Terraform ]</li>
+                <li class="br br--mono">[ Docker ]</li>
+                <li class="br br--mono">[ PowerShell ]</li>
+              </ul>
+            </div>
+
+            <div class="toolkit-group">
+              <p class="label">Web &amp; tooling</p>
+              <ul class="tags toolkit-tags">
+                <li class="br br--mono">[ FastAPI ]</li>
+                <li class="br br--mono">[ React/Next.js ]</li>
+                <li class="br br--mono">[ GitHub Actions ]</li>
+                <li class="br br--mono">[ Git ]</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 04 · CONTACT ============ -->
+      <section class="sec close" id="contact" aria-labelledby="contact-title">
+        <div class="silk-host silk-host--close" aria-hidden="true">
+          <canvas data-silk="0.72"></canvas>
+        </div>
+
+        <!-- everything the work is made of, radiating from one fixed
+             point. Every line runs to the hub, so the families only
+             name themselves when you hover one of their members and
+             that slice of the fan gathers. -->
+        <div class="constellation" aria-hidden="true">
+          <svg class="constellation-lines"><g></g></svg>
+
+          <!-- --cx/--cy are the phone positions: the type does not
+               shrink with the field, so the wide layout cannot simply
+               be scaled down -->
+          <span class="cn-hub" data-node="hub" style="--x: 50%; --y: 80%; --cx: 50%; --cy: 82%"
+            >The Work<em>build it, then break it</em></span
+          >
+
+          <span class="cn-node" data-node="ai"  data-of="hub" style="--x: 10%; --y: 26%; --cx: 15%; --cy: 18%">AI&thinsp;/&thinsp;ML</span>
+          <span class="cn-node" data-node="sec" data-of="hub" style="--x: 5%;  --y: 58%; --cx: 9%;  --cy: 42%">Security</span>
+          <span class="cn-node" data-node="sys" data-of="hub" style="--x: 28%; --y: 76%; --cx: 17%; --cy: 64%">Systems</span>
+
+          <!-- data-compact drops a satellite on phones, where the
+               field has nothing like the room for nine of them -->
+          <span class="cn-sat" data-of="ai"  data-compact="off" style="--x: 32%; --y: 48%">reinforcement learning</span>
+          <span class="cn-sat" data-of="ai"  data-compact="off" style="--x: 52%; --y: 34%">agentic AI</span>
+          <span class="cn-sat" data-of="ai"  style="--x: 86%; --y: 40%; --cx: 79%; --cy: 40%">risk scoring</span>
+          <span class="cn-sat" data-of="sec" data-compact="off" style="--x: 30%; --y: 58%">playbooks</span>
+          <span class="cn-sat" data-of="sec" data-compact="off" style="--x: 66%; --y: 53%">ATT&amp;CK</span>
+          <span class="cn-sat" data-of="sec" style="--x: 93%; --y: 63%; --cx: 72%; --cy: 62%">capture the flag</span>
+          <span class="cn-sat" data-of="sys" style="--x: 60%; --y: 22%; --cx: 62%; --cy: 16%">solvers</span>
+          <span class="cn-sat" data-of="sys" data-compact="off" style="--x: 80%; --y: 80%">IAM &middot; GuardDuty</span>
+          <span class="cn-sat" data-of="sys" data-compact="off" style="--x: 66%; --y: 92%">pipelines</span>
+        </div>
+
+        <div class="close-inner">
+          <p class="label rise">04 · Contact</p>
+          <h2 class="close-title rise" id="contact-title" style="--d: 0.06s">
+            Have something to build,<br />or something to break?
+          </h2>
+          <p class="close-sub rise" style="--d: 0.12s">
+            I'm looking for my next co-op or internship in AI/ML and security
+            engineering. If you're building agents, hardening cloud, or both, I
+            would genuinely love to hear about it. My inbox is open and I answer
+            everything.
+          </p>
+          <a class="close-mail rise" style="--d: 0.18s" href="mailto:kishaangidda@gmail.com">
+            kishaangidda@gmail.com
+          </a>
+          <p class="close-links rise" style="--d: 0.24s">
+            <a class="br" href="https://github.com/kishaang" target="_blank" rel="noreferrer">[ GitHub ↗ ]</a>
+            <a class="br" href="https://www.linkedin.com/in/kishaan-gidda/" target="_blank" rel="noreferrer">[ LinkedIn ↗ ]</a>
+            <a class="br" href="blog.html">[ Blog ]</a>
+          </p>
+        </div>
       </section>
     </main>
 
-    <footer class="container footer">
-      <small>© <span id="year"></span> Kishaan Gidda </small>
+    <!-- ===================== BOTTOM CHROME ===================== -->
+    <footer class="bar bar--bottom">
+      <p class="colophon">© <span id="year">2026</span> Kishaan Gidda</p>
+      <div class="socials">
+        <a class="social" href="https://github.com/kishaang" target="_blank" rel="noreferrer" aria-label="GitHub">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true">
+            <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.17c-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.75 2.69 1.25 3.34.95.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.16-1.18 3.16-1.18.63 1.59.24 2.76.12 3.05.74.81 1.18 1.83 1.18 3.09 0 4.41-2.69 5.38-5.26 5.66.41.36.78 1.05.78 2.13v3.16c0 .31.21.67.8.55A11.52 11.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/>
+          </svg>
+        </a>
+        <a class="social" href="https://www.linkedin.com/in/kishaan-gidda/" target="_blank" rel="noreferrer" aria-label="LinkedIn">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true">
+            <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45Z"/>
+          </svg>
+        </a>
+      </div>
     </footer>
 
-    <div id="videoModal" class="video-modal" aria-hidden="true">
-      <div class="video-modal__backdrop"></div>
-
-      <div class="video-modal__content" role="dialog" aria-modal="true">
-        <video id="modalVideo" class="video-modal__video" playsinline autoplay muted loop></video>
-      </div>
-    </div>
-
-    <script src="script.js"></script>
+    <script src="smooth-scroll.js" defer></script>
+    <script src="silk.js" defer></script>
+    <script src="visuals.js" defer></script>
+    <script src="home.js" defer></script>
   </body>
 </html>

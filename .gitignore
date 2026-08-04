@@ -1,0 +1,11 @@
+# Dev screenshots taken while iterating on the design.
+# Real site assets live in images/ and videos/, so nothing at the repo root
+# should be a committed image.
+/*.png
+/*.jpg
+/*.jpeg
+/*.gif
+
+# OS / editor noise
+.DS_Store
+Thumbs.db

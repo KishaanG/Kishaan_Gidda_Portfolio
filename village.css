@@ -1,0 +1,530 @@
+/* ============================================================
+   Kishaan's Village — pixel RPG overworld
+   Sky #B8D4F0 · Grass #5DB85C · Path #C2B280 · Gold #FFD700
+   ============================================================ */
+
+:root {
+  --sky: #b8d4f0;
+  --sky-deep: #9cc0e8;
+  --gold: #ffd700;
+  --ink: #14142a;
+  --panel: #1a1a30;
+  --panel-edge: #f0f0f6;
+  --lcd: #9bf09b;
+  --lcd-dim: #3a6b3a;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 30% 20%, #cfe2f7 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 80%, var(--sky-deep) 0%, transparent 60%),
+    var(--sky);
+  font-family: "Press Start 2P", monospace;
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  -webkit-font-smoothing: none;
+  user-select: none;
+}
+
+/* ---------- drifting cloud puffs around the island ---------- */
+.sky-clouds {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.puff {
+  position: absolute;
+  width: 280px;
+  height: 90px;
+  border-radius: 90px;
+  background: rgba(255, 255, 255, 0.75);
+  filter: blur(18px);
+  animation: drift 60s linear infinite;
+}
+
+.puff::before {
+  content: "";
+  position: absolute;
+  left: 60px;
+  top: -34px;
+  width: 140px;
+  height: 80px;
+  border-radius: 80px;
+  background: inherit;
+}
+
+.p1 { top: 6%;  left: -10%; animation-duration: 75s; }
+.p2 { top: 70%; left: -25%; animation-duration: 95s;  opacity: 0.8; }
+.p3 { top: 38%; left: -40%; animation-duration: 120s; opacity: 0.55; transform: scale(0.7); }
+.p4 { top: 88%; left: -15%; animation-duration: 85s;  opacity: 0.7;  transform: scale(0.55); }
+
+@keyframes drift {
+  to { translate: 130vw 0; }
+}
+
+/* ---------- canvas stage ---------- */
+.stage {
+  position: relative;
+  z-index: 1;
+  line-height: 0;
+}
+
+#village {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  display: block;
+  box-shadow: 0 30px 80px rgba(40, 70, 110, 0.45);
+}
+
+#village.point {
+  cursor: pointer;
+}
+
+/* ---------- cloud-level vignette ---------- */
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 90px 30px rgba(184, 212, 240, 0.9),
+    inset 0 0 220px 60px rgba(184, 212, 240, 0.45);
+}
+
+/* ---------- shared pixel window chrome ---------- */
+.pixel-window {
+  background: var(--panel);
+  color: #f5f5f7;
+  border: 3px solid var(--panel-edge);
+  border-radius: 3px;
+  box-shadow:
+    0 0 0 3px var(--ink),
+    4px 4px 0 3px rgba(20, 20, 42, 0.45);
+  image-rendering: pixelated;
+}
+
+/* ---------- HUD ---------- */
+.hud {
+  position: fixed;
+  z-index: 5;
+}
+
+.hud-title {
+  top: 18px;
+  left: 50%;
+  translate: -50% 0;
+  padding: 12px 20px 10px;
+  text-align: center;
+}
+
+.hud-title h1 {
+  font-size: 13px;
+  line-height: 1.5;
+  letter-spacing: 2px;
+  color: var(--gold);
+  text-shadow: 2px 2px 0 var(--ink);
+}
+
+.hud-title p {
+  margin-top: 7px;
+  font-size: 7px;
+  letter-spacing: 3px;
+  color: #aab4d4;
+  text-transform: uppercase;
+}
+
+.hud-exit {
+  top: 18px;
+  right: 18px;
+  padding: 10px 12px;
+  font-size: 8px;
+  color: #f5f5f7;
+  text-decoration: none;
+  transition: translate 0.1s steps(2);
+}
+
+.hud-exit:hover {
+  color: var(--gold);
+  translate: 0 -2px;
+}
+
+.hud-hint {
+  bottom: 22px;
+  left: 50%;
+  translate: -50% 0;
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: var(--ink);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+  animation: hint-blink 1.6s steps(2) infinite;
+  transition: opacity 0.6s;
+  pointer-events: none;
+}
+
+.hud-hint.gone {
+  opacity: 0;
+}
+
+@keyframes hint-blink {
+  50% { opacity: 0.35; }
+}
+
+/* ---------- on-screen D-pad (touch devices only) ---------- */
+.dpad {
+  position: fixed;
+  z-index: 5;
+  left: 16px;
+  bottom: 22px;
+  display: none;
+  grid-template-columns: repeat(3, 40px);
+  grid-template-rows: repeat(3, 40px);
+  gap: 3px;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .dpad {
+    display: grid;
+  }
+}
+
+.dpad-btn {
+  font-family: inherit;
+  font-size: 12px;
+  color: #f5f5f7;
+  cursor: pointer;
+  touch-action: none;
+  transition: translate 0.1s steps(2), background 0.1s steps(2);
+}
+
+.dpad-btn:active {
+  background: var(--ink);
+  translate: 0 1px;
+}
+
+.dpad-up { grid-area: 1 / 2 / 2 / 3; }
+.dpad-left { grid-area: 2 / 1 / 3 / 2; }
+.dpad-right { grid-area: 2 / 3 / 3 / 4; }
+.dpad-down { grid-area: 3 / 2 / 4 / 3; }
+
+/* ---------- hover tooltip nameplate ---------- */
+.tooltip {
+  position: absolute;
+  z-index: 6;
+  padding: 6px 9px 5px;
+  background: var(--panel);
+  border: 2px solid var(--gold);
+  border-radius: 2px;
+  color: var(--gold);
+  font-size: 8px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  pointer-events: none;
+  translate: -50% -130%;
+  opacity: 0;
+  transition: opacity 0.12s steps(3);
+  box-shadow: 0 0 0 2px var(--ink), 0 0 14px rgba(255, 215, 0, 0.5);
+}
+
+.tooltip.on {
+  opacity: 1;
+}
+
+/* ---------- "press space" doorway nudge ---------- */
+.interact-prompt {
+  position: absolute;
+  z-index: 6;
+  padding: 6px 8px 5px;
+  background: var(--gold);
+  border: 2px solid var(--ink);
+  border-radius: 2px;
+  color: var(--ink);
+  font-size: 7px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  pointer-events: none;
+  translate: -50% -100%;
+  opacity: 0;
+  transition: opacity 0.12s steps(2);
+  box-shadow: 0 0 0 2px var(--ink), 2px 2px 0 rgba(20, 20, 42, 0.4);
+}
+
+.interact-prompt::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  translate: -50% 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--gold);
+}
+
+.interact-prompt.on {
+  opacity: 1;
+  animation: prompt-bob 0.7s steps(2) infinite;
+}
+
+@keyframes prompt-bob {
+  50% { translate: -50% calc(-100% - 3px); }
+}
+
+/* ---------- JRPG dialogue ---------- */
+.dialogue {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 16px 34px;
+  background: rgba(20, 20, 42, 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+
+.dialogue.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.dialogue-box {
+  position: relative;
+  width: min(640px, 100%);
+  min-height: 132px;
+  padding: 26px 26px 30px;
+  cursor: pointer;
+  translate: 0 24px;
+  transition: translate 0.18s steps(4);
+}
+
+.dialogue.open .dialogue-box {
+  translate: 0 0;
+}
+
+.nameplate {
+  position: absolute;
+  top: -14px;
+  left: 16px;
+  padding: 7px 12px 5px;
+  background: var(--gold);
+  color: var(--ink);
+  font-size: 9px;
+  letter-spacing: 1px;
+  border: 2px solid var(--ink);
+  border-radius: 2px;
+  box-shadow: 2px 2px 0 rgba(20, 20, 42, 0.5);
+}
+
+.dlg-text {
+  font-size: 10px;
+  line-height: 2;
+  color: #eef0fa;
+  min-height: 60px;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+.dlg-cue {
+  position: absolute;
+  right: 18px;
+  bottom: 10px;
+  color: var(--gold);
+  font-size: 10px;
+  animation: cue-bob 0.7s steps(2) infinite;
+}
+
+.dlg-cue.hide {
+  display: none;
+}
+
+@keyframes cue-bob {
+  50% { translate: 0 3px; }
+}
+
+.dlg-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.dlg-links:empty {
+  display: none;
+}
+
+.dlg-links a {
+  font-size: 8px;
+  color: var(--gold);
+  text-decoration: none;
+  padding: 7px 10px 6px;
+  border: 2px solid var(--gold);
+  border-radius: 2px;
+  transition: background 0.1s steps(2), color 0.1s steps(2);
+}
+
+.dlg-links a:hover {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.dlg-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #8890b8;
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.dlg-close:hover {
+  color: var(--gold);
+}
+
+/* ---------- cell tower SMS screen ---------- */
+.sms {
+  position: fixed;
+  inset: 0;
+  z-index: 11;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(20, 20, 42, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+
+.sms.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sms-screen {
+  width: min(420px, 100%);
+  background: #0c1c0c;
+  border: 4px solid #3c3c4a;
+  border-radius: 8px;
+  box-shadow:
+    0 0 0 3px var(--ink),
+    inset 0 0 30px rgba(60, 240, 60, 0.12),
+    0 24px 60px rgba(20, 20, 42, 0.55);
+  padding: 16px 18px 20px;
+  color: var(--lcd);
+  text-shadow: 0 0 6px rgba(120, 255, 120, 0.55);
+  scale: 0.92;
+  transition: scale 0.18s steps(4);
+}
+
+.sms.open .sms-screen {
+  scale: 1;
+}
+
+.sms-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 7px;
+  letter-spacing: 1px;
+  color: var(--lcd-dim);
+  border-bottom: 2px dashed var(--lcd-dim);
+  padding-bottom: 10px;
+}
+
+.sms-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.sms-bars i {
+  width: 3px;
+  background: var(--lcd);
+  animation: bar-flicker 2.2s steps(2) infinite;
+}
+
+.sms-bars i:nth-child(1) { height: 4px; }
+.sms-bars i:nth-child(2) { height: 7px; }
+.sms-bars i:nth-child(3) { height: 10px; animation-delay: 0.4s; }
+.sms-bars i:nth-child(4) { height: 13px; animation-delay: 0.9s; }
+
+@keyframes bar-flicker {
+  50% { opacity: 0.45; }
+}
+
+.sms-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--lcd-dim);
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.sms-close:hover {
+  color: var(--lcd);
+}
+
+.sms-from {
+  margin-top: 14px;
+  font-size: 8px;
+  color: var(--lcd-dim);
+  animation: hint-blink 1.4s steps(2) infinite;
+}
+
+.sms-body {
+  margin-top: 12px;
+  font-size: 9px;
+  line-height: 2;
+  min-height: 72px;
+}
+
+.sms-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.sms-btn {
+  font-size: 8px;
+  color: var(--lcd);
+  text-decoration: none;
+  padding: 8px 10px 7px;
+  border: 2px solid var(--lcd-dim);
+  border-radius: 2px;
+  transition: background 0.1s steps(2), color 0.1s steps(2);
+}
+
+.sms-btn:hover {
+  background: var(--lcd);
+  color: #0c1c0c;
+  text-shadow: none;
+}
+
+/* ---------- small screens ---------- */
+@media (max-width: 560px) {
+  .hud-title h1 { font-size: 9px; }
+  .hud-title { padding: 10px 12px 8px; width: max-content; max-width: 70vw; }
+  .hud-exit { font-size: 7px; padding: 8px 9px; top: auto; bottom: 60px; right: 12px; }
+  .dlg-text { font-size: 9px; }
+  .hud-hint { font-size: 7px; width: max-content; max-width: 92vw; text-align: center; }
+}
