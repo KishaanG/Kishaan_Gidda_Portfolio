@@ -3,51 +3,168 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kishaan Gidda</title>
-    <meta name="description" content="Personal website of Kishaan Gidda." />
-    <link rel="stylesheet" href="style.css" />
+    <title>Your Earbuds Are Not Private · Kishaan Gidda</title>
+    <meta
+      name="description"
+      content="Inside the WhisperPair attack: how a flaw in Google Fast Pair lets Bluetooth earbuds be hijacked silently, who is at risk, and what to do about it."
+    />
+    <meta name="theme-color" content="#ffffff" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23dceaf8'/%3E%3Ctext x='32' y='45' font-family='Georgia,serif' font-size='38' fill='%2327517e' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&family=Geist+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,300..500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <link rel="stylesheet" href="blog.css" />
   </head>
-  <body>
-    <div id="top"></div>
-    <header class="container header">
-      <nav class="nav">
-        <a class="button ghost" href="index.html#top">Home</a>
-        <a class="button ghost" href="index.html#about">About</a>
-        <a class="button ghost" href="index.html#experience">Experience</a>
-        <a class="button ghost" href="index.html#projects">Projects</a>
-        <a class="button ghost" href="index.html#contact">Contact</a>
-        <a class="button ghost" href="#top">Blog</a>
+
+  <body class="reading">
+    <a class="skip-link" href="#article">Skip to article</a>
+
+    <div class="col-grid" aria-hidden="true"><span></span></div>
+
+    <header class="bar bar--top">
+      <a class="wordmark" href="index.html">Kishaan Gidda</a>
+      <nav class="site-nav" aria-label="Primary">
+        <a class="br" href="index.html#work">[ Work ]</a>
+        <a class="br" href="index.html#experience">[ Experience ]</a>
+        <a class="br" href="index.html#about">[ About ]</a>
+        <a class="br" href="index.html#contact">[ Contact ]</a>
+        <a class="br" href="blog.html" aria-current="page">[ Blog ]</a>
       </nav>
     </header>
-    <main class="container">
-      <section class="section">
-        <article class="card blog-card">
-            <div class="blog-head">
-              <h5>January 20, 2026</h5>
-              <h2>Your Earbuds Are Not Private: Inside the WhisperPair Attack</h2>
-              <p>Right now, hundreds of millions of Bluetooth headphones and earbuds that support Google's Fast Pair may be vulnerable to silent hijacking in seconds.</p>
-            </div>
-            <h3>What WhisperPair Is</h3>
-            <p>WhisperPair is a script-based attack that uses a single, versatile script capable of targeting a wide range of Fast Pair-enabled Bluetooth devices. The attack exploits a flaw in how Bluetooth devices implement Google Fast Pair, a protocol designed to make Bluetooth pairing easier and faster for Android devices.</p>
-            <h3>Who's at Risk and Why Is It a Problem</h3>
-            <p>Although Fast Pair is designed to improve pairing on Android devices, iOS users are also at risk because the vulnerability lies in the accessory itself, as opposed to the phone. <br><br>Under normal circumstances, Fast Pair devices should ignore pairing and interaction requests unless they are explicitly in pairing mode; however, many devices fail to properly enforce this restriction. Researchers at KU Leuven University discovered that this allows unauthorized devices to interact with them even when pairing mode is not enabled. This allows attackers to:</p>
-            <ul class="blog-list">
-                <li>Hijack the device without the user being alerted</li>
-                <li>Control the audio device's functions such as playing audio or changing the volume</li>
-                <li>Access the built-in microphones to eavesdrop on conversations</li>
-                <li>Track the user's location by linking the device to a Google account controlled by the attacker (if this happens, you may receive notifications that you're being tracked by your own device)</li>
+
+    <main id="top">
+      <!-- ============ MASTHEAD ============ -->
+      <header class="masthead">
+        <div class="silk-host masthead-silk" aria-hidden="true">
+          <canvas data-silk="0.85"></canvas>
+        </div>
+        <div class="masthead-inner">
+          <p class="label rise">Writing · 01</p>
+          <h1 class="masthead-title rise" style="--d: 0.08s">
+            Your earbuds<br />are not private.
+          </h1>
+          <p class="masthead-standfirst rise" style="--d: 0.16s">
+            Right now, hundreds of millions of Bluetooth headphones and earbuds
+            that support Google's Fast Pair may be vulnerable to silent hijacking
+            in seconds.
+          </p>
+          <p class="masthead-meta rise" style="--d: 0.24s">
+            <time datetime="2026-01-20">20 January 2026</time>
+            <span class="sep" aria-hidden="true">·</span>
+            <span>Inside the WhisperPair attack</span>
+          </p>
+        </div>
+      </header>
+
+      <!-- ============ ARTICLE ============ -->
+      <article class="article" id="article">
+        <!-- the reading rail: section index, sticky -->
+        <nav class="reading-index" aria-label="In this article">
+          <p class="label">Contents</p>
+          <ol>
+            <li><a href="#what" data-index="0">What WhisperPair is</a></li>
+            <li><a href="#risk" data-index="1">Who's at risk</a></li>
+            <li><a href="#devices" data-index="2">Affected devices</a></li>
+            <li><a href="#protect" data-index="3">How to protect yourself</a></li>
+          </ol>
+        </nav>
+
+        <div class="prose">
+          <section id="what" data-section="0">
+            <h2><span class="h-num" aria-hidden="true">01</span>What WhisperPair is</h2>
+            <p>
+              WhisperPair is a script-based attack that uses a single, versatile
+              script capable of targeting a wide range of Fast Pair-enabled
+              Bluetooth devices. The attack exploits a flaw in how Bluetooth
+              devices implement Google Fast Pair, a protocol designed to make
+              Bluetooth pairing easier and faster for Android devices.
+            </p>
+          </section>
+
+          <section id="risk" data-section="1">
+            <h2><span class="h-num" aria-hidden="true">02</span>Who's at risk, and why it's a problem</h2>
+            <p>
+              Although Fast Pair is designed to improve pairing on Android
+              devices, iOS users are also at risk, because the vulnerability lies
+              in the accessory itself rather than in the phone.
+            </p>
+            <p>
+              Under normal circumstances, Fast Pair devices should ignore pairing
+              and interaction requests unless they are explicitly in pairing mode.
+              Many devices fail to enforce that restriction. Researchers at KU
+              Leuven University discovered that this allows unauthorized devices
+              to interact with them even when pairing mode is not enabled, which
+              lets an attacker:
+            </p>
+            <ul class="prose-list">
+              <li>Hijack the device without alerting the user</li>
+              <li>Control the audio device's functions, such as playing audio or changing the volume</li>
+              <li>Access the built-in microphones to eavesdrop on conversations</li>
+              <li>Track the user's location by linking the device to a Google account the attacker controls; if this happens, you may receive notifications that you're being tracked by your own device</li>
             </ul>
-            <h3>What Devices Are Affected</h3>
-            <p>Many popular Bluetooth accessories from major brands may be vulnerable if their firmware doesn't properly follow the Fast Pair specifications. To determine if your headphones are vulnerable, visit the official website and search for your device at <a href="https://whisperpair.eu/vulnerable-devices" target="_blank" rel="noreferrer">whisperpair.eu/vulnerable-devices</a>. Be mindful that only devices tested so far are listed, which may not include yours. </p>
-            <h3>How to Protect Yourself</h3>
-            <p>Thankfully, the researchers have not released the script to the public, though these attacks are bound to be independently replicated. Since the attack is very recent, patches will begin rolling out soon, meaning it is very important to stay up-to-date and check for firmware patches as soon as they're released for your devices.</p>
-          </article>
-      </section>
+          </section>
+
+          <section id="devices" data-section="2">
+            <h2><span class="h-num" aria-hidden="true">03</span>What devices are affected</h2>
+            <p>
+              Many popular Bluetooth accessories from major brands may be
+              vulnerable if their firmware doesn't properly follow the Fast Pair
+              specification. To check whether your headphones are affected, search
+              for your device at
+              <a href="https://whisperpair.eu/vulnerable-devices" target="_blank" rel="noreferrer">whisperpair.eu/vulnerable-devices</a>.
+              Be mindful that only devices tested so far are listed, which may not
+              include yours.
+            </p>
+          </section>
+
+          <section id="protect" data-section="3">
+            <h2><span class="h-num" aria-hidden="true">04</span>How to protect yourself</h2>
+            <p>
+              The researchers have not released the script publicly, though these
+              attacks are bound to be replicated independently. Since the attack is
+              very recent, patches will begin rolling out soon, which makes it
+              important to stay up to date and check for firmware patches for your
+              devices as soon as they're released.
+            </p>
+          </section>
+
+          <footer class="article-end">
+            <hr class="rule" />
+            <p class="article-sign">Kishaan Gidda · 20 January 2026</p>
+            <p class="article-links">
+              <a class="br" href="index.html">[ Back to the site ]</a>
+              <a class="br" href="#top">[ Top ]</a>
+            </p>
+          </footer>
+        </div>
+      </article>
     </main>
-    <footer class="container footer">
-      <small>© <span id="year"></span> Kishaan Gidda </small>
+
+    <footer class="bar bar--bottom">
+      <p class="colophon">© <span id="year">2026</span> Kishaan Gidda</p>
+      <div class="socials">
+        <a class="social" href="https://github.com/kishaang" target="_blank" rel="noreferrer" aria-label="GitHub">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true">
+            <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.17c-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.75 2.69 1.25 3.34.95.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.16-1.18 3.16-1.18.63 1.59.24 2.76.12 3.05.74.81 1.18 1.83 1.18 3.09 0 4.41-2.69 5.38-5.26 5.66.41.36.78 1.05.78 2.13v3.16c0 .31.21.67.8.55A11.52 11.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/>
+          </svg>
+        </a>
+        <a class="social" href="https://www.linkedin.com/in/kishaan-gidda/" target="_blank" rel="noreferrer" aria-label="LinkedIn">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true">
+            <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45Z"/>
+          </svg>
+        </a>
+      </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="smooth-scroll.js" defer></script>
+    <script src="silk.js" defer></script>
+    <script src="blog.js" defer></script>
   </body>
 </html>

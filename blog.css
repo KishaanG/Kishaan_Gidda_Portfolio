@@ -1,0 +1,213 @@
+/* ============================================================
+   Kishaan Gidda — BLOG layout
+   Mode: Read. Same world as the home page, tuned for a single
+   long-form article: a masthead, a sticky contents rail, and
+   one comfortable measure of text.
+   ============================================================ */
+
+main { position: relative; z-index: 1; }
+
+/* ============================================================
+   MASTHEAD — the silk appears once here, then the page is paper
+   ============================================================ */
+
+.masthead {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: min(78svh, 660px);
+  padding: calc(var(--bar-top) + 72px) var(--gutter) clamp(56px, 8vh, 96px);
+}
+.masthead-inner {
+  width: min(1320px, 100%);
+  margin: 0 auto;
+}
+
+/* the plate dissolves into the paper rather than stopping dead */
+.masthead-silk {
+  mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
+}
+
+.masthead-title {
+  margin-top: 20px;
+  max-width: 16ch;
+  font-size: clamp(2.4rem, 6.4vw, 5.6rem);
+  letter-spacing: -0.038em;
+  line-height: 1.0;
+}
+.masthead-standfirst {
+  margin-top: 30px;
+  max-width: 48ch;
+  font-size: clamp(1.02rem, 1.5vw, 1.2rem);
+  line-height: 1.58;
+  color: var(--ink);
+}
+.masthead-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 30px;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.masthead-meta .sep { color: var(--ink-faint); }
+
+/* ============================================================
+   ARTICLE — contents rail + one measure of prose
+   Column tracks are exact quarters with no gap, so both the
+   rail and the text start on a hairline. See home.css.
+   ============================================================ */
+
+.article {
+  position: relative;
+  width: var(--container);
+  margin: 0 auto;
+  padding: clamp(72px, 10vh, 132px) 0 clamp(96px, 12vh, 168px);
+  display: grid;
+  grid-template-columns: 25% 75%;
+  align-items: start;
+  border-top: 1px solid var(--rule);
+}
+
+.reading-index {
+  position: sticky;
+  top: calc(var(--bar-top) + clamp(28px, 6vh, 64px));
+  padding-right: var(--gutter);
+}
+.reading-index .label { margin-bottom: 14px; }
+.reading-index ol { border-top: 1px solid var(--rule); }
+.reading-index li { border-bottom: 1px solid var(--rule); position: relative; }
+.reading-index a {
+  display: block;
+  padding: 12px 0;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+  transition: color 260ms var(--ease), transform 260ms var(--ease);
+}
+.reading-index a:hover { color: var(--display); }
+.reading-index a.on { color: var(--display); transform: translateX(12px); }
+.reading-index li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 14px;
+  width: 1px;
+  height: 20px;
+  background: var(--display);
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform 300ms var(--ease);
+}
+.reading-index li:has(a.on)::before { transform: scaleY(1); }
+
+/* ---- prose ---- */
+
+.prose {
+  /* the measure lives in the first two of the three right-hand
+     tracks; the third stays empty so the page keeps breathing */
+  max-width: 68ch;
+  padding-right: var(--gutter);
+}
+
+.prose section + section { margin-top: clamp(48px, 6vh, 76px); }
+
+.prose h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 22px;
+  font-size: clamp(1.55rem, 3vw, 2.2rem);
+  line-height: 1.14;
+}
+.h-num {
+  flex: 0 0 auto;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  color: var(--ink-faint);
+  transform: translateY(-0.35em);
+}
+
+.prose p {
+  margin-bottom: 20px;
+  font-size: 1.04rem;
+  line-height: 1.72;
+  color: var(--ink);
+}
+.prose p:last-child { margin-bottom: 0; }
+
+.prose a:not(.br) {
+  color: var(--display);
+  border-bottom: 1px solid var(--rule);
+  transition: border-color 200ms var(--ease);
+}
+.prose a:not(.br):hover { border-bottom-color: var(--display); }
+
+.prose-list { margin: 4px 0 20px; }
+.prose-list li {
+  position: relative;
+  padding: 11px 0 11px 28px;
+  font-size: 1.02rem;
+  line-height: 1.66;
+  color: var(--ink);
+  border-bottom: 1px solid var(--rule-soft);
+}
+.prose-list li:first-child { border-top: 1px solid var(--rule-soft); }
+.prose-list li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 21px;
+  width: 12px;
+  height: 1px;
+  background: var(--ink-faint);
+}
+
+/* ---- end matter ---- */
+
+.article-end { margin-top: clamp(56px, 7vh, 88px); }
+.article-sign {
+  margin-top: 22px;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.article-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin: 22px 0 0 -12px;
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+
+@media (max-width: 900px) {
+  .masthead { min-height: 68svh; }
+  .masthead-title { max-width: 100%; }
+
+  .article { display: block; }
+  /* with the prose in one column the rail becomes a real table
+     of contents at the top, not a sticky sidebar */
+  .reading-index {
+    position: static;
+    padding-right: 0;
+    margin-bottom: 44px;
+  }
+  .reading-index a.on { transform: translateX(12px); }
+
+  .prose { max-width: 100%; padding-right: 0; }
+}
+
+@media (max-width: 620px) {
+  .masthead-title { font-size: clamp(2rem, 10vw, 3rem); }
+  .prose h2 { gap: 10px; }
+}

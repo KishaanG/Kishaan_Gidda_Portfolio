@@ -1,0 +1,441 @@
+/* ============================================================
+   Kishaan Gidda — the Silk system
+   Shared by index.html and blog.html. See DESIGN.md.
+   village.* is a separate world and loads none of this.
+   ============================================================ */
+
+:root {
+  /* ---- ground ---- */
+  --paper: #ffffff;
+  --paper-tint: #f5f9fd;
+  --wash: #e8f2fc;
+
+  /* ---- one blue family, no second hue ---- */
+  /* --ink-soft is the floor for real text: 4.5:1 on white.
+     --ink-faint is decorative only (constellation satellites,
+     hairline furniture) and never carries information alone. */
+  --display: #27517e;
+  --ink: #1b4c78;
+  --ink-soft: #547aa3;
+  --ink-faint: #8fb0cd;
+
+  --rule: rgba(39, 81, 126, 0.13);
+  --rule-soft: rgba(39, 81, 126, 0.06);
+  --halo: rgba(39, 81, 126, 0.05);
+
+  /* ---- type ---- */
+  --serif: "Source Serif 4", "Source Serif Pro", "EB Garamond", Georgia, serif;
+  --sans: Geist, "Geist Fallback", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, "SF Mono", "Cascadia Mono", monospace;
+
+  /* ---- structure ---- */
+  --gutter: 48px;
+  --container: min(1320px, 100% - 96px);
+  --bar: 74px;              /* fixed chrome height */
+  --bar-top: var(--bar);    /* the top bar grows a second row on phones */
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (max-width: 900px) {
+  :root {
+    --gutter: 24px;
+    --container: calc(100% - 40px);
+    --bar: 62px;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html {
+  /* no scroll-behavior here: smooth-scroll.js owns anchor motion so
+     wheel and nav clicks share one easing. Under reduced motion the
+     script bows out and jumps are instant, which is correct. */
+  scroll-padding-top: calc(var(--bar-top) + 16px);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 400;
+  font-variation-settings: "opsz" 60;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: var(--display);
+}
+
+p { margin: 0; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+img, video, canvas, svg { display: block; max-width: 100%; }
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 160ms var(--ease);
+}
+
+strong { font-weight: 500; color: var(--display); }
+
+::selection {
+  background: rgba(39, 81, 126, 0.14);
+  color: var(--display);
+}
+
+:focus-visible {
+  outline: 1.5px solid var(--display);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: -60px;
+  z-index: 300;
+  padding: 10px 16px;
+  background: var(--paper);
+  border: 1px solid var(--display);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--display);
+  transition: top 180ms var(--ease);
+}
+.skip-link:focus { top: 12px; }
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============================================================
+   The column grid — DESIGN.md §2
+   Fixed, full-height hairlines behind everything. Content
+   aligns to these; nothing on the page floats free of them.
+   ============================================================ */
+
+/* Drawn OVER the page, not behind it — as in the reference,
+   where the rules pass across content. Above main (1), below
+   the fixed chrome (100). */
+.col-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+}
+.col-grid > span {
+  width: var(--container);
+  height: 100%;
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--rule) 0 1px,
+    transparent 1px calc(25% + 0.25px)
+  );
+  background-position: left top;
+}
+/* the closing rule on the right edge, which the repeat can't reach */
+.col-grid > span::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 1px;
+  background: var(--rule);
+}
+.col-grid > span { position: relative; }
+
+@media (max-width: 900px) {
+  .col-grid { display: none; }
+}
+
+/* ============================================================
+   Fixed chrome — top bar and footer bar
+   ============================================================ */
+
+.bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  height: var(--bar);
+  padding: 0 var(--gutter);
+  pointer-events: none;
+}
+.bar > * { pointer-events: auto; }
+.bar--top { top: 0; height: var(--bar-top); }
+.bar--bottom { bottom: 0; }
+
+/* A scrim of paper under the chrome. Without a real background
+   here, page content scrolling past collides with the nav — the
+   blur alone does not separate same-coloured type. It fades out
+   at the inner edge so the bar never reads as a solid slab. */
+.bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  backdrop-filter: blur(9px);
+  -webkit-backdrop-filter: blur(9px);
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.86) 0%,
+    rgba(255, 255, 255, 0.62) 62%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  mask-image: linear-gradient(to bottom, #000 58%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent 100%);
+}
+.bar--bottom::before {
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.86) 0%,
+    rgba(255, 255, 255, 0.62) 62%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  mask-image: linear-gradient(to top, #000 58%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to top, #000 58%, transparent 100%);
+}
+
+.wordmark {
+  font-size: 1.02rem;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  color: var(--display);
+  white-space: nowrap;
+}
+.wordmark:hover { color: var(--ink); }
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.site-nav::-webkit-scrollbar { display: none; }
+
+.colophon {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.socials { display: flex; align-items: center; gap: 6px; }
+.social {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  color: var(--ink-soft);
+  transition: color 160ms var(--ease), background 160ms var(--ease);
+}
+.social:hover { color: var(--display); background: var(--halo); }
+
+/* ============================================================
+   The bracket — DESIGN.md §5
+   [ Label ] is this site's interactive notation. The brackets
+   are real characters, so they survive copy-paste and read
+   correctly aloud. There are no filled buttons anywhere.
+   ============================================================ */
+
+.br {
+  /* the two knobs the hover turns: the gap the brackets sit off
+     the label, and the halo's own breathing room */
+  --br-pad: 12px;
+  --br-open: 0em;
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  padding: 7px var(--br-pad);
+  font-family: var(--sans);
+  font-size: 0.94rem;
+  font-weight: 400;
+  letter-spacing: 0.005em;
+  word-spacing: var(--br-open);
+  color: var(--ink-soft);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 160ms var(--ease), background 160ms var(--ease),
+    padding 220ms var(--ease), word-spacing 220ms var(--ease);
+}
+/* hover opens the bracket. The label pushes the two characters
+   apart and the halo grows with them — the notation itself is the
+   affordance, so the notation is what moves. */
+.br:hover,
+.br:focus-visible {
+  --br-pad: 16px;
+  --br-open: 0.34em;
+  color: var(--display);
+  background: var(--halo);
+}
+.br[aria-current] { color: var(--display); background: var(--halo); }
+
+/* an nbsp inside a label is glue (Village↗), not a bracket gap */
+.br .tight { word-spacing: 0; }
+
+.br--mono {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* the one primary action: a turnstile, not a button */
+.turn {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 9px;
+  padding: 7px 0;
+  font-size: 1.02rem;
+  color: var(--display);
+  background: none;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  cursor: pointer;
+  transition: border-color 200ms var(--ease), gap 200ms var(--ease);
+}
+/* the turnstile is drawn, not typed — U+21B3 is missing from
+   too many stacks and falls back to a tofu box */
+.turn svg {
+  flex: 0 0 auto;
+  align-self: center;
+  color: var(--ink-soft);
+  transition: color 200ms var(--ease), transform 200ms var(--ease);
+}
+.turn:hover { border-bottom-color: var(--rule); gap: 13px; }
+.turn:hover svg { color: var(--display); transform: translateX(1px); }
+
+/* ============================================================
+   Labels and rules
+   ============================================================ */
+
+.label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.rule {
+  height: 1px;
+  background: var(--rule);
+  border: 0;
+  margin: 0;
+}
+
+/* ============================================================
+   The silk field — DESIGN.md §1
+   ============================================================ */
+
+.silk-host {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background: linear-gradient(160deg, #eaf3fc 0%, #cfe4f8 46%, #eff6fd 100%);
+}
+.silk-host canvas {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 900ms var(--ease);
+}
+.silk-host.silk-live canvas { opacity: 0.94; }
+
+/* WebGL unavailable: the same light, layered out of gradients */
+.silk-host.silk-fallback {
+  background:
+    radial-gradient(120% 90% at 88% 4%, #ffffff 0%, rgba(255, 255, 255, 0) 52%),
+    radial-gradient(90% 70% at 18% 88%, #9cc8ee 0%, rgba(156, 200, 238, 0) 60%),
+    radial-gradient(70% 60% at 62% 40%, #ffffff 0%, rgba(255, 255, 255, 0) 55%),
+    linear-gradient(150deg, #e6f1fb 0%, #b9d9f4 44%, #eaf4fd 100%);
+}
+.silk-host.silk-fallback canvas { display: none; }
+
+/* ============================================================
+   Reveals — DESIGN.md §6. Once, on entry. They do not replay.
+   ============================================================ */
+
+.rise {
+  opacity: 0;
+  transform: translateY(24px);
+}
+.rise.in {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 700ms var(--ease) var(--d, 0s),
+    transform 700ms var(--ease) var(--d, 0s);
+}
+
+/* ============================================================
+   Reduced motion
+   ============================================================ */
+
+/* ============================================================
+   Phones: six nav items will not share a row with the
+   wordmark at 390px, so the top bar takes a second row and
+   the nav scrolls under a fade that shows there is more.
+   ============================================================ */
+
+@media (max-width: 680px) {
+  :root { --bar-top: 104px; }
+
+  .bar--top {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    gap: 2px;
+    padding-top: 6px;
+  }
+  .bar--top .site-nav {
+    margin: 0 calc(var(--gutter) * -1);
+    padding: 0 calc(var(--gutter) - 8px);
+    mask-image: linear-gradient(to right, #000 88%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, #000 88%, transparent 100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise { opacity: 1; transform: none; }
+  .rise.in { transition: none; }
+  .turn:hover { gap: 9px; }
+  /* the bracket still lights up, it just doesn't open */
+  .br:hover,
+  .br:focus-visible { --br-pad: 12px; --br-open: 0em; }
+  * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; }
+}
