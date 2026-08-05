@@ -12,24 +12,93 @@ light-field behind quiet, wide-set serif type on an almost-empty white page.
 ## 1. Ground and light
 
 The page is white. The only "image" the site owns is a **live silk light field** —
-a WebGL fragment shader of domain-warped fbm noise that reads as light through
-folded satin, in blues. It is not decoration and never a static gradient
-imitation: it renders, it drifts, it is the reason the page feels alive.
+a WebGL fragment shader that reads as light moving through poured liquid, in blues.
+It is not decoration and never a static gradient imitation: it renders, it drifts,
+it is the reason the page feels alive.
 
-It appears in exactly **two places**, and nowhere else:
+On the home page it appears in exactly **two places**, and nowhere else:
 
 1. **The hero**, full-bleed, at full strength.
 2. **The close** (contact), rising from the bottom edge, at reduced strength.
 
 Everything between those two is white paper. That contrast is the whole rhythm:
-light, paper, light. Adding a third silk field would flatten it.
+light, paper, light. Adding a third silk field to the home page would flatten it.
+The blog masthead carries the same field once, at 0.85, and the article below it
+is paper — the same rhythm, one beat shorter.
 
-**Fallback:** if WebGL is unavailable, a layered radial-gradient standing in at
-the same colours. Under `prefers-reduced-motion`, the shader renders **one static
+### The committed field, and the four it was chosen against
+
+The field's character comes down to **one ratio**: whether the fold phase is led
+by position or by the turbulence. Position-led gives parallel ribbons with a
+constant lean — woven cloth, and the closest fit to the pinned reference's
+geometry. Turbulence-led gives broad molten folds that lose that geometry
+entirely — poured liquid.
+
+**The site ships the turbulence-led field (`marble`).** It is the smoothest and
+least structured of the variants, and it was chosen for exactly that: the brief
+asked for the reference's "video" quality above all, and this reads most like
+moving light and least like a woven material. It is a **deliberate divergence**
+from the reference's parallel-ribbon composition — picked over the closer-fitting
+`silk` with that trade understood.
+
+All five states live in `PRESETS` in `silk.js` and run side by side in
+`silk-lab.html`. Switching is one word: `data-preset` on the canvas, or the
+default in `mount()`. Nothing else in the system changes.
+
+### How it is built, and why each choice is load-bearing
+
+The material quality is the point: it has to read as **poured liquid**, not as a
+blurred photograph of clouds. Three decisions carry that, and none of them is
+interchangeable — they hold for every preset.
+
+**The field is all sines.** Iterated sine turbulence — each pass folds the plane
+back through itself — and *not* lattice noise. A value-noise fbm is only as smooth
+as its interpolant: it carries a grid, an octave seam, and a derivative kink
+wherever cells meet. Those artefacts are exactly what makes a shader look like
+fog. A sum of sines of sines is analytic everywhere, so a fold keeps a clean edge
+no matter how hard the light leans on it. This is the single change that separates
+this field from the one it replaced.
+
+**The palette is not monotone.** Six stops, and the fifth is a deep blue sitting
+between the pale stop and the specular white, so every crest is born with its own
+crease beside it. That inversion is what gives the cloth an edge; a plain
+dark-to-light ramp can only ever produce haze. The crease is pitched at
+`--display`, so the fold's shadow and the display serif are the same blue.
+
+**It is mixed in Oklab, in linear light.** Blending blues through sRGB drags them
+grey at the midpoint, which is what makes a gradient look muddy. The stops are
+converted to Oklab once on the CPU and uploaded as uniforms, so the fragment pays
+for one Oklab→linear on the way out and nothing else. All illumination — the lamp,
+the pooled deeps, the reading light, both speculars — moves Oklab lightness and
+chroma **together**, the way real light does: the lit face desaturates toward
+white, the deep face saturates.
+
+Interleaved gradient noise dithers the result at ±1.7/255. The flats here are very
+wide, and banding is the one artefact that would give the whole illusion away.
+
+### The reading light
+
+Each mount declares where its own type sits, as `data-read="cx cy rx ry"`. The
+field lights that patch so copy never lands in a crease — the same move the pinned
+reference makes, where the type occupies the palest part of the frame.
+
+It is a **floor under Oklab lightness, not a wash**: only the crease is dark enough
+to threaten body copy, so only the crease is lifted. The folds keep their edges
+where the type sits; they simply stop going deep there. Washing the area pale
+instead bleaches that third of the frame flat, which is the opposite of the brief.
+
+The zone is a **plateau**, sized to the whole type stack rather than to its centre,
+so no line of copy sits on the shoulder of the falloff. This is what holds every
+element on the field at ≥4.5:1 across the entire drift, at every breakpoint. If
+the hero's copy ever moves, `data-read` moves with it.
+
+**Fallback:** if WebGL is unavailable, a layered radial-gradient standing in at the
+same colours. Under `prefers-reduced-motion`, the shader renders **one static
 frame** — the field is still there, it simply stops moving.
 
 **Budget:** DPR capped at 1.5; the shader pauses via `IntersectionObserver` when
-its section leaves the viewport. It must never run offscreen.
+its section leaves the viewport. It must never run offscreen. Measured at a locked
+60fps (16.7ms median) on a 1.28M-pixel canvas.
 
 ## 2. The column grid
 
@@ -63,6 +132,13 @@ field carries all the colour energy the page needs; a second accent would fight 
 
 **Status is carried by weight and a small filled dot, never by hue** — a
 "Current" marker is `--display` at 500, not green.
+
+**On the field, secondary text steps up one level.** `--ink-soft` is tuned for
+paper; over the silk it cannot clear 4.5:1 at any point in the drift, so the hero,
+the close and the masthead set their mono and their one exposed bracket in `--ink`.
+The hierarchy is unchanged — it was already carried by size, tracking and case,
+which is where it belongs. The nav brackets are exempt because the bar carries its
+own paper scrim, which is what that scrim is for.
 
 ### The one exception: work plates
 
@@ -134,8 +210,20 @@ comes from the bracket, the hairline, and the hover ground.
 
 One idea: **things arrive by settling, and light never stops moving.**
 
-- The silk field drifts continuously and slowly (`~0.045` time scale). It is the
+- The silk field drifts continuously and slowly (`~0.088` time scale). It is the
   only perpetual motion on the page.
+
+  Two things give that drift a beat instead of leaving it as noise morphing. A
+  **broad sheen** pools on every crest, so the surface reads wet rather than matte.
+  And a **raking glint** makes one slow pass across the folds every 21 seconds —
+  the cloth turning under a lamp. Without it the field is smooth but inert; it is
+  the difference the user asked for when they called the reference "video-like".
+
+  The field **opens on a chosen frame** (`OPEN`), not on `t=0`. Every phase this
+  shader reaches is a valid composition, but they are not equally good, and the
+  first viewport is the most important frame on the page. Reduced-motion visitors
+  are held on exactly that frame — the still *is* the opening, which is why there
+  is one constant and not two.
 - Content reveals once on entry — 24px rise, 700ms, `cubic-bezier(.22,1,.36,1)`,
   staggered by `--d`. **Reveals do not replay on scroll-back.** The old site
   re-animated every pass; that reads as restless here.
