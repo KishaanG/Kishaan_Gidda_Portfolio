@@ -23,10 +23,14 @@ main { position: relative; z-index: 1; }
   margin: 0 auto;
 }
 
-/* the plate dissolves into the paper rather than stopping dead */
+/* the plate dissolves into the paper rather than stopping dead.
+   --field-to is where that dissolve starts; the mask is built
+   from it so the number lives once and chrome.js reads the same
+   one to know where the light stops (see site.css .silk-host). */
 .masthead-silk {
-  mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
+  --field-to: 74%;
+  mask-image: linear-gradient(to bottom, #000 var(--field-to), transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 var(--field-to), transparent 100%);
 }
 
 .masthead-title {

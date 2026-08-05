@@ -719,8 +719,12 @@ main { position: relative; z-index: 1; }
   top: auto;
   height: 78%;
   bottom: 0;
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 42%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 42%);
+  /* the field ramps in over the top 42% and is solid below it —
+     the mask is built from this, so the number lives once and
+     chrome.js can read the same one (see site.css .silk-host) */
+  --field-from: 42%;
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 var(--field-from));
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 var(--field-from));
   background: linear-gradient(180deg, rgba(234, 243, 252, 0) 0%, #d8e9f9 60%, #eff6fd 100%);
 }
 

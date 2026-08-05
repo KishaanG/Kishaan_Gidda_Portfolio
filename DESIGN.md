@@ -137,8 +137,22 @@ field carries all the colour energy the page needs; a second accent would fight 
 paper; over the silk it cannot clear 4.5:1 at any point in the drift, so the hero,
 the close and the masthead set their mono and their one exposed bracket in `--ink`.
 The hierarchy is unchanged — it was already carried by size, tracking and case,
-which is where it belongs. The nav brackets are exempt because the bar carries its
-own paper scrim, which is what that scrim is for.
+which is where it belongs.
+
+**The fixed chrome steps up two.** The bars carry a paper scrim so body copy
+scrolling past never collides with the nav, but over the field that scrim was a
+blurred white slab banked across the top and bottom of the first viewport —
+fogging the one thing the field is for. So it is painted only where it does that
+job: `chrome.js` drops it whenever a bar's band sits over a field's solid range,
+and the chrome sits on raw light instead. That leaves the nav as the only type on
+the site with nothing under it at all, and `--ink` bottoms out at 3.97:1 in the
+top-right corner where the field's own reading floor barely reaches. `--ink-field`
+is one rung deeper and clears 4.5:1 across the whole drift. It appears nowhere
+else; on paper the scrim is back and `--ink-soft` is correct again.
+
+Each field declares where it is at full strength as `--field-from`/`--field-to`
+and builds its own mask from those values, so the mask and the scrim can never
+disagree about where the light starts.
 
 ### The one exception: work plates
 
