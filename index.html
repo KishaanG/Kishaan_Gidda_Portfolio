@@ -8,8 +8,9 @@
     monospace bravado) and the student default (bordered
     cartoon cards). Quiet is the claim.
   OWN-WORLD: White paper, one blue family, a fixed hairline
-    4-column grid, and a live WebGL silk light field that
-    appears exactly twice — the opening and the close.
+    4-column grid, and a live WebGL silk light field that the
+    page is lit by — the opening, down into the work, through
+    the experience and About, and the close.
     Source Serif 4 at display size over Geist. [ Brackets ]
     are the only affordance; there are no filled buttons.
   STORY: He ships software and he breaks it. TrendAI, Hydro
@@ -20,7 +21,8 @@
     Fixed wordmark and bracket nav above; © and socials below.
   FORM: Reference world pinned by the user to the register of
     sreedesigns.com — generative light field behind wide-set
-    serif on near-empty paper. Staging: index-and-viewer.
+    serif on near-empty paper. Staging: a pinned work stage
+    straight after the hero (johngearhart.me).
   ============================================================
 -->
 <html lang="en">
@@ -45,6 +47,8 @@
     />
     <link rel="stylesheet" href="site.css" />
     <link rel="stylesheet" href="home.css" />
+    <link rel="stylesheet" href="about.css" />
+    <link rel="stylesheet" href="bridge.css" />
   </head>
 
   <body>
@@ -105,141 +109,145 @@
       </section>
 
       <!-- ============ 01 · WORK ============ -->
-      <section class="sec" id="work" aria-labelledby="work-title">
-        <header class="sec-head">
-          <p class="label rise">01 · Selected work</p>
-          <h2 class="sec-title rise" id="work-title" style="--d: 0.06s">Work</h2>
-          <p class="sec-lede rise" style="--d: 0.12s">
-            Three things I've built or won: an optimal-control solver I couldn't
-            stop working on, an AI triage system with real stakes, and a
-            capture-the-flag weekend that ended first place.
-          </p>
-        </header>
+      <!-- The stage. It follows the hero with no header between them,
+           rising under the field already composed — PoleLab at rest,
+           its name over its card — and pins. From there scroll hands
+           each project to the next — the card leaving tips toward
+           you and drops away, the next rises from behind it, the
+           name rolls over, and the ground deepens or lifts to the
+           next blue (work.js). Each card is a real screenshot of the
+           project's most important screen.
 
-        <!-- Pinned slideshow: the section holds still while you scroll
-             through it, the viewer cross-fades project to project, and
-             the index tracks whichever is showing. Each slide carries
-             its own plate colour (see home.css); the drawn visuals read
-             that plate so the diagram matches its ground. Below 900px
-             this degrades to a plain stack. -->
-        <div class="work" data-slideshow style="--slides: 3">
-          <div class="work-pin">
-            <!-- the index: names only, mirrors the reference -->
-            <nav class="work-index" aria-label="Work">
-              <ol>
-                <li>
-                  <a href="#work-racingline" data-index="0">
-                    <span class="work-index__name">Racing Line App</span>
-                    <span class="work-index__kind">Physics-optimal racing lines</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#work-carerouter" data-index="1">
-                    <span class="work-index__name">CareRouter</span>
-                    <span class="work-index__kind">AI mental-health triage</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#work-cybersci" data-index="2">
-                    <span class="work-index__name">CyberSci Ottawa</span>
-                    <span class="work-index__kind">Capture the flag &middot; 1st of 13</span>
-                  </a>
-                </li>
-              </ol>
-              <p class="work-count" aria-hidden="true">
-                <span data-count-now>01</span> / 03
+           Without script, on phones, and under reduced motion the
+           same markup is a plain stack of three grounds. -->
+      <section class="work" id="work" aria-labelledby="work-title">
+        <h2 class="sr-only" id="work-title">Selected work</h2>
+
+        <div class="stage" data-stage>
+          <nav class="stage-rail" aria-label="Projects">
+            <p class="label">Selected work</p>
+            <ol>
+              <li><a href="#work-polelab" data-go="0"><span class="stage-tick" aria-hidden="true"></span><span class="stage-num">01</span><span class="sr-only">PoleLab</span></a></li>
+              <li><a href="#work-carerouter" data-go="1"><span class="stage-tick" aria-hidden="true"></span><span class="stage-num">02</span><span class="sr-only">CareRouter</span></a></li>
+              <li><a href="#work-cybersci" data-go="2"><span class="stage-tick" aria-hidden="true"></span><span class="stage-num">03</span><span class="sr-only">CyberSci Ottawa Regional</span></a></li>
+            </ol>
+          </nav>
+
+          <article class="stage-slide" id="work-polelab" data-ground="pole">
+            <header class="stage-head">
+              <h3 class="stage-title"><span class="roll">PoleLab</span></h3>
+              <p class="stage-meta"><span class="roll">Race strategy optimizer &middot; React &middot; Three.js &middot; FastAPI &middot; CasADi/IPOPT</span></p>
+            </header>
+            <figure class="stage-frame">
+              <a class="stage-card" href="https://polelab.dev" target="_blank" rel="noreferrer" tabindex="-1" aria-hidden="true">
+                <img
+                  src="images/polelab-report-1440.webp"
+                  srcset="images/polelab-report-1440.webp 1440w, images/polelab-report.webp 2880w"
+                  sizes="(min-width: 901px) 62vw, 100vw"
+                  width="1440"
+                  height="900"
+                  alt=""
+                  decoding="async"
+                />
+              </a>
+              <figcaption class="sr-only">
+                PoleLab's strategy report for Spa-Francorchamps, from the
+                live app. The call is a one-stop: soft tyres for laps 1 to
+                15, hard for 16 to 44, pitting on lap 16 to 18, tied with
+                five other plans closer than the run's resolution. Below it,
+                one simulated race of twenty identical cars, gap to the
+                leader, with this plan's car highlighted.
+              </figcaption>
+            </figure>
+            <div class="stage-caption">
+              <p class="stage-text">
+                It solves the physics-optimal lap around any circuit on the
+                2026 calendar, then breeds pit-stop plans, races twenty
+                identical cars through them, and reports the plans it can't
+                separate as a tie.
               </p>
-            </nav>
-
-            <!-- the viewer -->
-            <div class="work-stage">
-              <article class="slide" id="work-racingline" data-slide="0" data-plate="track">
-                <figure class="slide-figure">
-                  <canvas data-visual="racingline" aria-hidden="true"></canvas>
-                  <figcaption class="sr-only">
-                    A circuit drawn as two hairline track edges with a dotted
-                    geometric centreline, and over it the minimum-lap-time racing
-                    line (wide at entry, tight at the apex, wide at exit), with
-                    the apexes marked.
-                  </figcaption>
-                </figure>
-                <div class="slide-body">
-                  <p class="label">FastAPI &middot; CasADi/IPOPT &middot; React &middot; Three.js</p>
-                  <h3>Racing Line App</h3>
-                  <p class="slide-text">
-                    Draw a track on flat ground or real-world terrain and the
-                    solver returns the minimum-lap-time racing line. Then orbit
-                    it, or drive the optimal lap from a driver's-eye camera in 3D.
-                    Two solvers sit behind it: a fast curvature heuristic, and a
-                    periodic optimal-control problem over 360 collocation nodes
-                    solved with IPOPT through CasADi. 15K+ lines and 590+ tests
-                    later it also trains its own drivers in the browser, evolving
-                    neural-net policies with CMA-ES across parallel Web Workers.
-                  </p>
-                </div>
-              </article>
-
-              <article class="slide" id="work-carerouter" data-slide="1" data-plate="care">
-                <figure class="slide-figure">
-                  <canvas data-visual="routing" aria-hidden="true"></canvas>
-                  <figcaption class="sr-only">
-                    A diagram of CareRouter's routing: an intake is scored by a
-                    Gemini-based severity assessment, then routed down one of four
-                    bands: low to self-serve resources, moderate to a community
-                    clinic, elevated to matched urgent care, and crisis directly to
-                    a crisis line without queueing.
-                  </figcaption>
-                </figure>
-                <div class="slide-body">
-                  <p class="label">FastAPI &middot; Gemini 2.5 Flash &middot; 2026</p>
-                  <h3>CareRouter</h3>
-                  <p class="slide-text">
-                    An AI mental-health triage system that gets people to the
-                    right support fast. I was the sole backend developer on a
-                    four-person team: a rule-constrained Gemini pass scores
-                    severity, urgency and issue type from a six-question intake,
-                    a second pass filters real facilities on cost, transport and
-                    language, and crisis cases route deterministically to 9-1-1
-                    or 9-8-8 without ever touching the model. Safety-first by
-                    construction, not by policy.
-                  </p>
-                  <p class="slide-links">
-                    <a class="br" href="https://github.com/KishaanG/CareRouter" target="_blank" rel="noreferrer">[ Source &#8599; ]</a>
-                  </p>
-                </div>
-              </article>
-
-              <article class="slide" id="work-cybersci" data-slide="2" data-plate="ctf">
-                <figure class="slide-figure slide-figure--record">
-                  <img
-                    src="images/CyberSci.png"
-                    alt="CyberSci results listing: Ottawa Region, Carleton University, Team &quot;The Off-By-Ones&quot;"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <figcaption class="label">Competition results &middot; Ottawa region</figcaption>
-                </figure>
-                <div class="slide-body">
-                  <p class="label">Capture the flag &middot; 1st of 13 teams</p>
-                  <h3>CyberSci Ottawa Regional</h3>
-                  <p class="slide-text">
-                    A room full of people trying to break the same systems I
-                    spend my weeks defending, which is my favourite way to spend
-                    a weekend. <strong>The Off-By-Ones</strong> finished first
-                    out of thirteen teams at the Ottawa regional.
-                  </p>
-                  <p class="slide-links">
-                    <a class="br" href="https://cybersecuritychallenge.ca/en/" target="_blank" rel="noreferrer">[ CyberSci &#8599; ]</a>
-                  </p>
-                </div>
-              </article>
+              <p class="stage-links">
+                <a class="br" href="https://polelab.dev" target="_blank" rel="noreferrer">[ polelab.dev &#8599; ]</a>
+              </p>
             </div>
-          </div>
+          </article>
+
+          <article class="stage-slide" id="work-carerouter" data-ground="care">
+            <header class="stage-head">
+              <h3 class="stage-title"><span class="roll">CareRouter</span></h3>
+              <p class="stage-meta"><span class="roll">AI mental-health triage &middot; FastAPI &middot; Gemini 2.5 Flash &middot; 2026</span></p>
+            </header>
+            <figure class="stage-frame">
+              <a class="stage-card" href="https://github.com/KishaanG/CareRouter" target="_blank" rel="noreferrer" tabindex="-1" aria-hidden="true">
+                <img
+                  src="images/carerouter-chat-1280.webp"
+                  srcset="images/carerouter-chat-1280.webp 1248w, images/carerouter-chat.webp 2496w"
+                  sizes="(min-width: 901px) 62vw, 100vw"
+                  width="1248"
+                  height="780"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+              </a>
+              <figcaption class="sr-only">
+                CareRouter's intake chat, four questions in, answered with
+                the intake from the repo's own tests. The answers so far
+                are on the right, and the next question reads: which
+                statement best describes your safety right now?
+              </figcaption>
+            </figure>
+            <div class="stage-caption">
+              <p class="stage-text">
+                I was the sole backend developer on a four-person team. Gemini
+                scores a six-question intake, and crisis cases route to
+                <span class="nowrap">9-1-1</span> or <span class="nowrap">9-8-8</span> without ever touching the model.
+              </p>
+              <p class="stage-links">
+                <a class="br" href="https://github.com/KishaanG/CareRouter" target="_blank" rel="noreferrer">[ Source &#8599; ]</a>
+              </p>
+            </div>
+          </article>
+
+          <article class="stage-slide" id="work-cybersci" data-ground="ctf">
+            <header class="stage-head">
+              <h3 class="stage-title"><span class="roll">CyberSci Ottawa Regional</span></h3>
+              <p class="stage-meta"><span class="roll">Capture the flag &middot; 1st of 13 teams</span></p>
+            </header>
+            <figure class="stage-frame">
+              <a class="stage-card stage-card--record" href="https://cybersecuritychallenge.ca/en/" target="_blank" rel="noreferrer" tabindex="-1" aria-hidden="true">
+                <img
+                  src="images/cybersci-listing.png"
+                  width="319"
+                  height="209"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+              </a>
+              <figcaption class="sr-only">
+                The CyberSci results listing: Ottawa Region, Carleton
+                University, Team "The Off-By-Ones".
+              </figcaption>
+            </figure>
+            <div class="stage-caption">
+              <p class="stage-text">
+                A room full of people trying to break the same systems I spend
+                my weeks defending. <strong>The Off-By-Ones</strong> finished
+                first out of thirteen teams at the Ottawa regional.
+              </p>
+              <p class="stage-links">
+                <a class="br" href="https://cybersecuritychallenge.ca/en/" target="_blank" rel="noreferrer">[ CyberSci &#8599; ]</a>
+              </p>
+            </div>
+          </article>
         </div>
       </section>
-
       <!-- ============ 02 · EXPERIENCE ============ -->
       <section class="sec sec--tint" id="experience" aria-labelledby="xp-title">
+        <!-- Seen only without the flight: phones, reduced motion, no
+             WebGL. The flight names itself, so under it this header
+             is kept for screen readers alone (home.css). -->
         <header class="sec-head sec-head--split">
           <div>
             <p class="label rise">02 · Experience</p>
@@ -253,6 +261,24 @@
             <span data-scale-now>2026</span> / 2023
           </p>
         </header>
+
+        <!-- The flight (xp3d.js): a camera carried along a hairline
+             thread from one job to the next, through a world made of
+             the hero's own light. Built from the ledger below, which
+             stays the record — for screen readers, phones, reduced
+             motion and no WebGL. Hidden until the script mounts it. -->
+        <div class="xp-flight" data-flight hidden>
+          <div class="xp-stage" data-field-host>
+            <canvas class="xp-gl" aria-hidden="true"></canvas>
+            <canvas class="xp-lines" aria-hidden="true"></canvas>
+            <div class="xp-tags" aria-hidden="true"></div>
+            <p class="xp-readout" aria-hidden="true">
+              Experience · <span data-xp-year>2023</span>
+            </p>
+            <div class="xp-panel" aria-hidden="true"></div>
+            <nav class="xp-rail" aria-label="Experience stops"></nav>
+          </div>
+        </div>
 
         <!-- Scroll here drives time, not a slideshow. A hairline is
              drawn down the left grid line to the reading position,
@@ -349,103 +375,120 @@
       </section>
 
       <!-- ============ 03 · ABOUT ============ -->
-      <section class="sec" id="about" aria-labelledby="about-title">
-        <header class="sec-head">
-          <p class="label rise">03 · About</p>
-          <h2 class="sec-title rise" id="about-title" style="--d: 0.06s">About</h2>
-        </header>
-
-        <!-- The dossier. About takes the ledger's own 25 / 75 split and
-             hairline rows because it is the same kind of object: a record
-             you scan, not prose you read. There is deliberately no
-             standfirst — the hero already carries the one "who I am"
-             sentence this site needs (DESIGN.md §7). -->
-        <dl class="dossier rise">
-          <div class="dossier-row">
-            <dt class="label">Education</dt>
-            <dd>
-              Carleton University · Computer Science Co-op, AI/ML stream
-              <span class="dossier-meta">3.6 GPA · Dean's Honour List</span>
-            </dd>
+      <!-- The line goes on. The experience flight lets its thread drop
+           out of the bottom of its frame (xp3d.js) at the x marked by
+           [data-thread-in], and About picks it up at that point and
+           keeps drawing it, pen tip on the same reading line, over the
+           hero's own light. Every path ends by running into the column
+           grid, so the close is handed a hairline rather than an edge.
+           It carries the same record the dossier and the toolkit always
+           did, and nothing else. -->
+      <section class="about" id="about" aria-labelledby="about-title">
+        <div class="about-field" data-field-host aria-hidden="true">
+          <div class="silk-host about-silk">
+            <canvas data-silk="1"></canvas>
           </div>
+        </div>
+        <svg class="about-line" aria-hidden="true"></svg>
+        <span class="about-in" data-thread-in="0.7" aria-hidden="true"></span>
 
-          <div class="dossier-row">
-            <dt class="label">Focus</dt>
-            <dd>
-              Agentic AI · optimal control · offensive security ·
-              capture-the-flag
-            </dd>
-          </div>
+        <div class="about-inner">
+          <header class="about-head" data-st>
+            <h2 class="about-title" id="about-title" data-anchor>About</h2>
+          </header>
 
-          <div class="dossier-row">
-            <dt class="label">Languages</dt>
-            <dd>English · French, DELF B2</dd>
-          </div>
+          <!-- The river. The thread swings down the page in long bends,
+               and each fact sits in the crook of one, held by it. At the
+               foot it fans out onto the grid's five rules and runs on
+               through the toolkit as its warp. -->
+          <dl class="rv">
+            <div class="rv-st" data-st>
+              <dt class="label">Education</dt>
+              <dd>
+                <p class="rv-big" data-anchor>Carleton University</p>
+                <p class="rv-text">Computer Science Co-op, AI/ML stream</p>
+                <p class="rv-meta">3.6 GPA · Dean's Honour List</p>
+              </dd>
+            </div>
+            <div class="rv-st rv-st--r" data-st>
+              <dt class="label">Focus</dt>
+              <dd>
+                <p class="rv-big" data-anchor>Offensive security and agentic AI/ML development</p>
+              </dd>
+            </div>
+            <div class="rv-st" data-st>
+              <dt class="label">Languages</dt>
+              <dd>
+                <p class="rv-big" data-anchor>English and French</p>
+                <p class="rv-meta">French · DELF B2</p>
+              </dd>
+            </div>
+            <div class="rv-st rv-st--r" data-st>
+              <dt class="label">Off keyboard</dt>
+              <dd>
+                <p class="rv-big" data-anchor>Soccer, playing and watching Liverpool</p>
+                <p class="rv-text">The gym, most days. Reading on where AI is actually heading.</p>
+              </dd>
+            </div>
+          </dl>
 
-          <div class="dossier-row">
-            <dt class="label">Off keyboard</dt>
-            <dd>
-              Soccer, playing and watching Liverpool · the gym, most days ·
-              reading on where AI is actually heading
-            </dd>
-          </div>
-        </dl>
-
-        <!-- Four groups on the page's four columns, so the toolkit sits on
-             the background grid's own rules rather than drawing new ones
-             (DESIGN.md §2). Marked entries are depth, carried by weight and
-             the display blue — never by a second hue (§3). -->
-        <div class="toolkit rise">
-          <div class="toolkit-head">
-            <p class="label">Toolkit</p>
-            <p class="label toolkit-note">Marked · what I use most</p>
-          </div>
-
-          <div class="toolkit-grid">
-            <div class="toolkit-group">
-              <p class="label">Languages</p>
-              <ul class="tags toolkit-tags">
-                <li class="br br--mono br--depth">[ Python ]</li>
-                <li class="br br--mono br--depth">[ TypeScript ]</li>
-                <li class="br br--mono">[ Go ]</li>
-                <li class="br br--mono">[ C++ ]</li>
-                <li class="br br--mono">[ Java ]</li>
-                <li class="br br--mono">[ SQL ]</li>
-              </ul>
+          <!-- The toolkit closes it: four groups on the page's four
+               columns, so the last stretch of the thread runs down the
+               grid's own rules between them.
+               Marked entries are depth, carried by weight and the display
+               blue — never by a second hue (DESIGN.md §3). -->
+          <div class="about-kit" data-st data-kit>
+            <div class="toolkit-head">
+              <p class="label" data-anchor>Toolkit</p>
+              <p class="label toolkit-note">Marked · what I use most</p>
             </div>
 
-            <div class="toolkit-group">
-              <p class="label">AI &amp; optimisation</p>
-              <ul class="tags toolkit-tags">
-                <li class="br br--mono br--depth">[ Claude Agent SDK ]</li>
-                <li class="br br--mono">[ MCP ]</li>
-                <li class="br br--mono">[ Gemini API ]</li>
-                <li class="br br--mono">[ ONNX ]</li>
-                <li class="br br--mono">[ CMA-ES ]</li>
-                <li class="br br--mono">[ IPOPT ]</li>
-              </ul>
-            </div>
+            <div class="toolkit-grid">
+              <div class="toolkit-group">
+                <p class="label">Languages</p>
+                <ul class="tags toolkit-tags">
+                  <li class="br br--mono br--depth">[ Python ]</li>
+                  <li class="br br--mono br--depth">[ TypeScript ]</li>
+                  <li class="br br--mono">[ Go ]</li>
+                  <li class="br br--mono">[ C++ ]</li>
+                  <li class="br br--mono">[ Java ]</li>
+                  <li class="br br--mono">[ SQL ]</li>
+                </ul>
+              </div>
 
-            <div class="toolkit-group">
-              <p class="label">Cloud &amp; security</p>
-              <ul class="tags toolkit-tags">
-                <li class="br br--mono br--depth">[ AWS ]</li>
-                <li class="br br--mono br--depth">[ MITRE ATT&amp;CK ]</li>
-                <li class="br br--mono br--depth">[ Linux ]</li>
-                <li class="br br--mono">[ Terraform ]</li>
-                <li class="br br--mono">[ Docker ]</li>
-                <li class="br br--mono">[ PowerShell ]</li>
-              </ul>
-            </div>
+              <div class="toolkit-group">
+                <p class="label">AI &amp; optimisation</p>
+                <ul class="tags toolkit-tags">
+                  <li class="br br--mono br--depth">[ Claude Agent SDK ]</li>
+                  <li class="br br--mono">[ MCP ]</li>
+                  <li class="br br--mono">[ Gemini API ]</li>
+                  <li class="br br--mono">[ ONNX ]</li>
+                  <li class="br br--mono">[ CMA-ES ]</li>
+                  <li class="br br--mono">[ IPOPT ]</li>
+                </ul>
+              </div>
 
-            <div class="toolkit-group">
-              <p class="label">Web &amp; tooling</p>
-              <ul class="tags toolkit-tags">
-                <li class="br br--mono">[ FastAPI ]</li>
-                <li class="br br--mono">[ React/Next.js ]</li>
-                <li class="br br--mono">[ GitHub Actions ]</li>
-                <li class="br br--mono">[ Git ]</li>
-              </ul>
+              <div class="toolkit-group">
+                <p class="label">Cloud &amp; security</p>
+                <ul class="tags toolkit-tags">
+                  <li class="br br--mono br--depth">[ AWS ]</li>
+                  <li class="br br--mono br--depth">[ MITRE ATT&amp;CK ]</li>
+                  <li class="br br--mono br--depth">[ Linux ]</li>
+                  <li class="br br--mono">[ Terraform ]</li>
+                  <li class="br br--mono">[ Docker ]</li>
+                  <li class="br br--mono">[ PowerShell ]</li>
+                </ul>
+              </div>
+
+              <div class="toolkit-group">
+                <p class="label">Web &amp; tooling</p>
+                <ul class="tags toolkit-tags">
+                  <li class="br br--mono">[ FastAPI ]</li>
+                  <li class="br br--mono">[ React/Next.js ]</li>
+                  <li class="br br--mono">[ GitHub Actions ]</li>
+                  <li class="br br--mono">[ Git ]</li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -454,7 +497,9 @@
       <!-- ============ 04 · CONTACT ============ -->
       <section class="sec close" id="contact" aria-labelledby="contact-title">
         <div class="silk-host silk-host--close" aria-hidden="true">
-          <canvas data-silk="0.72"></canvas>
+          <!-- the close sets its type centred and full-width, so its
+               reading light is a wide low band, not the hero's column -->
+          <canvas data-silk="0.72" data-read="0.50 0.30 1.02 0.60"></canvas>
         </div>
 
         <!-- everything the work is made of, radiating from one fixed
@@ -489,7 +534,7 @@
         </div>
 
         <div class="close-inner">
-          <p class="label rise">04 · Contact</p>
+          <p class="label rise">Contact</p>
           <h2 class="close-title rise" id="contact-title" style="--d: 0.06s">
             Have something to build,<br />or something to break?
           </h2>
@@ -529,8 +574,13 @@
     </footer>
 
     <script src="smooth-scroll.js" defer></script>
+    <script src="about.js" defer></script>
     <script src="silk.js" defer></script>
-    <script src="visuals.js" defer></script>
+    <script src="chrome.js" defer></script>
+    <script src="work.js" defer></script>
+    <script src="bridge.js" defer></script>
+    <script src="xp3d-scenes.js" defer></script>
+    <script src="xp3d.js" defer></script>
     <script src="home.js" defer></script>
   </body>
 </html>

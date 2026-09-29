@@ -18,6 +18,15 @@
   --ink: #1b4c78;
   --ink-soft: #547aa3;
   --ink-faint: #8fb0cd;
+  /* One rung below --ink, for type that sits on RAW field with no
+     scrim under it — which since the chrome stopped fogging the
+     first viewport means the fixed bars. The field's own reading
+     floor is authored around the hero's type column, so it only
+     partly reaches the top-right corner where the nav sits, and
+     --ink bottoms out at 3.97:1 there when the crease sweeps
+     through. This clears 4.5:1 across the whole drift. Same blue
+     family, one step deeper; nothing on paper uses it. */
+  --ink-field: #143a63;
 
   --rule: rgba(39, 81, 126, 0.13);
   --rule-soft: rgba(39, 81, 126, 0.06);
@@ -194,7 +203,16 @@ strong { font-weight: 500; color: var(--display); }
 /* A scrim of paper under the chrome. Without a real background
    here, page content scrolling past collides with the nav — the
    blur alone does not separate same-coloured type. It fades out
-   at the inner edge so the bar never reads as a solid slab. */
+   at the inner edge so the bar never reads as a solid slab.
+
+   It is painted only where it is doing that job. Over the silk
+   field it was doing the opposite: a blurred white slab banked
+   across the top and bottom of the first viewport, fogging the
+   one thing the field is for — a clean fold running edge to
+   edge. So on field the scrim goes to zero and the chrome sits
+   on raw light. chrome.js toggles .on-field by testing each
+   bar's band against the fields' solid range; the transition
+   is what makes the handover a fade rather than a flicker. */
 .bar::before {
   content: "";
   position: absolute;
@@ -210,6 +228,7 @@ strong { font-weight: 500; color: var(--display); }
   );
   mask-image: linear-gradient(to bottom, #000 58%, transparent 100%);
   -webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent 100%);
+  transition: opacity 260ms var(--ease);
 }
 .bar--bottom::before {
   background: linear-gradient(
@@ -220,6 +239,26 @@ strong { font-weight: 500; color: var(--display); }
   );
   mask-image: linear-gradient(to top, #000 58%, transparent 100%);
   -webkit-mask-image: linear-gradient(to top, #000 58%, transparent 100%);
+}
+
+/* opacity, not display: the blur has to leave with it, and a
+   composited fade is the only version that does not tear */
+.bar.on-field::before { opacity: 0; }
+
+/* Same rule as the surfaces below: type that sits on the field
+   steps up, because --ink-soft is tuned for paper and cannot
+   clear 4.5:1 over the cloth at any point in the drift. It goes
+   to --ink-field rather than --ink because the chrome is the one
+   type on this site with NO scrim under it — measured worst case
+   across a full drift cycle, --ink leaves the nav at 3.97:1.
+   Only on field: over paper the scrim is back and the softer ink
+   is correct again. The wordmark steps too — it is --display,
+   which is lighter still. */
+.bar.on-field .wordmark:not(:hover),
+.bar.on-field .br:not(:hover):not(:focus-visible),
+.bar.on-field .colophon,
+.bar.on-field .social:not(:hover) {
+  color: var(--ink-field);
 }
 
 .wordmark {
@@ -366,7 +405,16 @@ strong { font-weight: 500; color: var(--display); }
   inset: 0;
   z-index: -1;
   overflow: hidden;
-  background: linear-gradient(160deg, #eaf3fc 0%, #cfe4f8 46%, #eff6fd 100%);
+  /* Where down the host the field is actually at full strength.
+     The hero is full bleed; the mounts that ramp in or out under
+     a mask restate these, and build their mask FROM them, so the
+     number lives once. chrome.js reads them to decide whether a
+     bar is over real light or over the ramp. */
+  --field-from: 0%;
+  --field-to: 100%;
+  /* what shows for the 900ms before the field fades up — the same
+     light, so the arrival is a sharpening rather than a colour change */
+  background: linear-gradient(158deg, #eef5fd 0%, #c9e0f6 48%, #eef6fe 100%);
 }
 .silk-host canvas {
   width: 100%;
@@ -374,15 +422,39 @@ strong { font-weight: 500; color: var(--display); }
   opacity: 0;
   transition: opacity 900ms var(--ease);
 }
-.silk-host.silk-live canvas { opacity: 0.94; }
+/* Full opacity, deliberately. At 0.94 the canvas composited over the
+   gradient above, which diluted the crease and the specular — exactly
+   the two values the cloth is made of. Per-instance strength belongs
+   in data-silk, where it is authored, not in a blanket alpha. */
+.silk-host.silk-live canvas { opacity: 1; }
+
+/* On the field, secondary text steps up one level. --ink-soft is
+   tuned for paper and cannot clear 4.5:1 over the silk at any point
+   in the drift — it cannot clear it on plain white either — so the
+   surfaces that sit on the field set their mono in --ink. The
+   hierarchy is unchanged: it was already carried by size, tracking
+   and case, which is where it belongs. */
+.hero .label,
+.close .label,
+.masthead .label {
+  color: var(--ink);
+}
+
+/* Same reason, for the one bracket in the page body that sits on
+   raw field. The nav brackets get the same treatment one rung
+   deeper — see .bar.on-field above, and --ink-field. */
+.hero-actions .br:not(:hover):not(:focus-visible) {
+  color: var(--ink);
+}
 
 /* WebGL unavailable: the same light, layered out of gradients */
 .silk-host.silk-fallback {
   background:
-    radial-gradient(120% 90% at 88% 4%, #ffffff 0%, rgba(255, 255, 255, 0) 52%),
-    radial-gradient(90% 70% at 18% 88%, #9cc8ee 0%, rgba(156, 200, 238, 0) 60%),
-    radial-gradient(70% 60% at 62% 40%, #ffffff 0%, rgba(255, 255, 255, 0) 55%),
-    linear-gradient(150deg, #e6f1fb 0%, #b9d9f4 44%, #eaf4fd 100%);
+    radial-gradient(120% 90% at 26% 6%, #ffffff 0%, rgba(255, 255, 255, 0) 54%),
+    radial-gradient(85% 75% at 96% 62%, #6ba6de 0%, rgba(107, 166, 222, 0) 62%),
+    radial-gradient(80% 65% at 6% 96%, #8fbfea 0%, rgba(143, 191, 234, 0) 60%),
+    radial-gradient(64% 54% at 40% 46%, #ffffff 0%, rgba(255, 255, 255, 0) 58%),
+    linear-gradient(152deg, #e9f3fd 0%, #b9daf5 46%, #eaf4fd 100%);
 }
 .silk-host.silk-fallback canvas { display: none; }
 

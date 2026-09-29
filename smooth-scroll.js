@@ -125,7 +125,9 @@
     e.preventDefault();
     const pad =
       parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
-    to(el.getBoundingClientRect().top + window.scrollY - pad);
+    // and the target's own margin, as the browser's own jump honours it
+    const margin = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
+    to(el.getBoundingClientRect().top + window.scrollY - pad - margin);
     history.replaceState(null, "", "#" + id);
   });
 

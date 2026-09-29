@@ -45,11 +45,17 @@ is that he ships software *and* breaks it — development plus vulnerability wor
 - **CareRouter** — AI mental-health triage and navigation. Next.js / Gemini.
   Gemini-based severity assessment, location-matched facilities, safety-first
   crisis routing. → `https://github.com/KishaanG/CareRouter`
-- **Racing Line App** — physics-optimal racing lines in 3D. React / FastAPI /
-  Three.js. Draw a track on flat ground or real terrain; a physics optimizer
-  computes the minimum-lap-time line; orbit it or drive it from a driver's-eye
-  camera. Two solvers (fast heuristic + IPOPT optimal-control), an in-browser RL
-  driver, and a 2026 F1 season globe with circuit fly-ins. **No public link.**
+- **PoleLab** (formerly the Racing Line App) — a race-strategy optimizer, live
+  at `https://polelab.dev`. React / Three.js / FastAPI / CasADi-IPOPT. Solves the
+  physics-optimal lap around a real or hand-drawn circuit (one solver: IPOPT
+  collocation), then uses that lap to breed pit-stop plans (genetic search),
+  race twenty identical cars through them across Web Workers (Monte Carlo), and
+  judge the survivors in an invasion tournament. Tyre wear and compound pace are
+  fitted to 52,185 laps of real F1 timing; circuit constants to 183 fastf1
+  sessions. Ties are reported as ties. 2026 season globe with circuit fly-ins.
+  The strategy search itself is simulation and search, not a trained model —
+  the learned part is the fitted tyre and circuit models. RL training and the
+  heuristic solver were removed from the product and are not claimed.
 - **CyberSci Ottawa Regional — 1st of 13 teams.** Capture-the-flag competition.
   Team: *The Off-By-Ones*. → `https://cybersecuritychallenge.ca/en/`
 
@@ -67,12 +73,25 @@ WhisperPair Attack"*, January 20, 2026.
 ## Assets on hand
 
 `images/` — `trendai.png`, `hydro ottawa.png`, `ciena.png`, `CyberSci.png`
-(real team photo), `carleton_logo.png`, `github.png`, `linkedin.jpg`.
+(a crop of the results listing: Ottawa Region, Carleton University, Team "The
+Off-By-Ones"), `carleton_logo.png`, `github.png`, `linkedin.jpg`.
 `videos/soccer.mp4`.
 
-**There are no screenshots of CareRouter or the Racing Line App.** Their visuals
-are authored in-world (see DESIGN.md) rather than faked — nothing on the page
-claims to be a product screenshot that isn't one.
+**Project screenshots (2026-09-28).** Each project's card in the work stage is a
+real capture of its most important screen, taken from the running product:
+
+- `polelab-report.webp` (2880×1800, plus a 1440 copy) — the live polelab.dev
+  strategy report for Spa-Francorchamps: the call is a one-stop, soft 1–15 /
+  hard 16–44, pit lap 16–18, tied with five other plans.
+- `carerouter-chat.webp` (2496×1560, plus a 1248 copy) — CareRouter's intake
+  chat run locally, four questions in, answered with the intake from the repo's
+  own `test_location_finder.py`. The results page was not used: its map needs
+  Google Maps billing enabled on the project's key and renders an AuthFailure
+  without it.
+- `cybersci-listing.png` — `CyberSci.png` cropped to the listing's own red box.
+  cybersci.ca has no higher-resolution copy of the Off-By-Ones listing.
+
+Nothing in them is staged or edited beyond cropping.
 
 ## Constraints
 

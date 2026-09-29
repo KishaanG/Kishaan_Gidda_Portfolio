@@ -66,7 +66,9 @@ main { position: relative; z-index: 1; }
   font-size: 0.72rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--ink-soft);
+  /* --ink, not --ink-soft: this line sits on the field. See the note
+     beside the silk rules in site.css. */
+  color: var(--ink);
 }
 
 /* the "currently" marker — status by weight and a dot, never by hue */
@@ -109,259 +111,374 @@ main { position: relative; z-index: 1; }
   font-size: clamp(2.4rem, 6vw, 4.6rem);
   line-height: 1;
 }
-.sec-lede {
-  margin: 22px 0 0;
-  max-width: 46ch;
-  font-size: 1.02rem;
-  color: var(--ink-soft);
-}
 
 /* ============================================================
-   WORK — sticky index, scroll-driven viewer
+   WORK — the stage
    ============================================================ */
 
-/* The section is a scroll runway; .work-pin sticks inside it and
-   holds still while the runway passes, so scrolling advances the
-   viewer instead of scrolling past it. Runway length = the pinned
-   height plus one segment of scroll per project.
+/* Each project stands on its own ground, and the three grounds are
+   one blue family taken down and back up: the hero's light, then
+   deep water for PoleLab, the display blue for CareRouter, and the
+   hero's light again for CyberSci, which hands on to the paper of
+   the ledger below. The change of ground is what tells you the
+   project changed, as the work plates did, without leaving the
+   family to do it.
 
-   Column tracks are exact quarters with NO gap, and the breathing
-   room comes from padding-right on the children. A `gap` would
-   shift every content edge off the hairline grid by a fraction of
-   the gutter — the whole point of the grid is that things land on
-   it. Same pattern below. */
+   Every ink here clears 4.5:1 on its own ground. work.js reads
+   these values back off each slide before it pins the stage, then
+   blends them on the stage itself — which is why they stop applying
+   to the slides once it is pinned. This is the only place they are
+   written. */
+.work:not(.is-pinned) .stage-slide[data-ground="pole"] {
+  --st-ground: #0f2640;
+  --st-title: #eef5fc;
+  --st-text: #c2d6ea;
+  --st-soft: #a9c4df;
+  --st-halo: rgba(238, 245, 252, 0.1);
+  --focus: 0% 30%;
+  --zoom: 1.4;
+}
+.work:not(.is-pinned) .stage-slide[data-ground="care"] {
+  --st-ground: #27517e;
+  --st-title: #f4f8fd;
+  --st-text: #dde9f6;
+  --st-soft: #c9dcf0;
+  --st-halo: rgba(244, 248, 253, 0.12);
+  --focus: 50% 60%;
+  --zoom: 1.2;
+}
+.work:not(.is-pinned) .stage-slide[data-ground="ctf"] {
+  --st-ground: #d9e8f7;
+  --st-title: #27517e;
+  --st-text: #1b4c78;
+  --st-soft: #3a6590;
+  --st-halo: rgba(39, 81, 126, 0.08);
+}
+
 .work {
-  --pin-top: calc(var(--bar-top) + clamp(20px, 4vh, 40px));
-  /* The bottom allowance must clear the FIXED footer bar, not just
-     leave a margin. At 32px the pin ended 42px underneath the bar
-     and the last line of a tall slide body was hidden behind it —
-     on a short viewport the figure shrinks as designed, so the body
-     is what reaches the bottom edge. */
-  --pin-h: min(740px, calc(100svh - var(--pin-top) - var(--bar) - 16px));
-  --seg: 92svh;   /* scroll distance each project gets */
   position: relative;
-  height: calc(var(--pin-h) + var(--slides, 3) * var(--seg));
+  /* the card's corner, at the size it is read. The only rounded
+     surface on the site: DESIGN.md §7. */
+  --card-r: clamp(14px, 2vw, 30px);
+  --st-gap: clamp(14px, 2.4vh, 28px);
 }
+.stage { position: relative; }
 
-.work-pin {
-  position: sticky;
-  top: var(--pin-top);
-  height: var(--pin-h);
-  display: grid;
-  grid-template-columns: 25% 75%;
-  align-items: start;
-}
+/* ---- the stack: phones, reduced motion, and no script -------- */
 
-.work-index {
+.stage-slide {
+  position: relative;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  padding-right: var(--gutter);
+  align-items: center;
+  gap: clamp(20px, 3vw, 32px);
+  padding: clamp(72px, 11vw, 120px) var(--gutter);
+  background: var(--st-ground);
+  color: var(--st-text);
 }
-.work-count {
-  margin-top: auto;
+
+.stage-head {
+  max-width: 100%;
+  text-align: center;
+}
+/* each line is a window its text rolls through, so the mask is the
+   line box itself. The padding lets the serif's descenders out of
+   the clip; the negative margin gives the space back. */
+.stage-title,
+.stage-meta {
+  overflow: hidden;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+.stage-title {
+  /* by height as well as width: on a short laptop the name would
+     otherwise take the height the card needs */
+  font-size: clamp(2.3rem, min(5.6vw, 8.6svh), 5.75rem);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  color: var(--st-title);
+  text-wrap: balance;
+}
+.stage-meta {
+  margin-top: 20px;
   font-family: var(--mono);
   font-size: 0.7rem;
   letter-spacing: 0.14em;
-  color: var(--ink-faint);
-}
-.work-count [data-count-now] { color: var(--display); }
-.work-index ol { border-top: 1px solid var(--rule); }
-.work-index li { border-bottom: 1px solid var(--rule); }
-/* the active row steps in on transform, not padding — padding
-   would relayout the whole sticky column on every scroll-spy tick.
-   Centred in the band so no name is left resting on the column
-   rule; the rule is furniture, not a margin to write against. */
-.work-index a {
-  display: block;
-  padding: 17px 0;
-  text-align: center;
-  transition: transform 260ms var(--ease);
-}
-.work-index__name {
-  display: block;
-  font-family: var(--serif);
-  font-variation-settings: "opsz" 24;
-  font-size: 1.24rem;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-  color: var(--ink-soft);
-  transition: color 300ms var(--ease);
-}
-.work-index__kind {
-  display: block;
-  margin-top: 4px;
-  font-family: var(--mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--ink-soft);
-  opacity: 0.62;
-  transition: color 300ms var(--ease), opacity 300ms var(--ease);
+  color: var(--st-soft);
 }
-.work-index a:hover .work-index__name { color: var(--display); }
-.work-index a.on { transform: translateX(14px); }
-.work-index a.on .work-index__name { color: var(--display); }
-.work-index a.on .work-index__kind { color: var(--ink-soft); opacity: 1; }
-/* the active marker rides the left edge, on the grid line */
-.work-index li { position: relative; }
-.work-index li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 17px;
-  width: 1px;
-  height: 26px;
-  background: var(--display);
-  transform: scaleY(0);
-  transform-origin: top center;
-  transition: transform 320ms var(--ease);
+.roll { display: inline-block; }
+
+.stage-frame {
+  position: relative;
+  width: min(100%, 1100px);
+  aspect-ratio: 16 / 10;
+  margin: 0;
 }
-.work-index li:has(a.on)::before { transform: scaleY(1); }
-
-/* ---- plates ------------------------------------------------
-   Each project's viewer gets its own ground. This is the one
-   place on the site that leaves the single blue family, and it
-   earns it: the plate is what tells you the slide changed, and
-   the hue carries the subject. They stay low-chroma tints so
-   the viewer still reads as paper under glass rather than three
-   coloured boxes, and every ink below clears 4.5:1 on its own
-   plate. The four values are written out per plate rather than
-   derived, so canvas can read them straight back.
-   ------------------------------------------------------------ */
-
-.slide {
-  --plate: var(--paper-tint);
-  --plate-ink: var(--display);
-  --plate-soft: var(--ink-soft);
-  --plate-rule: rgba(39, 81, 126, 0.28);
-  --plate-rule-soft: rgba(39, 81, 126, 0.14);
-}
-
-/* asphalt — tarmac, timing screens, a cold pit lane */
-.slide[data-plate="track"] {
-  --plate: #e9edec;
-  --plate-ink: #24343a;
-  --plate-soft: #4e6068;
-  --plate-rule: rgba(36, 52, 58, 0.30);
-  --plate-rule-soft: rgba(36, 52, 58, 0.15);
-}
-
-/* clinical calm — the colour of care, and of the product's
-   safety-first thesis */
-.slide[data-plate="care"] {
-  --plate: #e6efe9;
-  --plate-ink: #1f4a39;
-  --plate-soft: #4a6f5f;
-  --plate-rule: rgba(31, 74, 57, 0.28);
-  --plate-rule-soft: rgba(31, 74, 57, 0.14);
-}
-
-/* the record — picks up the red rule and Carleton crest in the
-   results crop rather than fighting it */
-.slide[data-plate="ctf"] {
-  --plate: #f4ece9;
-  --plate-ink: #5e2a24;
-  --plate-soft: #82544c;
-  --plate-rule: rgba(94, 42, 36, 0.26);
-  --plate-rule-soft: rgba(94, 42, 36, 0.13);
-}
-
-/* the plate colours the type that describes the figure too */
-.slide-body h3 { color: var(--plate-ink); }
-.slide-body .label { color: var(--plate-soft); }
-.slide-text strong { color: var(--plate-ink); }
-.slide-links .br { color: var(--plate-soft); }
-.slide-links .br:hover { color: var(--plate-ink); }
-
-/* the viewer: slides stack in place and cross-fade */
-.work-stage { position: relative; height: 100%; }
-
-/* The cross-fade is tied to scroll position, not fired as a timed
-   transition on a threshold — that flip is what made the change
-   feel like a stop. --a and --dy come from home.js every frame, so
-   a slide hands over gradually and the pinned content keeps moving
-   with the wheel instead of sitting frozen between swaps. The two
-   slides drift in opposite directions through the handover so the
-   overlap reads as one passing the other rather than as mud. */
-.slide {
+.stage-card {
   position: absolute;
   inset: 0;
+  z-index: 2;
+  display: block;
+  overflow: hidden;
+  border-radius: var(--card-r);
+  background: #ffffff;
+}
+.stage-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--focus, 50% 50%);
+}
+/* the results listing is a small crop of a page, not a screen: it
+   sits on white at a size it can be read at, rather than blown up to
+   fill the card. The crop is the listing's own red box, nothing of
+   the entries either side of it. */
+.stage-card--record { display: grid; place-items: center; }
+.stage-card--record img {
+  width: min(52%, 480px);
+  height: auto;
+}
+/* hover is a hairline, as everywhere else — here drawn inside the
+   card's own edge, in the ground's softer ink */
+.stage-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px transparent;
+  transition: box-shadow 160ms var(--ease);
+  pointer-events: none;
+}
+.stage-card:hover::after { box-shadow: inset 0 0 0 1px var(--st-soft); }
+
+.stage-caption {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px 40px;
+  width: min(100%, 1100px);
+}
+.stage-text {
+  max-width: 62ch;
+  font-size: 0.98rem;
+  line-height: 1.58;
+  color: var(--st-text);
+}
+.stage-text strong { color: var(--st-title); }
+/* a phone number never breaks at its hyphens */
+.stage-text .nowrap { white-space: nowrap; }
+.stage-links {
+  flex: none;
+  margin: -7px -12px 0 0;
+}
+.stage .br { color: var(--st-soft); }
+.stage .br:hover,
+.stage .br:focus-visible {
+  color: var(--st-title);
+  background: var(--st-halo);
+}
+.stage :focus-visible { outline-color: var(--st-title); }
+
+.stage-rail { display: none; }
+
+/* ---- stacked reveal: work.js adds .is-reveal when it can run
+   the motion, so without script nothing here is ever hidden ---- */
+.work.is-reveal .roll {
+  transform: translateY(108%);
+  transition: transform 900ms var(--ease);
+}
+.work.is-reveal .stage-meta .roll { transition-delay: 140ms; }
+.work.is-reveal .stage-card {
+  opacity: 0;
+  transform: perspective(1400px) translate3d(0, 24px, -120px) rotateX(8deg);
+  transition: opacity 700ms var(--ease), transform 1100ms var(--ease);
+}
+.work.is-reveal .stage-caption {
+  opacity: 0;
+  transition: opacity 700ms var(--ease) 260ms;
+}
+.work.is-reveal .stage-slide.is-in .roll,
+.work.is-reveal .stage-slide.is-in .stage-card { opacity: 1; transform: none; }
+.work.is-reveal .stage-slide.is-in .stage-caption { opacity: 1; }
+
+/* ---- the pinned stage (desktop, full motion) ----------------- */
+
+/* The section is a runway and the stage sticks inside it; work.js
+   sets the runway's length from its own segment table, so the scroll
+   distances live in one place. The stage takes its ground from the
+   script, which blends it between projects. */
+.work.is-pinned { height: var(--runway, 500svh); }
+.work.is-pinned .stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  background: var(--st-ground);
+  color: var(--st-text);
+}
+
+/* the slides stack in the stage and keep one layout between them,
+   so their titles and cards sit in exactly the same place. They are
+   hidden by opacity and transform, never visibility, so every project
+   stays in the accessibility tree and in find-in-page; only the one
+   at rest takes the pointer, or the transparent slides stacked above
+   it would swallow its clicks. */
+.work.is-pinned .stage-slide {
+  position: absolute;
+  inset: 0;
+  justify-content: center;
+  gap: var(--st-gap);
+  padding: calc(var(--bar-top) + var(--st-gap)) var(--gutter) calc(var(--bar) + var(--st-gap));
+  background: none;
+  pointer-events: none;
+}
+.work.is-pinned .stage-slide.is-live { pointer-events: auto; }
+/* the one leaving passes in front of the one arriving: it is
+   coming toward you */
+.work.is-pinned .stage-slide.is-leaving { z-index: 2; }
+
+/* the head and caption keep their natural height — their masks clip
+   overflow, which would otherwise let flex crush them to nothing on a
+   short screen. The card is what gives. */
+.work.is-pinned .stage-head,
+.work.is-pinned .stage-caption { flex: none; }
+.work.is-pinned .stage-head {
+  width: 100%;
+  min-height: var(--head-h, 0px);
   display: flex;
   flex-direction: column;
-  opacity: var(--a, 0);
-  transform: translate3d(0, var(--dy, 0px), 0);
-  visibility: hidden;
-  pointer-events: none;
-  will-change: opacity, transform;
+  justify-content: flex-end;
 }
-/* lit = contributing to the frame; active = the one being read */
-.slide.is-lit { visibility: visible; }
-.slide.is-active { pointer-events: auto; }
 
-.slide-figure {
+/* The frame is the card's resting slot, sized by work.js to the
+   height left over between the title and the caption. The card only
+   ever leaves it by transform. */
+.work.is-pinned .stage-frame {
+  width: var(--card-w, 60vw);
+  flex: none;
+  perspective: 1600px;
+}
+.work.is-pinned .stage-card {
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+/* a card is only a link once it has landed — mid-flight it would
+   take clicks meant for the one arriving. The slide's own
+   pointer-events already say so; this is the card's. */
+.work.is-pinned .stage-slide:not(.is-live) .stage-card { pointer-events: none; }
+.work.is-pinned .stage-caption {
+  width: var(--cap-w, var(--card-w, 60vw));
+  min-height: var(--cap-h, 0px);
+}
+
+/* the rail: where you are, and a way to jump */
+.work.is-pinned .stage-rail {
+  display: block;
+  position: absolute;
+  z-index: 4;
+  left: max(var(--gutter), calc((100% - var(--container)) / 2));
+  top: 50%;
+  transform: translateY(-50%);
+}
+.stage-rail .label {
+  margin-bottom: 16px;
+  color: var(--st-soft);
+}
+.stage-rail a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 0;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--st-soft);
+  transition: color 160ms var(--ease);
+}
+/* the tick is a fixed 40px box so the numbers stay on one line;
+   the hairline in it is what grows, on transform */
+.stage-tick {
   position: relative;
-  margin: 0;
-  flex: 1 1 auto;
-  min-height: 0;          /* the figure gives its height to the pin */
-  background: var(--plate);
-  border: 1px solid var(--plate-rule-soft);
-  overflow: hidden;
+  width: 40px;
+  height: 1px;
 }
-.slide-figure canvas { width: 100%; height: 100%; }
+.stage-tick::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  transform: scaleX(0.4);
+  transform-origin: left center;
+  transition: transform 320ms var(--ease);
+}
+.stage-rail a:hover,
+.stage-rail a.on { color: var(--st-title); }
+.stage-rail a.on .stage-tick::before { transform: none; }
 
-/* A real artifact rather than a made visual: a crop of the
-   results listing. It is shown at its own size on white and
-   captioned for what it is, not blown up to fake a hero shot. */
-.slide-figure--record {
-  display: grid;
-  place-content: center;
-  gap: 22px;
-  background: var(--plate);
-  padding: clamp(32px, 4vw, 64px) 32px;
-}
-/* The source crop (383×267) carries the top edge of the next
-   entry in the results table. Trim it so the plate shows one
-   complete record instead of one and a sliver. */
-.slide-figure--record figcaption { color: var(--plate-soft); }
-.slide-figure--record img {
-  width: min(560px, 100%);
-  aspect-ratio: 383 / 236;
-  object-fit: cover;
-  object-position: center top;
-  border: 1px solid var(--plate-rule);
-}
-.slide-figure--record figcaption { text-align: center; }
+/* the column grid steps back while the stage has the viewport: the
+   stage is the one surface the rules do not pass across */
+.col-grid { opacity: var(--grid-a, 1); }
 
-/* three tracks inside the viewer's 75%, so the body text
-   starts exactly on the middle hairline */
-.slide-body {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  padding-top: 24px;
+/* the chrome over a ground: no paper scrim — the ground is the
+   surface, the same way the field is — and the ground's own ink */
+.bar.on-ground::before { opacity: 0; }
+.bar.on-ground .wordmark:not(:hover),
+.bar.on-ground .br:not(:hover):not(:focus-visible),
+.bar.on-ground .colophon,
+.bar.on-ground .social:not(:hover) {
+  color: var(--ground-ink);
 }
-.slide-body > * { padding-right: var(--gutter); }
-.slide-body .label { grid-column: 1 / -1; grid-row: 1; }
-.slide-body h3 {
-  grid-column: 1;
-  grid-row: 2;
-  margin-top: 10px;
-  font-size: clamp(1.5rem, 2.6vw, 2.15rem);
+.bar.on-ground .wordmark:hover,
+.bar.on-ground .br:hover,
+.bar.on-ground .br:focus-visible,
+.bar.on-ground .social:hover {
+  color: var(--ground-ink);
+  background: var(--ground-halo);
 }
-.slide-text {
-  grid-column: 2 / -1;
-  grid-row: 2;
-  margin-top: 10px;
-  max-width: 62ch;
-  color: var(--ink);
-  line-height: 1.62;
+.bar.on-ground :focus-visible { outline-color: var(--ground-ink); }
+/* Where copy moves under the bars over a ground — the stacked phone
+   layout, and the stage while it is rising or leaving — the scrim is
+   back, in the ground's colour rather than paper's.
+
+   It is its own layer, ::after, and never a restyle of the paper
+   scrim on ::before. Swapping ::before's gradient from ground to
+   paper while its opacity was still fading out is what flashed white
+   across the top and bottom of the screen as the stage pinned: the
+   gradient changes instantly, the fade takes 260ms. With two layers
+   each one only ever fades, and --ground-bg stays on the bar after it
+   leaves a ground, so the blue fades out as blue. */
+.bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  backdrop-filter: blur(9px);
+  -webkit-backdrop-filter: blur(9px);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--ground-bg, #ffffff) 90%, transparent) 0%,
+    color-mix(in srgb, var(--ground-bg, #ffffff) 70%, transparent) 62%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(to bottom, #000 58%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent 100%);
+  transition: opacity 260ms var(--ease);
 }
-.slide-links {
-  grid-column: 1;
-  grid-row: 3;
-  margin: 16px 0 0 -12px;
-  align-self: start;
+.bar--bottom::after {
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--ground-bg, #ffffff) 90%, transparent) 0%,
+    color-mix(in srgb, var(--ground-bg, #ffffff) 70%, transparent) 62%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(to top, #000 58%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to top, #000 58%, transparent 100%);
 }
+.bar.on-ground--scrim::after { opacity: 1; }
 
 /* ============================================================
    EXPERIENCE — a ledger, not a stack of cards
@@ -470,8 +587,8 @@ main { position: relative; z-index: 1; }
 .tags--wide { margin-top: 14px; }
 
 /* ---- the spine ---------------------------------------------
-   The work viewer's scroll drives a slideshow; this one drives
-   time, because the ledger is a chronology and the scroll axis
+   The work stage's scroll hands one project to the next; this
+   one drives time, because the ledger is a chronology and the scroll axis
    is already the time axis. One hairline runs the ledger on the
    left column rule and is drawn to the reading position; each
    job's mark is a station on it. The mark column sticks beside
@@ -580,8 +697,8 @@ main { position: relative; z-index: 1; }
 }
 .ledger.is-traced .is-reached.is-reading .ledger-mark::after { background: var(--display); }
 
-/* the year readout, set exactly as .work-count so the counter
-   reads as one device across both sections */
+/* the year readout, set in the same mono as the stage's rail so
+   the two position readouts rhyme across both sections */
 .sec-head--split {
   display: flex;
   align-items: flex-end;
@@ -602,104 +719,6 @@ main { position: relative; z-index: 1; }
 }
 
 /* ============================================================
-   ABOUT
-   ============================================================ */
-
-/* ---- the dossier -------------------------------------------
-   Same 25 / 75 split and hairline rows as the ledger above,
-   because About is the same kind of object: a record you scan.
-   The two sections rhyme on purpose — this one is just shorter. */
-
-.dossier {
-  margin: 0;
-  border-top: 1px solid var(--rule);
-}
-
-.dossier-row {
-  display: grid;
-  grid-template-columns: 25% 75%;
-  padding: clamp(20px, 2.4vw, 30px) 0;
-  border-bottom: 1px solid var(--rule);
-}
-
-/* mono caps sit high in their box; nudge the label down so it
-   sits on the same optical line as the sans beside it. Centred
-   in its quarter for the same reason the values are — nothing
-   in this list starts on a hairline. */
-.dossier-row dt {
-  padding-top: 3px;
-  text-align: center;
-}
-
-/* the toolkit's own top rule closes the list — two hairlines with
-   only whitespace between them read as an empty fifth row */
-.dossier-row:last-child { border-bottom: 0; }
-
-/* the measure still caps at 56ch; auto margins then sit that
-   measure in the middle of the three columns it spans, and the
-   lines centre inside it — so a one-line value and a two-line
-   value share a centre instead of a left edge */
-.dossier-row dd {
-  margin: 0 auto;
-  max-width: 56ch;
-  text-align: center;
-  color: var(--ink);
-  line-height: 1.6;
-}
-
-.dossier-meta {
-  display: block;
-  margin-top: 8px;
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-}
-
-/* ---- the toolkit ------------------------------------------- */
-
-/* padded to match the groups below, so the block's labels share
-   one left edge rather than stepping 12px */
-.toolkit-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 24px;
-  padding-left: 12px;
-}
-.toolkit-note { color: var(--ink-faint); }
-
-/* Four groups on the page's own four columns (DESIGN.md §2), so
-   the background grid's rules do the dividing and this adds none
-   of its own. The 12px inset less the bracket's own 10px padding
-   leaves every group's first glyph 12px clear of its rule. */
-.toolkit-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  margin-top: 30px;
-}
-.toolkit-group { padding: 0 var(--gutter) 0 12px; }
-
-.toolkit-tags {
-  display: block;
-  margin: 14px 0 0 -10px;
-}
-.toolkit-tags .br { display: flex; }
-
-/* depth is weight and the display blue, never a second hue (§3) */
-.tags .br--depth {
-  font-weight: 500;
-  color: var(--display);
-}
-
-.toolkit {
-  margin-top: clamp(48px, 6vw, 76px);
-  padding-top: 26px;
-  border-top: 1px solid var(--rule);
-}
-
-/* ============================================================
    CLOSE — the silk rises again, and the work's three
    territories converge on the address
    ============================================================ */
@@ -717,8 +736,12 @@ main { position: relative; z-index: 1; }
   top: auto;
   height: 78%;
   bottom: 0;
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 42%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 42%);
+  /* the field ramps in over the top 42% and is solid below it —
+     the mask is built from this, so the number lives once and
+     chrome.js can read the same one (see site.css .silk-host) */
+  --field-from: 42%;
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 var(--field-from));
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 var(--field-from));
   background: linear-gradient(180deg, rgba(234, 243, 252, 0) 0%, #d8e9f9 60%, #eff6fd 100%);
 }
 
@@ -872,36 +895,6 @@ main { position: relative; z-index: 1; }
   .hero { min-height: 92svh; }
   .hero-sub { max-width: 100%; font-size: 0.98rem; }
 
-  /* Pinning a viewport-tall stage on a phone leaves no room to
-     read, so the slideshow degrades to a plain stack. The index
-     is navigation for the pinned viewer; stacked, it would just
-     be a duplicate table of contents, so it goes and the slides
-     carry their own names. */
-  .work { height: auto; }
-  .work-pin { position: static; height: auto; display: block; }
-  .work-index { display: none; }
-  .work-stage { height: auto; }
-
-  .slide {
-    position: static;
-    opacity: 1;
-    visibility: visible;
-    transform: none;
-    pointer-events: auto;
-    will-change: auto;
-    padding-bottom: clamp(72px, 9vw, 132px);
-  }
-  .slide:last-child { padding-bottom: 0; }
-  .slide-figure { flex: none; }
-
-  .slide-body { grid-template-columns: 1fr; }
-  .slide-body > * { padding-right: 0; }
-  .slide-body .label,
-  .slide-body h3,
-  .slide-text,
-  .slide-links { grid-column: 1; grid-row: auto; }
-  .slide-text { margin-top: 14px; }
-
   /* No left rail to hang the spine from once the row collapses to
      a single column, so home.js drops .is-traced here and the
      ledger goes back to being a plain ledger. */
@@ -915,11 +908,6 @@ main { position: relative; z-index: 1; }
   /* the year range keeps its place beside the title while there is
      room for it; below 620px it takes its own line */
   .sec-head--split { gap: 18px; }
-
-  /* the diagrams need height once the frame loses its width,
-     or the labels have nowhere to go */
-  .slide-figure { aspect-ratio: 4 / 3; }
-  .slide-figure--record { aspect-ratio: auto; padding: 24px; }
 
   /* the dossier stacks label over value, exactly as the ledger
      row does — and the column grid is gone here, so the toolkit
@@ -973,10 +961,254 @@ main { position: relative; z-index: 1; }
   .sec-head--split { display: block; }
   .ledger-scale { margin-top: 16px; padding-bottom: 0; }
 
+  /* A screen shrunk to a phone's width is a thumbnail nobody can
+     read. So the card goes square and the screenshot stays at a
+     readable scale, cropped to the part that matters — each ground
+     names its own --focus and --zoom. The listing is small enough to
+     show whole. */
+  .stage-frame { aspect-ratio: 1 / 1; }
+  .stage-card img {
+    transform: scale(var(--zoom, 1));
+    transform-origin: var(--focus, 50% 50%);
+  }
+  .stage-slide[data-ground="ctf"] .stage-frame { aspect-ratio: 4 / 3; }
+  .stage-card--record img { width: min(84%, 420px); }
+  .stage-caption { flex-direction: column; gap: 14px; }
+  .stage-links { margin: 0 0 0 -12px; }
+
   /* [ Claude Agent SDK ] has no room to sit beside a sibling here */
   .toolkit-grid { grid-template-columns: 1fr; row-gap: 26px; }
   .toolkit-head { display: block; }
   .toolkit-note { margin-top: 8px; }
+}
+
+/* ============================================================
+   EXPERIENCE — the flight
+   xp3d.js mounts it on desktop with full motion and WebGL. Until
+   then .xp-flight is [hidden] and the ledger is untouched; once
+   it mounts, the ledger becomes the section's screen-reader
+   record and the stage is what the eye reads.
+   ============================================================ */
+
+.xp-flight[hidden] { display: none; }
+
+/* The flight names itself — its own readout says Experience and the
+   year — so the section's header would only be a band of paper
+   between the work stage letting go and this one pinning. The stage
+   follows the work stage directly, and the header stays for screen
+   readers alone. A way in lands on the stage pinned, not on the
+   scroll padding above it that the chrome would otherwise leave. */
+#experience.is-flight {
+  padding-top: 0;
+  border-top: 0;
+  scroll-margin-top: calc(-1 * (var(--bar-top) + 16px));
+}
+/* without it — phones, reduced motion, no WebGL — the ledger is what
+   the eye reads and it keeps its heading, but not a full section's
+   worth of paper above it: the work stage has only just let go */
+#experience:not(.is-flight) { padding-top: clamp(52px, 7vh, 88px); }
+#experience.is-flight { padding-bottom: 0; }
+#experience.is-flight .sec-head,
+#experience.is-flight .ledger {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* the runway: full bleed out of the tinted band, its length set by
+   the script from its own segment table */
+.xp-flight {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  height: var(--xp-runway, 400svh);
+}
+
+/* the stage's ground is the fog's colour, top and horizon — the
+   same two stops xp3d-scenes.js resolves every distant surface to */
+.xp-stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+  background: linear-gradient(180deg, #fbfdff 0%, #e3effb 100%);
+  border-block: 1px solid var(--rule);
+}
+.xp-gl,
+.xp-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* The work stage lets go on CyberSci's ground, and this one opens on
+   the fog. Rather than a hairline between two blues, the stage rises
+   still carrying that ground across its top edge, and the band draws
+   up into the edge as it comes, so the seam is the same colour on
+   both sides the whole way and is gone the instant the stage pins.
+   The frame it pins on is the flight's own. Where scroll-driven
+   animation isn't supported the hairline stays and does the job. */
+@supports (animation-timeline: view()) {
+  .xp-flight { view-timeline: --xp-rise block; }
+  .xp-stage { border-top: 0; }
+  .xp-stage::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 1;
+    height: 62%;
+    pointer-events: none;
+    background: linear-gradient(
+      in oklab 180deg,
+      #d9e8f7 0%,
+      rgb(217 232 247 / 0.5) 38%,
+      rgb(217 232 247 / 0) 100%
+    );
+    transform-origin: 50% 0;
+    animation: xp-rise linear both;
+    animation-timeline: --xp-rise;
+    animation-range: entry 0% entry 100%;
+  }
+  @keyframes xp-rise {
+    from { transform: scaleY(1); }
+    to { transform: scaleY(0); }
+  }
+}
+
+/* ---- the station labels, placed by the camera's projection ---- */
+.xp-tags {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.xp-tag {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  white-space: nowrap;
+  will-change: transform, opacity;
+}
+.xp-tag-year {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.xp-tag-name {
+  display: block;
+  margin: 0.06em 0 0.1em -0.04em;
+  font-family: var(--serif);
+  font-variation-settings: "opsz" 60;
+  font-weight: 400;
+  font-size: clamp(3rem, 4.6vw, 4.4rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  color: var(--display);
+}
+.xp-tag-role {
+  display: block;
+  font-size: 1.02rem;
+  color: var(--ink);
+}
+
+/* ---- the reading furniture: fixed to the stage, not the world ---- */
+.xp-readout {
+  position: absolute;
+  top: calc(var(--bar) + 22px);
+  left: max(var(--gutter), calc((100% - var(--container)) / 2));
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+/* the right half is the detail's: it starts on the grid's third
+   rule — the container is centred, so that rule is the stage's own
+   midline — and each job's detail settles in only while the camera
+   is resting on it */
+.xp-panel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(560px, calc(var(--container) / 2 - 24px));
+  display: grid;
+  transform: translateY(-46%);
+}
+.xp-detail {
+  grid-area: 1 / 1;
+  align-self: center;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.xp-detail-when {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.xp-detail .ledger-list { margin-top: 16px; }
+.xp-detail .ledger-list li { font-size: 0.92rem; line-height: 1.55; padding: 8px 0 8px 22px; }
+.xp-detail .ledger-list li::before { top: 17px; }
+.xp-detail .tags .br { color: var(--ink); }
+
+.xp-rail {
+  position: absolute;
+  left: max(var(--gutter), calc((100% - var(--container)) / 2));
+  right: max(var(--gutter), calc((100% - var(--container)) / 2));
+  bottom: calc(var(--bar) + 10px);
+  display: flex;
+  gap: 6px;
+  margin-left: -10px;
+  padding-top: 12px;
+}
+/* a hairline across the rail, inked as far as the flight has come */
+.xp-rail::before,
+.xp-rail::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 10px;
+  height: 1px;
+}
+.xp-rail::before { right: 0; background: var(--rule); }
+.xp-rail::after {
+  right: 0;
+  background: var(--display);
+  transform-origin: 0 50%;
+  transform: scaleX(var(--xp-progress, 0));
+}
+.xp-rail .br { color: var(--ink); }
+.xp-rail .br.on { color: var(--display); font-weight: 500; }
+
+/* ---- the hand-off to About ----------------------------------
+   The runway ends with the thread dropping out of the frame into
+   About (xp3d.js, about.js), so there is no rule under the stage:
+   its foot settles to the ground's own low stop under .xp-veil and
+   About's ground starts on exactly that colour. */
+#experience.is-flight { border-bottom-width: 0; }
+.xp-stage { border-bottom-width: 0; }
+.xp-veil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(180deg, rgba(227, 239, 251, 0) 52%, #e3effb 94%);
 }
 
 /* ============================================================
