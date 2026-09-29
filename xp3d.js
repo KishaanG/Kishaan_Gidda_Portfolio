@@ -32,8 +32,6 @@
   const Scenes = window.XpScenes;
   if (!flight || !Scenes) return;
 
-  const asked = new URLSearchParams(window.location.search).get("xp");
-  const pick = Scenes.has(asked) ? asked : "ribbon";
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const wide = window.matchMedia("(min-width: 901px)");
   if (!wide.matches) return;
@@ -91,14 +89,11 @@
 
   /* at rest the camera stands back, left and a little high, and
      looks past the station to its right: the label sits in the
-     left half and the detail panel has the right half to itself.
-     A world can move the camera — the sea is skimmed, not flown
-     over — but never the composition. */
-  const tune = Scenes.tune(pick);
-  const REST_EYE = tune.restEye || [-2.3, 1.0, 7.0];
-  const REST_AIM = tune.restAim || [4.6, -0.1, -0.6];
-  const OV_EYE = tune.ovEye || [-8.5, 7.8, 19];
-  const OV_AIM = tune.ovAim || [1.2, 0.2, -24];
+     left half and the detail panel has the right half to itself. */
+  const REST_EYE = [-2.3, 1.0, 7.0];
+  const REST_AIM = [4.6, -0.1, -0.6];
+  const OV_EYE = [-8.5, 7.8, 19];
+  const OV_AIM = [1.2, 0.2, -24];
 
   const restEye = (k) => add(ST[k], REST_EYE);
   const restAim = (k) => add(ST[k], REST_AIM);
@@ -118,41 +113,21 @@
     THREAD.push({ u, p: catmull(TH, u) });
   }
 
-  /* where the panes stand: one behind every station, seen from its
-     rest just to the right of the name, so the name sits on a pane
-     of the hero's light the way the hero line sits on the field and
-     the detail keeps paper. The last one is the present and is
-     never passed. */
-  const gates = stops.map((_, k) => {
-    const behind = add(mul(ST[k], 0.72), mul(restAim(k), 0.28));
-    const look = norm(sub(behind, restEye(k)));
-    return { at: add(restEye(k), mul(look, 11.5)), facing: mul(look, -1), look };
-  });
-
   /* keyframe 0 is the establishing shot — the whole career ahead,
      receding into the light — then one keyframe per station, with
-     a via point between each pair. Where the world stands panes in
-     the way, the via IS the pane: moving on means flying straight
-     through the light behind the job you are leaving. Elsewhere it
-     swings the camera out and up, so the move is an arc, never a
-     dolly on a rail. */
+     a via point between each pair. The via swings the camera out
+     and up, so the move is an arc, never a dolly on a rail. */
   const EYES = [OV_EYE];
   const AIMS = [OV_AIM];
   for (let k = 0; k < n; k++) {
     const e0 = k ? restEye(k - 1) : OV_EYE;
     const a0 = k ? restAim(k - 1) : OV_AIM;
-    if (k && tune.through) {
-      const g = gates[k - 1];
-      EYES.push(g.at, restEye(k));
-      AIMS.push(add(g.at, mul(g.look, 9)), restAim(k));
-      continue;
-    }
     const swing = k ? [k % 2 ? -1.9 : 2.3, 1.3, 0] : [2.4, 0.4, 0];
     EYES.push(add(mid(e0, restEye(k)), swing), restEye(k));
     AIMS.push(add(mul(a0, 0.4), mul(restAim(k), 0.6)), restAim(k));
   }
 
-  const scene = Scenes.build(pick, gl, { gates, stations: ST });
+  const scene = Scenes.build(gl);
   if (!scene) return;
 
   /* ================================================================
@@ -395,51 +370,9 @@
     if (a[2] < NEAR && b[2] < NEAR) return null;
     if (a[2] < NEAR) a = lerpV(b, a, (b[2] - NEAR) / (b[2] - a[2]));
     else if (b[2] < NEAR) b = lerpV(a, b, (a[2] - NEAR) / (a[2] - b[2]));
-    const s = [toScreen(a), toScreen(b), (a[2] + b[2]) / 2];
-    return occluded([(s[0][0] + s[1][0]) / 2, (s[0][1] + s[1][1]) / 2], s[2]) ? null : s;
+    return [toScreen(a), toScreen(b), (a[2] + b[2]) / 2];
   }
   const lerpV = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
-
-  /* ---- occlusion ------------------------------------------------
-     The hairlines and the labels are drawn over the WebGL world,
-     not in it, so where the world has solid surfaces standing in
-     space (the panes), anything behind one has to be hidden here.
-     Each blocker is a plane: the depth test is exact, a ray through
-     the pixel against the pane's own plane, not a guess from its
-     corners. */
-  let blockers = [];
-
-  function buildBlockers(cam) {
-    blockers = [];
-    if (!scene.frames) return;
-    scene.frames().forEach((q) => {
-      const v = q.map((p) => toView(cam, p));
-      if (v.some((c) => c[2] < NEAR)) return;
-      const nrm = cross(sub(v[1], v[0]), sub(v[3], v[0]));
-      blockers.push({ poly: v.map(toScreen), nrm, d: dot(nrm, v[0]) });
-    });
-  }
-
-  function inPoly(pt, poly) {
-    let inside = false;
-    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-      const [xi, yi] = poly[i];
-      const [xj, yj] = poly[j];
-      if ((yi > pt[1]) !== (yj > pt[1]) &&
-          pt[0] < ((xj - xi) * (pt[1] - yi)) / (yj - yi) + xi) inside = !inside;
-    }
-    return inside;
-  }
-
-  function occluded(pt, z) {
-    for (const b of blockers) {
-      if (!inPoly(pt, b.poly)) continue;
-      const ray = [(pt[0] - W / 2) / focal, -(pt[1] - H / 2) / focal, 1];
-      const t = b.d / dot(b.nrm, ray);
-      if (t > NEAR && t < z - 0.05) return true;
-    }
-    return false;
-  }
 
   /* ================================================================
      THE HAIRLINES
@@ -467,8 +400,8 @@
     ctx.setLineDash([]);
   }
 
-  function drawThread(cam, drawn, flip, base) {
-    const view = THREAD.map((t) => toView(cam, flip ? [t.p[0], -t.p[1], t.p[2]] : t.p));
+  function drawThread(cam, drawn) {
+    const view = THREAD.map((t) => toView(cam, t.p));
     const solid = [];
     const ahead = [];
     for (let i = 0; i < TH_N; i++) {
@@ -476,8 +409,8 @@
       (THREAD[i].u < drawn ? solid : ahead).push(seg);
     }
     // the part not lived yet gives way to the drop into About
-    strokeSegs(ahead, INK, base * 0.42 * (1 - exitP), [3, 6]);
-    strokeSegs(solid, INK, base * 0.9);
+    strokeSegs(ahead, INK, 0.42 * (1 - exitP), [3, 6]);
+    strokeSegs(solid, INK, 0.9);
   }
 
   const CUBE = [
@@ -489,8 +422,8 @@
     [6, 7], [7, 4], [0, 4], [1, 5], [2, 6], [3, 7],
   ];
 
-  function drawCube(cam, k, key, flip, base) {
-    const at = flip ? [ST[k][0], -ST[k][1], ST[k][2]] : ST[k];
+  function drawCube(cam, k, key) {
+    const at = ST[k];
     const reached = key >= k + 1 - 1e-3;
     // it turns only as you scroll — never on its own
     const yaw = 0.7 + k * 0.9 + key * 0.8;
@@ -505,33 +438,19 @@
       const z1 = -x * sy + z * cy;
       const y2 = y * cp - z1 * sp;
       const z2 = y * sp + z1 * cp;
-      return toView(cam, add(at, [x1 * s, (flip ? -y2 : y2) * s, z2 * s]));
+      return toView(cam, add(at, [x1 * s, y2 * s, z2 * s]));
     });
     const segs = EDGES.map(([a, b]) => clipSeg(pts[a], pts[b]));
-    strokeSegs(segs, reached ? INK : FAINT, base * (reached ? 0.95 : 0.8));
+    strokeSegs(segs, reached ? INK : FAINT, reached ? 0.95 : 0.8);
 
     const c = toView(cam, at);
-    if (reached && c[2] > NEAR && !flip) {
+    if (reached && c[2] > NEAR) {
       const [sx, sy2] = toScreen(c);
       ctx.fillStyle = `rgba(${INK}, ${(0.95 * depthAlpha(c[2])).toFixed(3)})`;
       ctx.beginPath();
       ctx.arc(sx, sy2, 2.4, 0, Math.PI * 2);
       ctx.fill();
     }
-  }
-
-  function drawStem(cam, k) {
-    const top = toView(cam, add(ST[k], [0, -0.34, 0]));
-    const foot = toView(cam, [ST[k][0], 0, ST[k][2]]);
-    strokeSegs([clipSeg(top, foot)], INK, 0.35);
-  }
-
-  function drawFrames(cam) {
-    if (!scene.frames) return;
-    scene.frames().forEach((q) => {
-      const v = q.map((p) => toView(cam, p));
-      strokeSegs([0, 1, 2, 3].map((i) => clipSeg(v[i], v[(i + 1) % 4])), INK, 0.5);
-    });
   }
 
   /* the hairlines never cross type: they are rubbed out, softly,
@@ -550,14 +469,8 @@
     ctx.clearRect(0, 0, W, H);
     ctx.lineWidth = 1;
     const drawn = key <= 1 ? lerp(0.3, 1, key) : 1 + 2 * (key - 1);
-    if (scene.mirror) {
-      drawThread(cam, drawn, true, 0.2);
-      ST.forEach((_, k) => drawCube(cam, k, key, true, 0.2));
-    }
-    drawFrames(cam);
-    if (scene.stem) ST.forEach((_, k) => drawStem(cam, k));
-    drawThread(cam, drawn, false, 1);
-    ST.forEach((_, k) => drawCube(cam, k, key, false, 1));
+    drawThread(cam, drawn);
+    ST.forEach((_, k) => drawCube(cam, k, key));
     knockOut(panelRect, 20, 16);
     if (tagRect) knockOut([tagRect[0] + 4, tagRect[1], tagRect[2], tagRect[3]], 4, 6);
     drawDrop(cam);
@@ -637,11 +550,6 @@
         return;
       }
       const [x, y] = toScreen(v);
-      if (occluded([x, y], v[2])) {
-        t.el.style.opacity = "0";
-        t.rect = null;
-        return;
-      }
       const s = clamp(REST_DEPTH / v[2], 0.1, 2.4);
       // far ones fade into the haze; one you are passing fades out
       const a = depthAlpha(v[2]) * clamp((v[2] - 2.4) / 2.2);
@@ -734,7 +642,6 @@
     if (Math.abs(target - shownX) < 0.02) shownX = target;
     const key = keyAt(shownX);
     const cam = cameraAt(key);
-    buildBlockers(cam);
     const tagRect = placeTags(cam);
     placePanel(key);
     drawLines(cam, key, tagRect);
@@ -743,8 +650,7 @@
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     scene.draw({
       vp: matrices(cam),
-      eye: cam.eye, fwd: cam.fwd, right: cam.right, up: cam.up,
-      fovY: FOV,
+      eye: cam.eye,
       time: (now - t0) / 1000 + 40,
       w: glCanvas.width, h: glCanvas.height, dpr,
       zones: zones(tagRect),

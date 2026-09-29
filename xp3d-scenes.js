@@ -1,25 +1,19 @@
 "use strict";
 
 /* ============================================================
-   Kishaan Gidda — the flight's three worlds
+   Kishaan Gidda — the flight's world
    ------------------------------------------------------------
    The experience flight (xp3d.js) carries a camera along a
    hairline thread from one job to the next. This file is the
-   space it flies through, and all three candidates are built
-   from the hero's own material: the same iterated-sine field,
-   the same six stops with the crease at stop five, the same
-   Oklab mixing. Only what the field is laid ON changes.
-
-     ribbon  — the field as a length of cloth in 3D, twisting
-               under a lamp, that the thread runs above
-     horizon — the field laid flat as a sea of light, skimmed
-               low, fogging to a pale sky at the horizon
-     panes   — the field cut into framed panes, one at every
-               year boundary, that the camera flies through
+   space it flies through: the ribbon, the hero's field as a
+   length of cloth in 3D, twisting under a lamp, that the
+   thread runs above. It is built from the hero's own material
+   — the same iterated-sine field, the same six stops with the
+   crease at stop five, the same Oklab mixing — and only what
+   the field is laid ON changes.
 
    Hand-written WebGL, like silk.js: no library, no build step.
-   Each scene exposes draw(frame) and, where it has hairline
-   furniture of its own (pane edges), frames().
+   The world exposes draw(frame).
    ============================================================ */
 
 (() => {
@@ -52,7 +46,7 @@
   };
   const LAB = new Float32Array(PALETTE.flatMap(hexToOklab));
 
-  /* ---- GLSL shared by every scene -------------------------------
+  /* ---- GLSL shared by the world's programs ---------------------
      silkField() is the hero's 'marble' preset, reproduced exactly;
      only its domain is now a surface coordinate instead of the
      screen. The lamp and the reading light become per-scene. */
@@ -184,7 +178,7 @@
     return p;
   }
 
-  /* the uniforms every scene shares, set once per frame */
+  /* the uniforms the world's shaders share, set once per frame */
   function common(gl, p, f) {
     gl.uniform3fv(p.u("uLab[0]"), LAB);
     gl.uniform1f(p.u("uTime"), f.time);
@@ -214,7 +208,6 @@
   const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
   const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
   const mul = (a, s) => [a[0] * s, a[1] * s, a[2] * s];
-  const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
   const cross = (a, b) => [
     a[1] * b[2] - a[2] * b[1],
     a[2] * b[0] - a[0] * b[2],
@@ -401,236 +394,8 @@
     };
   }
 
-  /* ==============================================================
-     HORIZON — the field laid flat as a sea of light
-     One full-screen triangle; every pixel casts a ray, and where
-     it meets the plane y = 0 the field is read at that point.
-     ============================================================== */
-
-  const FULL_VS = `
-    attribute vec2 aPos;
-    void main() { gl_Position = vec4(aPos, 0.0, 1.0); }
-  `;
-
-  const HORIZON_FS = `
-    uniform vec3  uEye;
-    uniform vec3  uFwd;
-    uniform vec3  uRight;
-    uniform vec3  uUp;
-    uniform float uTan;
-    uniform float uAspect;
-
-    void main() {
-      vec2 ndc = gl_FragCoord.xy / uRes * 2.0 - 1.0;
-      vec3 dir = normalize(uFwd + uRight * ndc.x * uTan * uAspect + uUp * ndc.y * uTan);
-      float y01 = gl_FragCoord.y / uRes.y;
-      vec3 haze = sky(y01);
-
-      /* a pale band where sea and sky meet, so the horizon is a
-         soft light rather than a hard line */
-      float glow = exp(-abs(dir.y) * 38.0);
-      haze = mix(haze, vec3(0.992, 0.996, 1.0), glow * 0.65);
-
-      if (dir.y > -0.0008) { gl_FragColor = dithered(haze); return; }
-
-      float dist = -uEye.y / dir.y;
-      vec3 P = uEye + dir * dist;
-      float t = uTime * 0.088;
-
-      vec2 p = P.xz * 0.075;
-      float val = silkField(p, t);
-      /* far off the folds go finer than a pixel: settle them to the
-         pale flat before they can shimmer, then let the fog finish */
-      val = mix(val, 0.50, smoothstep(26.0, 95.0, dist));
-      vec3 lab = ramp(val);
-
-      /* a sea reflects the sky at a glance: the grazing view lifts
-         toward white, the steep view keeps its blue */
-      float graze = pow(1.0 - abs(dir.y), 5.0);
-      lab.x = mix(lab.x, 0.975, graze * 0.30);
-      lab.yz *= 1.0 - graze * 0.34;
-
-      /* one broad glint, low on the water, where the lamp would sit */
-      vec3 L = normalize(vec3(-0.30, 0.34, -1.0));
-      vec3 R = reflect(dir, vec3(0.0, 1.0, 0.0));
-      float glint = pow(clamp(dot(R, L), 0.0, 1.0), 22.0);
-      float crest = smoothstep(0.60, 1.0, val);
-      lab.x += glint * (0.05 + crest * 0.10) + crest * 0.03;
-      lab.yz *= 1.0 - clamp(glint * 0.5 + crest * 0.1, 0.0, 0.7);
-
-      lab = readFloor(lab);
-      vec3 col = toSrgb(lab);
-      float fog = 1.0 - exp(-dist * 0.017);
-      col = mix(col, haze, fog);
-      gl_FragColor = dithered(col);
-    }
-  `;
-
-  function horizon(gl) {
-    const p = program(gl, FULL_VS, HORIZON_FS);
-    if (!p) return null;
-    const tri = buffer(gl, new Float32Array([-1, -1, 3, -1, -1, 3]));
-    return {
-      mirror: true,
-      stem: true,
-      draw(f) {
-        gl.disable(gl.DEPTH_TEST);
-        gl.useProgram(p);
-        common(gl, p, f);
-        attrib(gl, p, "aPos", tri, 2);
-        gl.uniform3fv(p.u("uEye"), f.eye);
-        gl.uniform3fv(p.u("uFwd"), f.fwd);
-        gl.uniform3fv(p.u("uRight"), f.right);
-        gl.uniform3fv(p.u("uUp"), f.up);
-        gl.uniform1f(p.u("uTan"), Math.tan(f.fovY / 2));
-        gl.uniform1f(p.u("uAspect"), f.w / f.h);
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
-      },
-    };
-  }
-
-  /* ==============================================================
-     PANES — the field cut into framed windows of light
-     Each year boundary is a pane of the hero, composed the way the
-     hero is (lamp high left, the deep pooled right), standing
-     across the flight path. The camera flies through each one.
-     ============================================================== */
-
-  const PANE_FS = `
-    uniform vec3  uEye;
-    uniform float uFogK;
-    uniform float uSeed;
-    uniform float uAspect;
-    varying vec3 vPos;
-    varying vec3 vNor;
-    varying vec2 vUv;
-
-    float zone(vec2 px, vec2 c, vec2 r, float plateau, float edge) {
-      return smoothstep(edge, plateau, length((px - c) / r));
-    }
-
-    void main() {
-      float t = uTime * 0.088 + uSeed;
-      vec2 p = (vUv - 0.5) * vec2(uAspect, 1.0) * 2.0;
-      float val = silkField(p, t);
-      vec3 lab = ramp(val);
-
-      /* the hero's own lamp, pool and sill, in the pane's frame */
-      float lamp = zone(vUv, vec2(0.20, 0.96), vec2(1.00, 0.84), 0.10, 1.28);
-      float pool = zone(vUv, vec2(1.04, 0.34), vec2(0.70, 1.00), 0.05, 1.02);
-      float sill = zone(vUv, vec2(0.02, -0.08), vec2(0.78, 0.70), 0.00, 0.92);
-      float lift = clamp(0.16 * lamp, 0.0, 0.34);
-      float sink = clamp(0.30 * pool + 0.16 * sill, 0.0, 0.40);
-      lab.x = mix(lab.x, 0.965, lift);
-      lab.x = mix(lab.x, lab.x * 0.87, sink);
-      lab.yz *= (1.0 - lift * 0.55) * (1.0 + sink * 0.34);
-
-      float crest = smoothstep(0.60, 1.0, val);
-      float sweep = mix(-0.55, 1.55, fract(uTime / 21.0));
-      float x = (dot(vUv - 0.5, vec2(0.9205, 0.3907)) + 0.5 - sweep) * 3.0;
-      float rake = exp(-x * x);
-      lab.x += crest * (0.030 + 0.075 * rake);
-      lab.yz *= 1.0 - crest * (0.10 + 0.26 * rake);
-
-      lab = readFloor(lab);
-      vec3 col = toSrgb(lab);
-      float fog = 1.0 - exp(-length(uEye - vPos) * uFogK);
-      col = mix(col, sky(gl_FragCoord.y / uRes.y), fog);
-      gl_FragColor = dithered(col);
-    }
-  `;
-
-  /* a pane as four world corners: centre, facing, size, and a lean */
-  function paneCorners(c, facing, w, h, roll) {
-    const n = norm(facing);
-    let r = norm(cross([0, 1, 0], n));
-    let u = cross(n, r);
-    const cr = Math.cos(roll);
-    const sr = Math.sin(roll);
-    const r2 = add(mul(r, cr), mul(u, sr));
-    const u2 = sub(mul(u, cr), mul(r, sr));
-    r = mul(r2, w / 2);
-    u = mul(u2, h / 2);
-    return [
-      sub(sub(c, r), u), add(sub(c, u), r),
-      add(add(c, r), u), add(sub(c, r), u),
-    ];
-  }
-
-  function panes(gl, layout) {
-    const p = program(gl, MESH_VS, PANE_FS);
-    if (!p) return null;
-
-    /* one pane behind every station; the engine routes the camera
-       through each on its way to the next (TUNE.panes.through) */
-    const list = layout.gates.map((g, i) => ({
-      corners: paneCorners(g.at, g.facing, 8.4, 5.25, (i % 2 ? -1 : 1) * 0.035),
-      aspect: 1.6, seed: i * 2.3, fog: 0.022, frame: true,
-    }));
-
-    /* and a scatter of small ones in the haze, for depth */
-    const scatter = [
-      [-15, 6.5, -6, 0.5], [13, 5.2, -14, -0.7], [-19, 2.4, -30, 0.3],
-      [17, 8.4, -38, -0.4], [-12, 9.2, -52, 0.6], [15, 1.6, -58, -0.2],
-      [-24, 4.2, -70, 0.4], [9, 11, -80, -0.5],
-    ];
-    scatter.forEach(([x, y, z, yaw], i) => {
-      const s = 1.6 + (i % 3) * 0.7;
-      list.push({
-        corners: paneCorners([x, y, z], [Math.sin(yaw), 0.08, Math.cos(yaw)], s * 1.6, s, 0.05 * (i % 2 ? 1 : -1)),
-        aspect: 1.6, seed: 11 + i * 1.7, fog: 0.03, frame: true,
-      });
-    });
-
-    list.forEach((q) => {
-      const [a, b, c, d] = q.corners;
-      const n = norm(cross(sub(b, a), sub(d, a)));
-      q.pos = buffer(gl, new Float32Array([...a, ...b, ...c, ...a, ...c, ...d]));
-      q.nor = buffer(gl, new Float32Array([...n, ...n, ...n, ...n, ...n, ...n]));
-      q.uv = buffer(gl, new Float32Array([0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1]));
-    });
-
-    return {
-      frames: () => list.filter((q) => q.frame).map((q) => q.corners),
-      draw(f) {
-        gl.enable(gl.DEPTH_TEST);
-        gl.disable(gl.CULL_FACE);
-        gl.useProgram(p);
-        common(gl, p, f);
-        gl.uniformMatrix4fv(p.u("uVP"), false, f.vp);
-        gl.uniform3fv(p.u("uEye"), f.eye);
-        list.forEach((q) => {
-          attrib(gl, p, "aPos", q.pos, 3);
-          attrib(gl, p, "aNor", q.nor, 3);
-          attrib(gl, p, "aUv", q.uv, 2);
-          gl.uniform1f(p.u("uFogK"), q.fog);
-          gl.uniform1f(p.u("uSeed"), q.seed);
-          gl.uniform1f(p.u("uAspect"), q.aspect);
-          gl.drawArrays(gl.TRIANGLES, 0, 6);
-        });
-      },
-    };
-  }
-
-  const BUILD = { ribbon, horizon, panes };
-
-  /* where each world wants the camera. The sea is skimmed: eye low,
-     level with the stations, so the horizon crosses the frame and
-     the names float on it. The others fly the default. */
-  const TUNE = {
-    panes: { through: true },
-    horizon: {
-      restEye: [-2.3, 0.5, 7.2],
-      restAim: [4.6, 0.32, -0.6],
-      ovEye: [-7, 3.2, 21],
-      ovAim: [1.0, 1.1, -30],
-    },
-  };
-
   window.XpScenes = {
-    has: (name) => Object.prototype.hasOwnProperty.call(BUILD, name),
-    build: (name, gl, layout) => BUILD[name](gl, layout),
-    tune: (name) => TUNE[name] || {},
+    build: ribbon,
     catmull,
     SKY_TOP,
     SKY_LOW,
