@@ -3,8 +3,8 @@
 ## What this is
 
 A personal portfolio for **Kishaan Gidda**, a second-year computer science co-op
-student at Carleton University (AI/ML stream), currently on a product team at
-TrendAI. The site exists to get him hired: co-op placements, internships, and
+student at Carleton University (AI/ML stream), most recently on a product team at
+TrendAI (May – Aug 2026). The site exists to get him hired: co-op placements, internships, and
 security/AI roles.
 
 It ships as **two parallel front doors** to the same person:
@@ -29,8 +29,8 @@ It ships as **two parallel front doors** to the same person:
 is that he ships software *and* breaks it — development plus vulnerability work.
 
 **Experience**
-- **TrendAI** — Product Team, AVTD. *Current.* Contributing to software
-  development on the AVTD product team; identifying and resolving vulnerabilities.
+- **TrendAI** — Product Team, AVTD. *May – Aug 2026.* Contributed to software
+  development on the AVTD product team; identified and resolved vulnerabilities.
 - **Hydro Ottawa** — Cybersecurity Analyst Intern. *May – Aug 2025.* IR playbooks
   for AI data leaks, web exploits, ransomware, insider threats; Living-Off-The-Land
   simulation with MITRE ATT&CK + Caldera on Linux; AWS GuardDuty as IaC and S3/IAM
