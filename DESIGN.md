@@ -162,7 +162,7 @@ the slide advanced. The drawn diagrams read these same properties, so a diagram
 always matches the ground it sits on.
 
 ```
-[data-plate="track"]  #e9edec / ink #24343a   asphalt — Racing Line App
+[data-plate="track"]  #e9edec / ink #24343a   asphalt — PoleLab
 [data-plate="care"]   #e6efe9 / ink #1f4a39   clinical calm — CareRouter
 [data-plate="ctf"]    #f4ece9 / ink #5e2a24   the record — CyberSci
 ```
@@ -173,6 +173,20 @@ can read them back directly. Rules: low-chroma tints only — the viewer stays
 paper under glass, never three coloured boxes; every ink clears 4.5:1 on its own
 plate; and plates live **only** in the work viewer. Do not spread them to
 sections, cards, or chrome.
+
+### Inside an open plate, the project speaks for itself
+
+When a plate opens (§6) it carries a few seconds of the project, and inside the
+demo's frame the project uses **its own** design language, not this one:
+PoleLab's pit wall (Titillium Web, carbon on off-white, one warm red),
+CareRouter's chat (blush ground, Queen's navy, gold). That is the point of the
+demo — it shows what the thing is like to use — and restyling it in blues would
+make it a picture of this site, not of the project. Titillium Web is loaded for
+that frame and nothing else.
+
+Everything around the frame stays in this system: the plate's own ground, mono
+captions, one hairline for time, and a bracket for the only control. Nothing
+inside the frame leaks out of it — no red on the page, no navy in the chrome.
 
 ## 4. Type
 
@@ -273,7 +287,8 @@ visitor gets the drawn fan, already complete, exactly as §6 describes.
 
 **Scroll drives two sections, and it must not drive them the same way.** In the
 work viewer scroll advances a *slide*: the section pins and the viewer
-cross-dissolves. In the ledger scroll advances *time*, because the ledger is a
+cross-dissolves — and partway through each slide, the plate **opens**. In the
+ledger scroll advances *time*, because the ledger is a
 chronology and the scroll axis is already the time axis: a hairline is drawn down
 the left column rule to the reading line, and each job's mark is a station on it.
 Nothing pins at section scale there, and nothing fades. Two states, and the
@@ -297,6 +312,38 @@ from `left bottom` so the overhang stays inside the row's own top padding, and
 the heading's box is `fit-content` so scaling it does not throw its right edge
 off screen behind the body's `overflow-x`.
 
+**The plate that opens.** Each project gets a longer stretch of runway
+(`170svh`, against `92svh` without demos), and in the middle of it the plate
+lifts out of its slot and opens to nearly the whole viewport, between the two
+chrome bars. A few seconds of the project plays inside (`demos.js`), then the
+plate settles back into its slot before the viewer dissolves to the next one —
+so either side of every demo is the viewer exactly as it always was.
+
+- **The zoom is a transform, never a layout.** The open plate is laid out once at
+  its open size and drawn at scale 1, so the type is sharp where it is read; at
+  rest it is the same plate scaled down to sit in the slot. Scale moves
+  geometrically and position follows it, so it reads as a camera closing in
+  rather than a box growing.
+- **While a plate is open, the rest of the viewer steps back.** The index, the
+  slide's copy and the column grid fade with how open it is, and the drift of
+  the dissolve is suspended. The plate is the one surface the grid's rules do not
+  pass across.
+- **The clock is time; scroll can only push it.** A demo plays at its own pace
+  once the plate lands, and keeps playing if you stop scrolling. Scroll faster
+  than it plays and it is carried forward, so a plate never closes on a
+  half-finished frame. Coming back up into a plate from below puts it straight on
+  its finished frame; coming down into it again plays it from the top.
+- **Every demo is a seekable timeline** of pure tweens — any instant can be drawn
+  directly. That is what makes the scroll push, the reduced-motion still and the
+  replay all the same code.
+- **One control:** `[ Pause ]` while it plays, `[ Play ]` when paused,
+  `[ Replay ]` at the end. Time is a single hairline with a tick where each
+  chapter starts, and the chapter's name reads beside it.
+
+Phones get the plate inline, in the diagram's place, and it plays once when it
+scrolls into view. Under `prefers-reduced-motion` the plate never opens: it sits
+in the slot on its **finished frame**, with a replay for anyone who wants it.
+
 Every one of these is `prefers-reduced-motion` guarded. The spine's guard follows
 the silk field's: under `reduce` the line is still there and still complete, it
 simply arrives already drawn instead of scrubbing.
@@ -310,7 +357,7 @@ simply arrives already drawn instead of scrubbing.
 - **Work index + viewer.** The signature layout: a sticky left column listing the
   work, with the active entry in `--display` and the rest in `--ink-faint`; the
   right three columns hold that entry's full-bleed visual. Scroll drives which
-  entry is active.
+  entry is active, and opens each entry's plate into its demo (§6).
 - **Experience is a ledger**, not a stack of cards: a hairline-ruled table of
   date / organisation / role, with detail underneath. Its left column — mark and
   date — sticks beside its own detail, so you never lose whose work you are
@@ -320,6 +367,14 @@ simply arrives already drawn instead of scrubbing.
   drawn in the site's own grammar — hairlines, blues, the display serif — never a
   gradient placeholder, a glass panel, or a generic icon tile. Nothing may be
   styled to look like a product screenshot that does not exist.
+- **Demos are rebuilt, never invented.** A plate's demo is rebuilt from the
+  project's real interface — its type, colours and copy, read out of its source —
+  and every figure in it is real output: PoleLab's solved lap of Spa and the
+  strategy report from the app's own fixtures, CareRouter's questions word for
+  word and the intake from its own tests. Where the product's data would have to
+  be made up — a live Places result, a rival team's name — the demo leaves it
+  out rather than fill it in. Each plate says where its data came from, and
+  compressed time is labelled as compressed.
 
 ## 8. Prohibitions
 
@@ -329,7 +384,9 @@ generic bans.
 - No thick ink outlines, no hard offset `box-shadow` "sticker" edges, no
   `border-radius: 22px` cards, no comic halftone dot fields.
 - No filled pill buttons, no gold. No hue outside the blue family except the
-  work plates above.
+  work plates above. (Inside an open plate's frame the project's own interface is
+  shown as it ships, pills and gold included — §3. That exemption stops at the
+  frame's edge.)
 - No emoji as interface furniture (📮, ☁️, 🏆, 📖 all go).
 - No perpetual bobbing, bouncing, or rotating decoration.
 - No `Fredoka`, `Nunito`, or `Press Start 2P` on the classic site. (`Press Start

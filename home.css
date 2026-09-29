@@ -144,6 +144,11 @@ main { position: relative; z-index: 1; }
   position: relative;
   height: calc(var(--pin-h) + var(--slides, 3) * var(--seg));
 }
+/* With demos, each project also opens out and plays, so it gets a
+   longer stretch of runway: the rest state and the dissolve keep
+   about the distance they had, and the open plate takes the rest.
+   work.js adds this only when the zoom is actually running. */
+.work.has-zoom { --seg: 170svh; }
 
 .work-pin {
   position: sticky;
@@ -155,10 +160,16 @@ main { position: relative; z-index: 1; }
 }
 
 .work-index {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   height: 100%;
   padding-right: var(--gutter);
+  /* --zoom is how open the current plate is (work.js). The index
+     is navigation for the viewer, so it steps back while a plate
+     has the whole viewport, and returns as the plate settles. */
+  opacity: calc(1 - var(--zoom, 0) * 2.4);
 }
 .work-count {
   margin-top: auto;
@@ -276,12 +287,28 @@ main { position: relative; z-index: 1; }
 .slide-links .br { color: var(--plate-soft); }
 .slide-links .br:hover { color: var(--plate-ink); }
 
-/* the viewer: slides stack in place and cross-fade */
-.work-stage { position: relative; height: 100%; }
+/* the viewer: slides stack in place and cross-fade. It stacks above
+   the index so an opening plate passes over it, and the slide whose
+   plate is open sits above its neighbours. */
+.work-stage { position: relative; z-index: 2; height: 100%; }
+.slide.is-zoomed { z-index: 3; }
+
+/* --e is how open this slide's plate is. Its diagram and its copy
+   give way to the plate as it lifts out of the slot. */
+.slide-body { opacity: calc(1 - var(--e, 0) * 2.4); }
+.slide-figure > :not(.zoom) { opacity: calc(1 - var(--e, 0) * 3); }
+/* once they have faded out they are out of reach as well — the plate
+   is inert until it lands, so clicks would otherwise pass through it */
+.work.is-covered .work-index,
+.slide.is-covered .slide-body { visibility: hidden; }
+
+/* the column grid steps back while a plate is open — the plate is
+   the one surface on the page the rules do not pass across */
+.col-grid { opacity: var(--grid-a, 1); }
 
 /* The cross-fade is tied to scroll position, not fired as a timed
    transition on a threshold — that flip is what made the change
-   feel like a stop. --a and --dy come from home.js every frame, so
+   feel like a stop. --a and --dy come from work.js every frame, so
    a slide hands over gradually and the pinned content keeps moving
    with the wheel instead of sitting frozen between swaps. The two
    slides drift in opposite directions through the handover so the

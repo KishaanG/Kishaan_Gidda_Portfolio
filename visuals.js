@@ -3,7 +3,7 @@
 /* ============================================================
    Kishaan Gidda — authored project visuals
    ------------------------------------------------------------
-   Neither CareRouter nor the Racing Line App has a screenshot
+   Neither CareRouter nor PoleLab has a screenshot
    in this repo, so rather than fake one, each project is drawn
    in the site's own grammar — hairlines, one blue family — and
    each drawing shows the thing the project actually does.
@@ -266,7 +266,7 @@
   }
 
   /* ============================================================
-     2 · Racing Line App — a circuit, and the minimum-time line
+     2 · PoleLab — a circuit, and the minimum-time line
      The line is solved, not shaped: lapTime() scores a candidate
      path against a friction-limited speed profile and solveLine()
      minimises it over the lateral offsets the track allows. Wide

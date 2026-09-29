@@ -1,0 +1,181 @@
+/* ============================================================
+   Kishaan Gidda — project demos
+   ------------------------------------------------------------
+   The plate that opens out of the work viewer (DESIGN.md §6).
+   The plate itself is in the site's grammar: the slide's own
+   plate colour, mono captions, one hairline for time, a bracket
+   for the only control.
+
+   Inside the frame each project speaks its own language —
+   PoleLab's pit wall, CareRouter's chat — because that is what
+   the demo is showing. Those live in demo-pole.css,
+   demo-care.css and demo-ctf.css, and none of it leaks out of
+   the frame.
+   ============================================================ */
+
+/* ---- the plate --------------------------------------------- */
+
+.zoom {
+  --pad-x: 30px;
+  --pad-head: 58px;
+  --pad-foot: 58px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 5;
+  transform-origin: 0 0;
+  background: var(--plate);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.zoom.is-shown { visibility: visible; }
+.zoom.is-moving { will-change: transform, opacity; }
+.slide.is-active .zoom.is-open { pointer-events: auto; }
+
+.zoom-head {
+  position: absolute;
+  left: var(--pad-x);
+  right: var(--pad-x);
+  top: 0;
+  height: var(--pad-head);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.zoom-cap,
+.zoom-src,
+.zoom-chapter,
+.zoom-time {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--plate-soft);
+  white-space: nowrap;
+}
+.zoom-cap { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.zoom-cap strong { font-weight: 500; color: var(--plate-ink); }
+.zoom-src {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: -12px;   /* the bracket's padding back to the plate edge */
+}
+.zoom-src .br,
+.zoom-btn { color: var(--plate-soft); font-size: 0.86rem; }
+.zoom-src .br:hover,
+.zoom-src .br:focus-visible,
+.zoom-btn:hover,
+.zoom-btn:focus-visible { color: var(--plate-ink); background: var(--plate-rule-soft); }
+
+.zoom-frame {
+  position: absolute;
+  left: var(--pad-x);
+  right: var(--pad-x);
+  top: var(--pad-head);
+  bottom: var(--pad-foot);
+  display: grid;
+  place-items: center;
+}
+/* the screen's edge is a hairline in the plate's own ink */
+.zoom-fit {
+  position: relative;
+  overflow: hidden;
+  outline: 1px solid var(--plate-rule-soft);
+}
+.zoom.is-bare .zoom-fit { outline: 0; overflow: visible; }
+.zoom-screen {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+}
+
+/* time is one hairline, marked where each chapter starts */
+.zoom-foot {
+  position: absolute;
+  left: var(--pad-x);
+  right: var(--pad-x);
+  bottom: 0;
+  height: var(--pad-foot);
+  display: grid;
+  grid-template-columns: minmax(0, 26rem) minmax(80px, 1fr) auto auto;
+  align-items: center;
+  column-gap: 20px;
+}
+.zoom-chapter { color: var(--plate-ink); overflow: hidden; text-overflow: ellipsis; }
+.zoom-track {
+  position: relative;
+  height: 1px;
+  background: var(--plate-rule-soft);
+}
+.zoom-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--plate-ink);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+}
+.zoom-track b {
+  position: absolute;
+  top: -3px;
+  width: 1px;
+  height: 7px;
+  background: var(--plate-rule);
+}
+.zoom-time { font-variant-numeric: tabular-nums; }
+.zoom-btn { margin-right: -12px; min-width: 7.2em; justify-content: flex-end; }
+
+/* Inline: phones, and reduced motion. The plate sits in the
+   figure's place instead of opening out of it. */
+.zoom.is-inline {
+  --pad-x: 16px;
+  --pad-head: 44px;
+  --pad-foot: 48px;
+  position: relative;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+.slide-figure.has-inline { padding: 0; display: block; }
+.slide-figure.has-inline > :not(.zoom):not(.sr-only) { display: none; }
+
+@media (max-width: 900px) {
+  .slide-figure.has-inline { aspect-ratio: auto; }
+  .zoom.is-inline .zoom-src > span { display: none; }
+  .zoom.is-inline .zoom-foot { grid-template-columns: minmax(0, 1fr) auto auto; }
+  .zoom.is-inline .zoom-track { position: absolute; left: 0; right: 0; top: 10px; }
+}
+
+/* ---- the demo cursor ---------------------------------------- */
+
+.demo-cursor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 40;
+  width: 16px;
+  height: 22px;
+  opacity: 0;
+  pointer-events: none;
+}
+.demo-cursor svg { display: block; filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.28)); }
+.demo-cursor__ring {
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid rgba(21, 21, 30, 0.5);
+  border-radius: 50%;
+  opacity: 0;
+}
+
+/* shared by every demo screen */
+.pl *,
+.cr * { box-sizing: border-box; }
+.pl p,
+.cr p,
+.ct p { margin: 0; }

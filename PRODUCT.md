@@ -45,11 +45,17 @@ is that he ships software *and* breaks it — development plus vulnerability wor
 - **CareRouter** — AI mental-health triage and navigation. Next.js / Gemini.
   Gemini-based severity assessment, location-matched facilities, safety-first
   crisis routing. → `https://github.com/KishaanG/CareRouter`
-- **Racing Line App** — physics-optimal racing lines in 3D. React / FastAPI /
-  Three.js. Draw a track on flat ground or real terrain; a physics optimizer
-  computes the minimum-lap-time line; orbit it or drive it from a driver's-eye
-  camera. Two solvers (fast heuristic + IPOPT optimal-control), an in-browser RL
-  driver, and a 2026 F1 season globe with circuit fly-ins. **No public link.**
+- **PoleLab** (formerly the Racing Line App) — a race-strategy optimizer, live
+  at `https://polelab.dev`. React / Three.js / FastAPI / CasADi-IPOPT. Solves the
+  physics-optimal lap around a real or hand-drawn circuit (one solver: IPOPT
+  collocation), then uses that lap to breed pit-stop plans (genetic search),
+  race twenty identical cars through them across Web Workers (Monte Carlo), and
+  judge the survivors in an invasion tournament. Tyre wear and compound pace are
+  fitted to 52,185 laps of real F1 timing; circuit constants to 183 fastf1
+  sessions. Ties are reported as ties. 2026 season globe with circuit fly-ins.
+  The strategy search itself is simulation and search, not a trained model —
+  the learned part is the fitted tyre and circuit models. RL training and the
+  heuristic solver were removed from the product and are not claimed.
 - **CyberSci Ottawa Regional — 1st of 13 teams.** Capture-the-flag competition.
   Team: *The Off-By-Ones*. → `https://cybersecuritychallenge.ca/en/`
 
@@ -70,9 +76,12 @@ WhisperPair Attack"*, January 20, 2026.
 (real team photo), `carleton_logo.png`, `github.png`, `linkedin.jpg`.
 `videos/soccer.mp4`.
 
-**There are no screenshots of CareRouter or the Racing Line App.** Their visuals
-are authored in-world (see DESIGN.md) rather than faked — nothing on the page
-claims to be a product screenshot that isn't one.
+**There are no screenshots of CareRouter or PoleLab.** Their at-rest visuals are
+authored in-world (see DESIGN.md) rather than faked. Their demos are rebuilt from
+each project's real interface and real output — PoleLab's solved Spa lap and
+strategy report from its own fixtures, CareRouter's questions and a test-suite
+intake from its repo — and leave out anything that would have to be invented.
+`images/carerouter-logo.png` is CareRouter's own logo, resized.
 
 ## Constraints
 
