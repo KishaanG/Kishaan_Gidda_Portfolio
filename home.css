@@ -438,25 +438,47 @@ main { position: relative; z-index: 1; }
   background: var(--ground-halo);
 }
 .bar.on-ground :focus-visible { outline-color: var(--ground-ink); }
-/* stacked, copy scrolls under the bars, so the scrim is back — in
-   the ground's colour rather than paper's */
-.bar.on-ground--scrim::before {
-  opacity: 1;
+/* Where copy moves under the bars over a ground — the stacked phone
+   layout, and the stage while it is rising or leaving — the scrim is
+   back, in the ground's colour rather than paper's.
+
+   It is its own layer, ::after, and never a restyle of the paper
+   scrim on ::before. Swapping ::before's gradient from ground to
+   paper while its opacity was still fading out is what flashed white
+   across the top and bottom of the screen as the stage pinned: the
+   gradient changes instantly, the fade takes 260ms. With two layers
+   each one only ever fades, and --ground-bg stays on the bar after it
+   leaves a ground, so the blue fades out as blue. */
+.bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  backdrop-filter: blur(9px);
+  -webkit-backdrop-filter: blur(9px);
   background: linear-gradient(
     to bottom,
-    color-mix(in srgb, var(--ground-bg) 90%, transparent) 0%,
-    color-mix(in srgb, var(--ground-bg) 70%, transparent) 62%,
+    color-mix(in srgb, var(--ground-bg, #ffffff) 90%, transparent) 0%,
+    color-mix(in srgb, var(--ground-bg, #ffffff) 70%, transparent) 62%,
     transparent 100%
   );
+  mask-image: linear-gradient(to bottom, #000 58%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent 100%);
+  transition: opacity 260ms var(--ease);
 }
-.bar--bottom.on-ground--scrim::before {
+.bar--bottom::after {
   background: linear-gradient(
     to top,
-    color-mix(in srgb, var(--ground-bg) 90%, transparent) 0%,
-    color-mix(in srgb, var(--ground-bg) 70%, transparent) 62%,
+    color-mix(in srgb, var(--ground-bg, #ffffff) 90%, transparent) 0%,
+    color-mix(in srgb, var(--ground-bg, #ffffff) 70%, transparent) 62%,
     transparent 100%
   );
+  mask-image: linear-gradient(to top, #000 58%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to top, #000 58%, transparent 100%);
 }
+.bar.on-ground--scrim::after { opacity: 1; }
 
 /* ============================================================
    EXPERIENCE — a ledger, not a stack of cards
