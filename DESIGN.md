@@ -21,8 +21,11 @@ On the home page it appears in exactly **two places**, and nowhere else:
 1. **The hero**, full-bleed, at full strength.
 2. **The close** (contact), rising from the bottom edge, at reduced strength.
 
-Everything between those two is white paper. That contrast is the whole rhythm:
-light, paper, light. Adding a third silk field to the home page would flatten it.
+Between those two, one band leaves paper: the **work stage** (§7), which follows
+the hero with nothing between them and takes the hero's light *down* — deep blue,
+then the display blue, then the hero's light again — before handing on to paper.
+It is solid ground, never a third field. So the rhythm is light, depth, paper,
+light. Adding a third silk field to the home page would flatten it.
 The blog masthead carries the same field once, at 0.85, and the article below it
 is paper — the same rhythm, one beat shorter.
 
@@ -154,39 +157,43 @@ Each field declares where it is at full strength as `--field-from`/`--field-to`
 and builds its own mask from those values, so the mask and the scrim can never
 disagree about where the light starts.
 
-### The one exception: work plates
+### The work stage's grounds
 
-The pinned work viewer is the single place that leaves the blue family. Each
-project's plate carries its subject, and the change of ground is what tells you
-the slide advanced. The drawn diagrams read these same properties, so a diagram
-always matches the ground it sits on.
+The work stage (§7) is the one place the page leaves paper, and it does it
+without leaving the family: each project stands on its own blue, and the change
+of ground is what tells you the project changed.
 
 ```
-[data-plate="track"]  #e9edec / ink #24343a   asphalt — PoleLab
-[data-plate="care"]   #e6efe9 / ink #1f4a39   clinical calm — CareRouter
-[data-plate="ctf"]    #f4ece9 / ink #5e2a24   the record — CyberSci
+[data-ground="pole"]  #0f2640 · title #eef5fc · text #c2d6ea · soft #a9c4df   deep water — PoleLab
+[data-ground="care"]  #27517e · title #f4f8fd · text #dde9f6 · soft #c9dcf0   the display blue — CareRouter
+[data-ground="ctf"]   #d9e8f7 · title #27517e · text #1b4c78 · soft #3a6590   the hero's light — CyberSci
 ```
 
-Each plate declares four values (`--plate`, `--plate-ink`, `--plate-soft`,
-`--plate-rule`, `--plate-rule-soft`) written out rather than derived, so canvas
-can read them back directly. Rules: low-chroma tints only — the viewer stays
-paper under glass, never three coloured boxes; every ink clears 4.5:1 on its own
-plate; and plates live **only** in the work viewer. Do not spread them to
-sections, cards, or chrome.
+The order is the point: out of the hero's light, down to depth, and back up to
+light before the ledger's paper. Every ink clears 4.5:1 on its own ground (the
+lowest is 4.89:1). The values are written once, in `home.css`, and `work.js`
+reads them back off the slides, then blends ground and inks on the stage between
+projects — the ground in Oklab, for the same reason the field is mixed there,
+and the inks across the middle third of a handover only, so type never sits on a
+ground halfway to its own colour for longer than it must.
 
-### Inside an open plate, the project speaks for itself
+Grounds live **only** in the work stage. Do not spread them to sections, cards,
+or chrome — the chrome only borrows a ground's ink while it is over one (below).
 
-When a plate opens (§6) it carries a few seconds of the project, and inside the
-demo's frame the project uses **its own** design language, not this one:
-PoleLab's pit wall (Titillium Web, carbon on off-white, one warm red),
-CareRouter's chat (blush ground, Queen's navy, gold). That is the point of the
-demo — it shows what the thing is like to use — and restyling it in blues would
-make it a picture of this site, not of the project. Titillium Web is loaded for
-that frame and nothing else.
+**The chrome over a ground.** Pinned, nothing scrolls under the bars, so they
+drop the paper scrim and take the ground's title ink, exactly as they step up
+over the field. On the stacked phone layout copy does scroll under them, so the
+scrim stays — in the ground's colour rather than paper's. Over a card they keep
+the paper scrim: the screenshots are paper-light and a ground's light ink would
+vanish on them.
 
-Everything around the frame stays in this system: the plate's own ground, mono
-captions, one hairline for time, and a bracket for the only control. Nothing
-inside the frame leaks out of it — no red on the page, no navy in the chrome.
+### Inside a card, the project speaks for itself
+
+Each card is a **real screenshot** of the project's most important screen, and
+inside it the project looks the way it ships: PoleLab's pit wall (carbon on
+off-white, one warm red), CareRouter's chat (blush ground, Queen's navy, gold).
+Restyling them in blues would make them pictures of this site. Nothing inside a
+card leaks out of it — no red on the page, no navy or gold in the chrome.
 
 ## 4. Type
 
@@ -208,7 +215,7 @@ the serif carries all the identity while the sans is deliberately neutral
 furniture. If the pin is ever lifted, this is the first thing to revisit.
 
 The display face is reserved for: the hero line, section titles, the contact
-address, project names in the viewer, blog article titles, and **every label in
+address, project names on the work stage, blog article titles, and **every label in
 the constellation**. **It never sets body copy, and it is never bolded** — weight
 400, occasionally 300 at the largest sizes. Size comes from scale, not weight.
 
@@ -257,8 +264,7 @@ One idea: **things arrive by settling, and light never stops moving.**
   re-animated every pass; that reads as restless here.
 - Hover is a hairline or ground change, 160ms. Nothing scales, nothing tilts,
   nothing bounces.
-- Authored diagrams (routing graph, racing line, constellation) draw themselves
-  once when scrolled into view, then hold.
+- The constellation draws itself once when scrolled into view (below).
 
 **The constellation is the one diagram that answers back, and the one that keeps
 moving.** It is a spring field: every label but the hub floats the whole time the
@@ -285,9 +291,9 @@ animation, and it never runs where it isn't wanted. The loop pauses off screen
 and on a hidden tab, and under `prefers-reduced-motion` it never starts: that
 visitor gets the drawn fan, already complete, exactly as §6 describes.
 
-**Scroll drives two sections, and it must not drive them the same way.** In the
-work viewer scroll advances a *slide*: the section pins and the viewer
-cross-dissolves — and partway through each slide, the plate **opens**. In the
+**Scroll drives two sections, and it must not drive them the same way.** On the
+work stage scroll hands over a *project*: the section pins and each card gives
+way to the next (below). In the
 ledger scroll advances *time*, because the ledger is a
 chronology and the scroll axis is already the time axis: a hairline is drawn down
 the left column rule to the reading line, and each job's mark is a station on it.
@@ -297,7 +303,7 @@ difference is the rule above, not an inconsistency:
 | State | Meaning | Reverts |
 |---|---|---|
 | `is-reached` | the line has been drawn past this job | never — it is a reveal |
-| `is-reading` | which job you are in | yes — it is a position indicator, like the work index |
+| `is-reading` | which job you are in | yes — it is a position indicator, like the stage's rail |
 
 The reading line is derived from the sticky offset rather than picked as a
 fraction of the viewport, so the filled node always sits exactly at the drawn
@@ -312,37 +318,46 @@ from `left bottom` so the overhang stays inside the row's own top padding, and
 the heading's box is `fit-content` so scaling it does not throw its right edge
 off screen behind the body's `overflow-x`.
 
-**The plate that opens.** Each project gets a longer stretch of runway
-(`170svh`, against `92svh` without demos), and in the middle of it the plate
-lifts out of its slot and opens to nearly the whole viewport, between the two
-chrome bars. A few seconds of the project plays inside (`demos.js`), then the
-plate settles back into its slot before the viewer dissolves to the next one —
-so either side of every demo is the viewer exactly as it always was.
+**The work stage.** Pinned by the user to the scroll animation on
+`https://johngearhart.me`. The runway is one table in `work.js` — a pull-back,
+then a rest on each project with a handover between each pair — and every frame
+is a pure function of where scroll sits on it, so going back up plays it all in
+reverse.
 
-- **The zoom is a transform, never a layout.** The open plate is laid out once at
-  its open size and drawn at scale 1, so the type is sharp where it is read; at
-  rest it is the same plate scaled down to sit in the slot. Scale moves
-  geometrically and position follows it, so it reads as a camera closing in
-  rather than a box growing.
-- **While a plate is open, the rest of the viewer steps back.** The index, the
-  slide's copy and the column grid fade with how open it is, and the drift of
-  the dissolve is suspended. The plate is the one surface the grid's rules do not
-  pass across.
-- **The clock is time; scroll can only push it.** A demo plays at its own pace
-  once the plate lands, and keeps playing if you stop scrolling. Scroll faster
-  than it plays and it is carried forward, so a plate never closes on a
-  half-finished frame. Coming back up into a plate from below puts it straight on
-  its finished frame; coming down into it again plays it from the top.
-- **Every demo is a seekable timeline** of pure tweens — any instant can be drawn
-  directly. That is what makes the scroll push, the reduced-motion still and the
-  replay all the same code.
-- **One control:** `[ Pause ]` while it plays, `[ Play ]` when paused,
-  `[ Replay ]` at the end. Time is a single hairline with a tick where each
-  chapter starts, and the chapter's name reads beside it.
+- **The pull-back.** The first thing under the hero is PoleLab's report, full
+  bleed. The stage pins and draws back from it until it is a card, and only then
+  does its name roll up over it. Scale moves geometrically and position follows,
+  so it reads as a camera drawing back rather than a box shrinking.
+- **The card is a transform, never a layout.** The first card is laid out large
+  enough to cover the stage and drawn scaled down into its slot, so it is always
+  rasterised at least as large as it is shown — sharp full bleed and sharp at
+  rest. Its corner radius is divided by the scale as it goes, so it opens square
+  and lands at the card's radius.
+- **A handover.** The card leaving tips toward you and drops away, fading; the
+  next rises from just behind it and straightens. The one leaving is in front,
+  because it is coming toward you. Names and meta lines roll through their own
+  line boxes — the meta a beat behind the name — and the caption hands over under
+  them. The ground blends as §3 describes.
+- **The snap.** When the wheel stops partway through a handover, the page glides
+  on to the nearer rest *in the direction you were going*: past a tenth of the
+  way, it carries on; short of that, it settles back. So a flick always finishes
+  the move it started, as on the reference, but scroll is never taken away — the
+  stage only ever moves where the page's own damped scroller would take it, and
+  only after a wheel, never against touch, keys or the scrollbar.
+- **Every way in lands at rest.** `[ Work ]`, `[ View work ]`, the rail and deep
+  links to a project all go to that project resting, not to the top of the
+  runway with the first card still full bleed.
+- **While the stage has the viewport the column grid steps back.** The stage is
+  the one surface the grid's rules do not pass across.
+- **The card is only a link once it has landed.** Mid-flight, and full bleed at
+  the top of the runway, it would swallow every click.
 
-Phones get the plate inline, in the diagram's place, and it plays once when it
-scrolls into view. Under `prefers-reduced-motion` the plate never opens: it sits
-in the slot on its **finished frame**, with a replay for anyone who wants it.
+Phones, and anyone under `prefers-reduced-motion`, get the same markup as a
+stack of three grounds. On phones each project rolls in once as it arrives —
+name up through its mask, card up from behind — and never replays; under
+reduced motion it is simply there. On a phone each card goes square and its
+screenshot is zoomed to a readable scale around the part that matters
+(`--focus`, `--zoom`), rather than shrunk to a thumbnail nobody can read.
 
 Every one of these is `prefers-reduced-motion` guarded. The spine's guard follows
 the silk field's: under `reduce` the line is still there and still complete, it
@@ -350,31 +365,34 @@ simply arrives already drawn instead of scrubbing.
 
 ## 7. Components
 
-- **Card is not a component.** The old world was built from bordered, shadowed,
-  rounded cards. This world uses **hairline rules and whitespace** to separate
-  things. Radius is `0` almost everywhere; `2px` where a surface truly must read
-  as inset. There are no drop shadows.
-- **Work index + viewer.** The signature layout: a sticky left column listing the
-  work, with the active entry in `--display` and the rest in `--ink-faint`; the
-  right three columns hold that entry's full-bleed visual. Scroll drives which
-  entry is active, and opens each entry's plate into its demo (§6).
+- **Card is not a component** — with one exception. The old world was built from
+  bordered, shadowed, rounded cards. This world uses **hairline rules and
+  whitespace** to separate things. Radius is `0` almost everywhere; `2px` where a
+  surface truly must read as inset. There are no drop shadows.
+  **The exception is the work stage's project card**, on the user's instruction to
+  follow the reference: one rounded card per project (`--card-r`,
+  `clamp(14px, 2vw, 30px)`), holding a screenshot and nothing else. No border, no
+  shadow, no text inside it; hover is a hairline inside its own edge. It is not
+  to be reused anywhere else on the site.
+- **The work stage.** The signature layout, and the page's one scroll-driven
+  showpiece: a full-viewport stage straight after the hero, one project at a
+  time — its name in the display serif, a mono meta line, the card, and a caption
+  with one bracket link. A rail on the left column rule marks where you are and
+  jumps. Scroll hands each project to the next (§6); each stands on its own
+  ground (§3).
 - **Experience is a ledger**, not a stack of cards: a hairline-ruled table of
   date / organisation / role, with detail underneath. Its left column — mark and
   date — sticks beside its own detail, so you never lose whose work you are
-  reading; the year readout is set exactly as the viewer's `01 / 03` counter so
-  the two sections rhyme without repeating.
-- **Authored visuals only.** Where there is no real screenshot, the visual is
-  drawn in the site's own grammar — hairlines, blues, the display serif — never a
-  gradient placeholder, a glass panel, or a generic icon tile. Nothing may be
-  styled to look like a product screenshot that does not exist.
-- **Demos are rebuilt, never invented.** A plate's demo is rebuilt from the
-  project's real interface — its type, colours and copy, read out of its source —
-  and every figure in it is real output: PoleLab's solved lap of Spa and the
-  strategy report from the app's own fixtures, CareRouter's questions word for
-  word and the intake from its own tests. Where the product's data would have to
-  be made up — a live Places result, a rival team's name — the demo leaves it
-  out rather than fill it in. Each plate says where its data came from, and
-  compressed time is labelled as compressed.
+  reading; the year readout is set in the same mono as the stage's rail, so the
+  two sections' position readouts rhyme without repeating.
+- **Screenshots are real, never staged.** A project's card is a capture of the
+  running product's most important screen: PoleLab's live strategy report for
+  Spa; CareRouter's intake chat, run locally and answered with the intake from its
+  own tests; CyberSci's results listing, cropped to its own box. Nothing is edited
+  beyond cropping, and nothing may be styled to look like a product screen that
+  does not exist. Where the real screen cannot be shown honestly — CareRouter's
+  results page, whose map fails without Maps billing — a different real screen is
+  used rather than a patched one. PRODUCT.md records where each came from.
 
 ## 8. Prohibitions
 
@@ -382,11 +400,11 @@ These name devices the *old* world used that this one refuses. They are not
 generic bans.
 
 - No thick ink outlines, no hard offset `box-shadow` "sticker" edges, no
-  `border-radius: 22px` cards, no comic halftone dot fields.
-- No filled pill buttons, no gold. No hue outside the blue family except the
-  work plates above. (Inside an open plate's frame the project's own interface is
-  shown as it ships, pills and gold included — §3. That exemption stops at the
-  frame's edge.)
+  `border-radius: 22px` cards (the work stage's screenshot card is the one
+  exception, §7), no comic halftone dot fields.
+- No filled pill buttons, no gold. No hue outside the blue family. (Inside a work
+  card's screenshot the project's own interface is shown as it ships, pills and
+  gold included — §3. That exemption stops at the card's edge.)
 - No emoji as interface furniture (📮, ☁️, 🏆, 📖 all go).
 - No perpetual bobbing, bouncing, or rotating decoration.
 - No `Fredoka`, `Nunito`, or `Press Start 2P` on the classic site. (`Press Start

@@ -20,7 +20,8 @@
     Fixed wordmark and bracket nav above; © and socials below.
   FORM: Reference world pinned by the user to the register of
     sreedesigns.com — generative light field behind wide-set
-    serif on near-empty paper. Staging: index-and-viewer.
+    serif on near-empty paper. Staging: a pinned work stage
+    straight after the hero (johngearhart.me).
   ============================================================
 -->
 <html lang="en">
@@ -40,15 +41,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&family=Geist+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,300..500&family=Titillium+Web:wght@400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&family=Geist+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,300..500&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="site.css" />
     <link rel="stylesheet" href="home.css" />
-    <link rel="stylesheet" href="demos.css" />
-    <link rel="stylesheet" href="demo-pole.css" />
-    <link rel="stylesheet" href="demo-care.css" />
-    <link rel="stylesheet" href="demo-ctf.css" />
   </head>
 
   <body>
@@ -109,153 +106,141 @@
       </section>
 
       <!-- ============ 01 · WORK ============ -->
-      <section class="sec" id="work" aria-labelledby="work-title">
-        <header class="sec-head">
-          <p class="label rise">01 · Selected work</p>
-          <h2 class="sec-title rise" id="work-title" style="--d: 0.06s">Work</h2>
-          <p class="sec-lede rise" style="--d: 0.12s">
-            Three things I've built or won: a race-strategy lab that grew out
-            of a solver I couldn't stop working on, an AI triage system with
-            real stakes, and a capture-the-flag weekend that ended first place.
-          </p>
-        </header>
+      <!-- The stage. It follows the hero with no header between them:
+           the first thing under the field is PoleLab itself, full
+           bleed, and the stage pins and pulls back from it until it
+           is a card with its name over it. From there scroll hands
+           each project to the next — the card leaving tips toward
+           you and drops away, the next rises from behind it, the
+           name rolls over, and the ground deepens or lifts to the
+           next blue (work.js). Each card is a real screenshot of the
+           project's most important screen.
 
-        <!-- Pinned slideshow: the section holds still while you scroll
-             through it, the viewer cross-fades project to project, and
-             the index tracks whichever is showing. Each slide carries
-             its own plate colour (see home.css); the drawn visuals read
-             that plate so the diagram matches its ground. A slide with
-             data-demo also opens its plate out to nearly the whole
-             viewport and plays a few seconds of the project (demos.js).
-             Below 900px this degrades to a plain stack, the demos
-             inline. -->
-        <div class="work" data-slideshow style="--slides: 3">
-          <div class="work-pin">
-            <!-- the index: names only, mirrors the reference -->
-            <nav class="work-index" aria-label="Work">
-              <ol>
-                <li>
-                  <a href="#work-polelab" data-index="0">
-                    <span class="work-index__name">PoleLab</span>
-                    <span class="work-index__kind">Race strategy optimizer</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#work-carerouter" data-index="1">
-                    <span class="work-index__name">CareRouter</span>
-                    <span class="work-index__kind">AI mental-health triage</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#work-cybersci" data-index="2">
-                    <span class="work-index__name">CyberSci Ottawa</span>
-                    <span class="work-index__kind">Capture the flag &middot; 1st of 13</span>
-                  </a>
-                </li>
-              </ol>
-              <p class="work-count" aria-hidden="true">
-                <span data-count-now>01</span> / 03
+           Without script, on phones, and under reduced motion the
+           same markup is a plain stack of three grounds. -->
+      <section class="work" id="work" aria-labelledby="work-title">
+        <h2 class="sr-only" id="work-title">Selected work</h2>
+
+        <div class="stage" data-stage>
+          <nav class="stage-rail" aria-label="Projects">
+            <p class="label">Selected work</p>
+            <ol>
+              <li><a href="#work-polelab" data-go="0"><span class="stage-tick" aria-hidden="true"></span><span class="stage-num">01</span><span class="sr-only">PoleLab</span></a></li>
+              <li><a href="#work-carerouter" data-go="1"><span class="stage-tick" aria-hidden="true"></span><span class="stage-num">02</span><span class="sr-only">CareRouter</span></a></li>
+              <li><a href="#work-cybersci" data-go="2"><span class="stage-tick" aria-hidden="true"></span><span class="stage-num">03</span><span class="sr-only">CyberSci Ottawa Regional</span></a></li>
+            </ol>
+          </nav>
+
+          <article class="stage-slide" id="work-polelab" data-ground="pole">
+            <header class="stage-head">
+              <h3 class="stage-title"><span class="roll">PoleLab</span></h3>
+              <p class="stage-meta"><span class="roll">Race strategy optimizer &middot; React &middot; Three.js &middot; FastAPI &middot; CasADi/IPOPT</span></p>
+            </header>
+            <figure class="stage-frame">
+              <a class="stage-card" href="https://polelab.dev" target="_blank" rel="noreferrer" tabindex="-1" aria-hidden="true">
+                <img
+                  src="images/polelab-report-1440.webp"
+                  srcset="images/polelab-report-1440.webp 1440w, images/polelab-report.webp 2880w"
+                  sizes="100vw"
+                  width="1440"
+                  height="900"
+                  alt=""
+                  decoding="async"
+                />
+              </a>
+              <figcaption class="sr-only">
+                PoleLab's strategy report for Spa-Francorchamps, from the
+                live app. The call is a one-stop: soft tyres for laps 1 to
+                15, hard for 16 to 44, pitting on lap 16 to 18, tied with
+                five other plans closer than the run's resolution. Below it,
+                one simulated race of twenty identical cars, gap to the
+                leader, with this plan's car highlighted.
+              </figcaption>
+            </figure>
+            <div class="stage-caption">
+              <p class="stage-text">
+                It solves the physics-optimal lap around any circuit on the
+                2026 calendar, then breeds pit-stop plans, races twenty
+                identical cars through them, and reports the plans it can't
+                separate as a tie.
               </p>
-            </nav>
-
-            <!-- the viewer -->
-            <div class="work-stage">
-              <article class="slide" id="work-polelab" data-slide="0" data-plate="track" data-demo="pole">
-                <figure class="slide-figure">
-                  <canvas data-visual="racingline" aria-hidden="true"></canvas>
-                  <figcaption class="sr-only">
-                    A circuit drawn as two hairline track edges with a dotted
-                    geometric centreline, and over it the minimum-lap-time racing
-                    line (wide at entry, tight at the apex, wide at exit), with
-                    the apexes marked. Scrolling on opens a short demo rebuilt
-                    from the app: it solves a lap of Spa-Francorchamps in
-                    1:36.699, runs the strategy report, and lands on the call,
-                    a one-stop from soft to hard tyres, beside one simulated race
-                    of twenty identical cars.
-                  </figcaption>
-                </figure>
-                <div class="slide-body">
-                  <p class="label">React &middot; Three.js &middot; FastAPI &middot; CasADi/IPOPT</p>
-                  <h3>PoleLab</h3>
-                  <p class="slide-text">
-                    A race-strategy lab, live at polelab.dev. It solves the
-                    physics-optimal lap around any circuit on the 2026 calendar,
-                    as an optimal-control problem handed to IPOPT through CasADi,
-                    then uses that lap to breed pit-stop plans, race twenty
-                    identical cars through them across Web Workers, and judge
-                    the survivors in an invasion tournament. Tyre wear and pace
-                    come from models fitted to 52,185 laps of real F1 timing, and
-                    plans it can't separate are reported as a tie, not an order.
-                  </p>
-                  <p class="slide-links">
-                    <a class="br" href="https://polelab.dev" target="_blank" rel="noreferrer">[ polelab.dev &#8599; ]</a>
-                  </p>
-                </div>
-              </article>
-
-              <article class="slide" id="work-carerouter" data-slide="1" data-plate="care" data-demo="care">
-                <figure class="slide-figure">
-                  <canvas data-visual="routing" aria-hidden="true"></canvas>
-                  <figcaption class="sr-only">
-                    A diagram of CareRouter's routing: an intake is scored by a
-                    Gemini-based severity assessment, then routed down one of four
-                    bands: low to self-serve resources, moderate to a community
-                    clinic, elevated to matched urgent care, and crisis directly to
-                    a crisis line without queueing. Scrolling on opens a short
-                    demo rebuilt from the app: the last two intake questions are
-                    answered in the chat, and the pathway that comes back puts
-                    9-1-1 and 9-8-8 first, then the matched helplines, with the
-                    recommended locations on a map.
-                  </figcaption>
-                </figure>
-                <div class="slide-body">
-                  <p class="label">FastAPI &middot; Gemini 2.5 Flash &middot; 2026</p>
-                  <h3>CareRouter</h3>
-                  <p class="slide-text">
-                    An AI mental-health triage system that gets people to the
-                    right support fast. I was the sole backend developer on a
-                    four-person team: a rule-constrained Gemini pass scores
-                    severity, urgency and issue type from a six-question intake,
-                    a second pass filters real facilities on cost, transport and
-                    language, and crisis cases route deterministically to 9-1-1
-                    or 9-8-8 without ever touching the model. Safety-first by
-                    construction, not by policy.
-                  </p>
-                  <p class="slide-links">
-                    <a class="br" href="https://github.com/KishaanG/CareRouter" target="_blank" rel="noreferrer">[ Source &#8599; ]</a>
-                  </p>
-                </div>
-              </article>
-
-              <article class="slide" id="work-cybersci" data-slide="2" data-plate="ctf" data-demo="ctf">
-                <figure class="slide-figure slide-figure--record">
-                  <img
-                    src="images/CyberSci.png"
-                    alt="CyberSci results listing: Ottawa Region, Carleton University, Team &quot;The Off-By-Ones&quot;"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <figcaption class="label">Competition results &middot; Ottawa region</figcaption>
-                </figure>
-                <div class="slide-body">
-                  <p class="label">Capture the flag &middot; 1st of 13 teams</p>
-                  <h3>CyberSci Ottawa Regional</h3>
-                  <p class="slide-text">
-                    A room full of people trying to break the same systems I
-                    spend my weeks defending, which is my favourite way to spend
-                    a weekend. <strong>The Off-By-Ones</strong> finished first
-                    out of thirteen teams at the Ottawa regional.
-                  </p>
-                  <p class="slide-links">
-                    <a class="br" href="https://cybersecuritychallenge.ca/en/" target="_blank" rel="noreferrer">[ CyberSci &#8599; ]</a>
-                  </p>
-                </div>
-              </article>
+              <p class="stage-links">
+                <a class="br" href="https://polelab.dev" target="_blank" rel="noreferrer">[ polelab.dev &#8599; ]</a>
+              </p>
             </div>
-          </div>
+          </article>
+
+          <article class="stage-slide" id="work-carerouter" data-ground="care">
+            <header class="stage-head">
+              <h3 class="stage-title"><span class="roll">CareRouter</span></h3>
+              <p class="stage-meta"><span class="roll">AI mental-health triage &middot; FastAPI &middot; Gemini 2.5 Flash &middot; 2026</span></p>
+            </header>
+            <figure class="stage-frame">
+              <a class="stage-card" href="https://github.com/KishaanG/CareRouter" target="_blank" rel="noreferrer" tabindex="-1" aria-hidden="true">
+                <img
+                  src="images/carerouter-chat-1280.webp"
+                  srcset="images/carerouter-chat-1280.webp 1248w, images/carerouter-chat.webp 2496w"
+                  sizes="100vw"
+                  width="1248"
+                  height="780"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+              </a>
+              <figcaption class="sr-only">
+                CareRouter's intake chat, four questions in, answered with
+                the intake from the repo's own tests. The answers so far
+                are on the right, and the next question reads: which
+                statement best describes your safety right now?
+              </figcaption>
+            </figure>
+            <div class="stage-caption">
+              <p class="stage-text">
+                I was the sole backend developer on a four-person team. Gemini
+                scores a six-question intake, and crisis cases route to
+                <span class="nowrap">9-1-1</span> or <span class="nowrap">9-8-8</span> without ever touching the model.
+              </p>
+              <p class="stage-links">
+                <a class="br" href="https://github.com/KishaanG/CareRouter" target="_blank" rel="noreferrer">[ Source &#8599; ]</a>
+              </p>
+            </div>
+          </article>
+
+          <article class="stage-slide" id="work-cybersci" data-ground="ctf">
+            <header class="stage-head">
+              <h3 class="stage-title"><span class="roll">CyberSci Ottawa Regional</span></h3>
+              <p class="stage-meta"><span class="roll">Capture the flag &middot; 1st of 13 teams</span></p>
+            </header>
+            <figure class="stage-frame">
+              <a class="stage-card stage-card--record" href="https://cybersecuritychallenge.ca/en/" target="_blank" rel="noreferrer" tabindex="-1" aria-hidden="true">
+                <img
+                  src="images/cybersci-listing.png"
+                  width="319"
+                  height="209"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+              </a>
+              <figcaption class="sr-only">
+                The CyberSci results listing: Ottawa Region, Carleton
+                University, Team "The Off-By-Ones".
+              </figcaption>
+            </figure>
+            <div class="stage-caption">
+              <p class="stage-text">
+                A room full of people trying to break the same systems I spend
+                my weeks defending. <strong>The Off-By-Ones</strong> finished
+                first out of thirteen teams at the Ottawa regional.
+              </p>
+              <p class="stage-links">
+                <a class="br" href="https://cybersecuritychallenge.ca/en/" target="_blank" rel="noreferrer">[ CyberSci &#8599; ]</a>
+              </p>
+            </div>
+          </article>
         </div>
       </section>
-
       <!-- ============ 02 · EXPERIENCE ============ -->
       <section class="sec sec--tint" id="experience" aria-labelledby="xp-title">
         <header class="sec-head sec-head--split">
@@ -551,11 +536,6 @@
     <script src="smooth-scroll.js" defer></script>
     <script src="silk.js" defer></script>
     <script src="chrome.js" defer></script>
-    <script src="visuals.js" defer></script>
-    <script src="demos.js" defer></script>
-    <script src="demo-pole.js" defer></script>
-    <script src="demo-care.js" defer></script>
-    <script src="demo-ctf.js" defer></script>
     <script src="work.js" defer></script>
     <script src="home.js" defer></script>
   </body>

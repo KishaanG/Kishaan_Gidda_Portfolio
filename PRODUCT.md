@@ -73,15 +73,25 @@ WhisperPair Attack"*, January 20, 2026.
 ## Assets on hand
 
 `images/` — `trendai.png`, `hydro ottawa.png`, `ciena.png`, `CyberSci.png`
-(real team photo), `carleton_logo.png`, `github.png`, `linkedin.jpg`.
+(a crop of the results listing: Ottawa Region, Carleton University, Team "The
+Off-By-Ones"), `carleton_logo.png`, `github.png`, `linkedin.jpg`.
 `videos/soccer.mp4`.
 
-**There are no screenshots of CareRouter or PoleLab.** Their at-rest visuals are
-authored in-world (see DESIGN.md) rather than faked. Their demos are rebuilt from
-each project's real interface and real output — PoleLab's solved Spa lap and
-strategy report from its own fixtures, CareRouter's questions and a test-suite
-intake from its repo — and leave out anything that would have to be invented.
-`images/carerouter-logo.png` is CareRouter's own logo, resized.
+**Project screenshots (2026-09-28).** Each project's card in the work stage is a
+real capture of its most important screen, taken from the running product:
+
+- `polelab-report.webp` (2880×1800, plus a 1440 copy) — the live polelab.dev
+  strategy report for Spa-Francorchamps: the call is a one-stop, soft 1–15 /
+  hard 16–44, pit lap 16–18, tied with five other plans.
+- `carerouter-chat.webp` (2496×1560, plus a 1248 copy) — CareRouter's intake
+  chat run locally, four questions in, answered with the intake from the repo's
+  own `test_location_finder.py`. The results page was not used: its map needs
+  Google Maps billing enabled on the project's key and renders an AuthFailure
+  without it.
+- `cybersci-listing.png` — `CyberSci.png` cropped to the listing's own red box.
+  cybersci.ca has no higher-resolution copy of the Off-By-Ones listing.
+
+Nothing in them is staged or edited beyond cropping.
 
 ## Constraints
 

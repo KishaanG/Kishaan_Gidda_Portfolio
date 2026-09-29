@@ -9,3 +9,6 @@
 # OS / editor noise
 .DS_Store
 Thumbs.db
+
+# browser-automation scratch output
+.playwright-mcp/

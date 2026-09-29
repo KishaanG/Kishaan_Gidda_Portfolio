@@ -3,7 +3,7 @@
 /* ============================================================
    Kishaan Gidda — home controller
    Reveals, the experience spine, and the constellation line
-   layer. The work viewer lives in work.js.
+   layer. The work stage lives in work.js.
    Motion rules live in DESIGN.md §6: content arrives once,
    and reveals do not replay on scroll-back.
    ============================================================ */
@@ -42,8 +42,8 @@ if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 /* ============================================================
    Experience — the spine
 
-   The work viewer's scroll advances a slide. This one advances
-   time: the ledger is a chronology, so the scroll axis already
+   The work stage's scroll hands over a project. This one
+   advances time: the ledger is a chronology, so the scroll axis already
    is the time axis, and the section is drawn rather than
    dissolved. A hairline runs the ledger on the left column rule
    and is drawn to the reading line; each job's mark is a station
@@ -56,7 +56,7 @@ if (yearEl) yearEl.textContent = String(new Date().getFullYear());
      is-reached — the line has been drawn past this job. Latches,
        and never reverts (DESIGN.md §6: reveals do not replay).
      is-reading — which job you are in. Reverts, exactly as the
-       work index tracks whichever project is showing.
+       stage's rail tracks whichever project is showing.
 
    Everything is gated on .is-traced so that no JS, a phone, or a
    stylesheet on its own leaves the ledger exactly as authored.
