@@ -260,7 +260,7 @@ sizes, the satellites in italic, so the whole fan reads as a single voice rather
 than a diagram assembled from mono tags. Mono would have made it furniture.
 
 **Separator.** Mono labels separate their parts with a middle dot: `01 · Selected
-work`, `Next.js · Gemini · 2026`, `Currently · Product Team, AVTD at TrendAI`.
+work`, `Next.js · Gemini · 2026`, `Previously · Product Team, AVTD at TrendAI`.
 One separator glyph across the whole system; em-dashes stay in prose, where they
 are punctuation rather than furniture.
 
@@ -400,7 +400,7 @@ screenshot is zoomed to a readable scale around the part that matters
 
 **The experience flight.** Pinned by the user to the 3D timeline on
 `https://clevir.li`. Scroll carries a camera along a hairline thread — Ciena
-2023, Hydro Ottawa 2025, TrendAI now — through a world built from the hero's
+2023, Hydro Ottawa 2025, TrendAI 2026 — through a world built from the hero's
 own shader (`xp3d.js`, `xp3d-scenes.js`; the ribbon world). Each job is a station:
 a wireframe cube, and a label as real text — the year in mono, the company in the
 display serif, the role. While the camera rests on a job its detail — the
