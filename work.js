@@ -4,9 +4,8 @@
    Kishaan Gidda — the work stage
 
    Desktop: the section is a runway and the stage sticks inside
-   it. The first thing under the hero is PoleLab itself, full
-   bleed; the stage pins and pulls back from it until it is a
-   card with its name rolled up over it. From there scroll hands
+   it. It rises under the hero already composed — PoleLab at rest,
+   its name over its card — and pins. From there scroll hands
    each project to the next. The card leaving tips toward you and
    drops away, the next rises from behind it, the names roll over
    through their masks, and the ground blends from one blue to the
@@ -46,12 +45,11 @@
   if (!n || cards.some((c) => !c)) return;
 
   /* ---- the runway, in svh ---------------------------------------
-     The pull-back, then a rest on each project with a handover
-     between each pair. The rests are what the snap lands on. */
-  const INTRO = 80;
+     A rest on each project with a handover between each pair. The
+     rests are what the snap lands on. */
   const REST = 36;
   const HAND = 85;
-  const SEGS = [{ kind: "intro", len: INTRO, k: 0 }];
+  const SEGS = [];
   for (let k = 0; k < n; k++) {
     SEGS.push({ kind: "rest", len: REST, k });
     if (k < n - 1) SEGS.push({ kind: "hand", len: HAND, k });
@@ -233,19 +231,8 @@
     }
     stage.style.setProperty("--cap-h", capH + "px");
 
-    const sr = stage.getBoundingClientRect();
-    const fr = frames[0].getBoundingClientRect();
-    const slot = { x: fr.left - sr.left, y: fr.top - sr.top, w: fr.width, h: fr.height };
-    // the first card is laid out large enough to cover the stage, so
-    // it can open the section full bleed and be drawn down from there
-    const S = Math.max(vw / slot.w, vh / slot.h) * 1.002;
-    cards.forEach((c, i) => c.style.setProperty("--L", i === 0 ? S.toFixed(4) : "1"));
-    const R = clamp(window.innerWidth * 0.02, 14, 30);
-
     geo = {
-      vw, vh, slot, S, R,
-      dx: vw / 2 - (slot.x + slot.w / 2),
-      dy: vh / 2 - (slot.y + slot.h / 2),
+      slotH: frames[0].offsetHeight,
       travel: work.offsetHeight - stage.offsetHeight,
     };
   }
@@ -253,37 +240,25 @@
   /* where the runway is: which segment, and how far through it */
   function locate() {
     const into = -work.getBoundingClientRect().top;
-    if (into <= 0 || !geo.travel) return { seg: SEGS[0], t: 0, P: -1 };
+    // still rising under the hero: the first project, at rest
+    if (into <= 0 || !geo.travel) return { seg: SEGS[0], t: 0, P: 0 };
     const x = clamp(into / geo.travel) * TOTAL;
     let seg = SEGS[SEGS.length - 1];
     for (const s of SEGS) {
       if (x < s.from + s.len) { seg = s; break; }
     }
     const t = clamp((x - seg.from) / seg.len);
-    const P = seg.kind === "intro" ? t - 1 : seg.kind === "rest" ? seg.k : seg.k + t;
+    const P = seg.kind === "rest" ? seg.k : seg.k + t;
     return { seg, t, P };
   }
 
   /* one card, at d = how far past it the stage is (-1 arriving,
      0 resting, 1 gone) */
-  function placeCard(i, d, P) {
+  function placeCard(i, d) {
     const c = cards[i];
-    const { S, R, slot, dx, dy } = geo;
-    const L = i === 0 ? S : 1;
-    let s = 1 / L;
-    let tx = 0, ty = 0, tz = 0, rx = 0, op = 1;
-    let r = R * L;
+    let ty = 0, tz = 0, rx = 0, op = 1;
 
-    if (i === 0 && P < 0) {
-      // the pull-back: scale moves geometrically and position follows
-      // it, so this reads as a camera drawing back, not a box shrinking
-      const e = inOut(P + 1);
-      s = Math.pow(S, -e);
-      const k = (S * s - 1) / (S - 1);
-      tx = k * dx;
-      ty = k * dy;
-      r = (R * e) / s;
-    } else if (d > -1 && d < 0) {
+    if (d > -1 && d < 0) {
       // arriving: up from behind the one leaving, and straightening
       const t = 1 + d;
       const e = inOut(t);
@@ -293,7 +268,7 @@
     } else if (d > 0 && d < 1) {
       // leaving: tips toward you and drops away
       const e = inOut(d);
-      ty = e * slot.h * 0.7;
+      ty = e * geo.slotH * 0.7;
       tz = e * 160;
       rx = -e * 22;
       op = 1 - band(0.15, 0.8, d);
@@ -302,10 +277,8 @@
     }
 
     c.style.transform =
-      `translate3d(${tx.toFixed(2)}px, ${ty.toFixed(2)}px, ${tz.toFixed(1)}px) ` +
-      `rotateX(${rx.toFixed(2)}deg) scale(${s.toFixed(5)})`;
+      `translate3d(0, ${ty.toFixed(2)}px, ${tz.toFixed(1)}px) rotateX(${rx.toFixed(2)}deg)`;
     c.style.opacity = op.toFixed(3);
-    c.style.setProperty("--r-l", r.toFixed(2) + "px");
   }
 
   /* a title or meta line rolling through its mask: -1 → 0 comes up
@@ -321,11 +294,10 @@
 
   function paintSlide(i, P) {
     const d = P - i;
-    const intro = i === 0 && P < 0;
-    const lit = intro || (d > -1 && d < 1);
+    const lit = d > -1 && d < 1;
     const s = slides[i];
     s.classList.toggle("is-leaving", d > 0 && d < 1);
-    s.classList.toggle("is-live", P >= 0 && Math.abs(d) < 0.02);
+    s.classList.toggle("is-live", Math.abs(d) < 0.02);
     if (!lit) {
       // out of frame: put it in its waiting (or gone) state once, so a
       // fast scroll that skips past can never leave it half drawn
@@ -340,43 +312,29 @@
     }
     delete s.dataset.out;
 
-    placeCard(i, d, P);
-    // in the pull-back the name waits for the card to clear its line
-    const u = P + 1;
-    const dt = intro ? -1 + band(0.45, 1, u) : d;
-    const dm = intro ? -1 + band(0.62, 1, u) : d;
-    roll(titles[i], dt, intro ? 0 : 0.2, 0.2);
-    roll(metas[i], dm, intro ? 0 : 0.4, 0.4);
+    placeCard(i, d);
+    roll(titles[i], d, 0.2, 0.2);
+    roll(metas[i], d, 0.4, 0.4);
 
-    let a;
-    if (intro) a = band(0.75, 1, u);
-    else if (d < 0) a = band(0.6, 1, 1 + d);
-    else a = 1 - band(0, 0.35, d);
+    const a = d < 0 ? band(0.6, 1, 1 + d) : 1 - band(0, 0.35, d);
     const cap = captions[i];
     cap.style.opacity = a.toFixed(3);
-    cap.style.transform = `translateY(${((1 - a) * (d < 0 || intro ? 12 : -12)).toFixed(1)}px)`;
+    cap.style.transform = `translateY(${((1 - a) * (d < 0 ? 12 : -12)).toFixed(1)}px)`;
   }
 
-  function paintChrome(P) {
+  /* the cards rest between the bars, so a bar is either over the
+     stage's ground or not over the stage at all. While the stage is
+     still rising or leaving, its copy moves under the bars, so they
+     keep a scrim in the ground's colour; pinned, nothing moves under
+     them and they sit on the ground itself. */
+  function paintChrome() {
     const sr = stage.getBoundingClientRect();
-    const intro = P < 0;
-    // the first card's drawn box while it is being pulled back
-    let card = null;
-    if (intro) {
-      const e = inOut(P + 1);
-      const s = Math.pow(geo.S, -e) * geo.S;
-      const k = (s - 1) / (geo.S - 1);
-      const h = geo.slot.h * s;
-      const w = geo.slot.w * s;
-      const cy = sr.top + geo.slot.y + geo.slot.h / 2 + k * geo.dy;
-      card = { top: cy - h / 2, bottom: cy + h / 2, wide: w > geo.vw * 0.8 };
-    }
+    const moving = Math.abs(sr.top) > 0.5;
     bars.forEach((bar) => {
       const b = bar.getBoundingClientRect();
       const mid = b.top + b.height / 2;
       if (mid < sr.top || mid > sr.bottom) return setBar(bar, null);
-      if (card && card.wide && mid >= card.top && mid <= card.bottom) return setBar(bar, null);
-      setBar(bar, colours["--st-title"], colours["--st-halo"]);
+      setBar(bar, colours["--st-title"], colours["--st-halo"], moving ? colours["--st-ground"] : null);
     });
   }
 
@@ -384,7 +342,7 @@
     if (!geo) return;
     const { P } = locate();
     const i = clamp(Math.floor(P), 0, n - 2);
-    colours = P <= 0 ? flat(pal[0]) : mix(pal[i], pal[i + 1], clamp(P - i));
+    colours = mix(pal[i], pal[i + 1], clamp(P - i));
     Object.keys(colours).forEach((k) => stage.style.setProperty(k, colours[k]));
 
     for (let j = 0; j < n; j++) paintSlide(j, P);
@@ -395,11 +353,8 @@
       if (j === on) a.setAttribute("aria-current", "true");
       else a.removeAttribute("aria-current");
     });
-    const ra = P < 0 ? band(0.7, 1, P + 1) : 1;
-    stage.style.setProperty("--rail-a", ra.toFixed(3));
-    rail.classList.toggle("is-hidden", ra < 0.01);
 
-    paintChrome(P);
+    paintChrome();
     fadeGrid();
   }
 
@@ -429,10 +384,7 @@
     const { seg, t } = locate();
     if (seg.kind === "rest" || t <= 0.002 || t >= 0.998) return;
     const on = dir > 0 ? t > 0.1 : t > 0.9;
-    let x;
-    if (seg.kind === "intro") x = on ? restX(0) : 0;
-    else x = on ? restX(seg.k + 1) : seg.from - REST * 0.12;
-    glide(yAt(x));
+    glide(yAt(on ? restX(seg.k + 1) : seg.from - REST * 0.12));
   }
 
   function mountPinned() {
@@ -477,8 +429,8 @@
       measure();
       paint();
     };
-    // every way into the section lands on the first project at rest,
-    // not on the top of the runway with the card still full bleed
+    // every way into the section lands on its project at rest, pinned,
+    // rather than on the section's top edge with the stage still rising
     const onClick = (e) => {
       if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey) return;
       const a = e.target.closest && e.target.closest('a[href^="#"]');
@@ -509,17 +461,15 @@
       stage.removeEventListener("focusin", onFocus);
       work.classList.remove("is-pinned");
       work.style.removeProperty("--runway");
-      INKS.concat("--st-halo", "--card-w", "--cap-w", "--rail-a", "--head-h", "--cap-h").forEach((k) => stage.style.removeProperty(k));
+      INKS.concat("--st-halo", "--card-w", "--cap-w", "--head-h", "--cap-h").forEach((k) => stage.style.removeProperty(k));
       slides.forEach((s) => {
         s.classList.remove("is-leaving", "is-live");
         delete s.dataset.out;
       });
-      rail.classList.remove("is-hidden");
       [...cards, ...titles, ...metas, ...captions].forEach((el) => {
         el.style.removeProperty("transform");
         el.style.removeProperty("opacity");
       });
-      cards.forEach((c) => { c.style.removeProperty("--L"); c.style.removeProperty("--r-l"); });
       railLinks.forEach((a) => { a.classList.remove("on"); a.removeAttribute("aria-current"); });
       geo = null;
     };

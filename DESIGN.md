@@ -319,20 +319,18 @@ the heading's box is `fit-content` so scaling it does not throw its right edge
 off screen behind the body's `overflow-x`.
 
 **The work stage.** Pinned by the user to the scroll animation on
-`https://johngearhart.me`. The runway is one table in `work.js` — a pull-back,
-then a rest on each project with a handover between each pair — and every frame
+`https://johngearhart.me`. The runway is one table in `work.js` — a rest on each
+project with a handover between each pair — and every frame
 is a pure function of where scroll sits on it, so going back up plays it all in
 reverse.
 
-- **The pull-back.** The first thing under the hero is PoleLab's report, full
-  bleed. The stage pins and draws back from it until it is a card, and only then
-  does its name roll up over it. Scale moves geometrically and position follows,
-  so it reads as a camera drawing back rather than a box shrinking.
-- **The card is a transform, never a layout.** The first card is laid out large
-  enough to cover the stage and drawn scaled down into its slot, so it is always
-  rasterised at least as large as it is shown — sharp full bleed and sharp at
-  rest. Its corner radius is divided by the scale as it goes, so it opens square
-  and lands at the card's radius.
+- **The arrival is already composed.** The stage rises under the hero as the
+  first project at rest — name, meta line, card, caption, rail — and pins. It
+  never opens full bleed: the user ruled that out, because the first thing seen
+  after the hero should be the composition, not a screenshot filling the screen.
+- **The card is a transform, never a layout.** It rests in a slot sized to the
+  height left between the name and the caption, and only ever leaves it by
+  transform.
 - **A handover.** The card leaving tips toward you and drops away, fading; the
   next rises from just behind it and straightens. The one leaving is in front,
   because it is coming toward you. Names and meta lines roll through their own
@@ -345,12 +343,12 @@ reverse.
   stage only ever moves where the page's own damped scroller would take it, and
   only after a wheel, never against touch, keys or the scrollbar.
 - **Every way in lands at rest.** `[ Work ]`, `[ View work ]`, the rail and deep
-  links to a project all go to that project resting, not to the top of the
-  runway with the first card still full bleed.
+  links to a project all go to that project resting and pinned, not to the
+  section's top edge with the stage still rising.
 - **While the stage has the viewport the column grid steps back.** The stage is
   the one surface the grid's rules do not pass across.
-- **The card is only a link once it has landed.** Mid-flight, and full bleed at
-  the top of the runway, it would swallow every click.
+- **The card is only a link once it has landed.** Mid-flight it would take
+  clicks meant for the one arriving.
 
 Phones, and anyone under `prefers-reduced-motion`, get the same markup as a
 stack of three grounds. On phones each project rolls in once as it arrives —

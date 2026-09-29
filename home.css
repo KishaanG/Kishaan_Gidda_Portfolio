@@ -353,29 +353,20 @@ main { position: relative; z-index: 1; }
 }
 
 /* The frame is the card's resting slot, sized by work.js to the
-   height left over between the title and the caption. The card in
-   it is laid out at --L times that size and drawn scaled down, so it
-   is always rasterised at least as large as it is shown — sharp at
-   rest, and sharp full bleed. Only the first card is ever shown
-   full bleed, so only its --L is above 1. */
+   height left over between the title and the caption. The card only
+   ever leaves it by transform. */
 .work.is-pinned .stage-frame {
   width: var(--card-w, 60vw);
   flex: none;
   perspective: 1600px;
 }
 .work.is-pinned .stage-card {
-  inset: auto;
-  left: calc(50% - 50% * var(--L, 1));
-  top: calc(50% - 50% * var(--L, 1));
-  width: calc(100% * var(--L, 1));
-  height: calc(100% * var(--L, 1));
-  border-radius: var(--r-l, var(--card-r));
   transform-origin: 50% 50%;
   will-change: transform, opacity;
 }
-/* a card is only a link once it has landed — mid-flight, and full
-   bleed at the top of the runway, it would swallow every click. The
-   slide's own pointer-events already say so; this is the card's. */
+/* a card is only a link once it has landed — mid-flight it would
+   take clicks meant for the one arriving. The slide's own
+   pointer-events already say so; this is the card's. */
 .work.is-pinned .stage-slide:not(.is-live) .stage-card { pointer-events: none; }
 .work.is-pinned .stage-caption {
   width: var(--cap-w, var(--card-w, 60vw));
@@ -390,9 +381,7 @@ main { position: relative; z-index: 1; }
   left: max(var(--gutter), calc((100% - var(--container)) / 2));
   top: 50%;
   transform: translateY(-50%);
-  opacity: var(--rail-a, 1);
 }
-.work.is-pinned .stage-rail.is-hidden { visibility: hidden; }
 .stage-rail .label {
   margin-bottom: 16px;
   color: var(--st-soft);
