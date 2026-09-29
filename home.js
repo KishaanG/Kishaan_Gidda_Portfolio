@@ -192,6 +192,13 @@ if (yearEl) yearEl.textContent = String(new Date().getFullYear());
     });
     ledger.style.removeProperty("--spine");
 
+    // the flight (xp3d.js) has taken the section: the ledger is its
+    // screen-reader record there, and nothing on it should move
+    if (ledger.closest(".is-flight")) {
+      ledger.classList.remove("is-traced");
+      return;
+    }
+
     if (!wide.matches) {
       ledger.classList.remove("is-traced");
       if (scale) scale.textContent = years[0] || "";

@@ -21,11 +21,22 @@
    overlap alone flips the scrim off while a one-pixel sliver of
    field is showing, which reads as a flicker. The midline
    crossing lands the 260ms fade where the eye expects it.
+
+   A field whose light runs down into a ground (bridge.js) can
+   also declare --field-veil: from there to --field-to the bar
+   keeps the field's ink but gets its scrim back, because that is
+   the stretch where the cloth is darkening and no ink would hold
+   on it bare.
    ============================================================ */
 
 (() => {
   const bars = Array.from(document.querySelectorAll(".bar"));
-  const fields = Array.from(document.querySelectorAll(".silk-host"));
+  // the experience flight is a field too while it has the viewport.
+  // A field mounted inside a declared host (About's, which sticks to
+  // the viewport inside it) is measured by that host, which knows
+  // where its own ramps are.
+  const fields = Array.from(document.querySelectorAll(".silk-host, [data-field-host]"))
+    .filter((el) => !(el.parentElement && el.parentElement.closest("[data-field-host]")));
   if (!bars.length || !fields.length) return;
 
   /* "42%" or "120px" against the host's own height. Percentages are
@@ -42,9 +53,11 @@
     const cs = getComputedStyle(host);
     const from = resolve(cs.getPropertyValue("--field-from").trim(), rect.height);
     const to = resolve(cs.getPropertyValue("--field-to").trim(), rect.height);
+    const veil = resolve(cs.getPropertyValue("--field-veil").trim(), rect.height);
     return {
       top: rect.top + (from === null ? 0 : from),
       bottom: rect.top + (to === null ? rect.height : to),
+      veil: veil === null ? null : rect.top + veil,
     };
   }
 
@@ -58,7 +71,9 @@
       const band = bar.getBoundingClientRect();
       const mid = band.top + band.height / 2;
       const lit = ranges.some((r) => mid >= r.top && mid <= r.bottom);
+      const veiled = ranges.some((r) => r.veil !== null && mid >= r.veil && mid <= r.bottom);
       bar.classList.toggle("on-field", lit);
+      bar.classList.toggle("on-field--veil", veiled);
     });
   }
 

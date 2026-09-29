@@ -34,11 +34,22 @@
    is unavailable, renders a single static frame under
    prefers-reduced-motion, and pauses whenever it leaves the
    viewport so it never burns a GPU offscreen.
+
+   One field can run across two canvases. A canvas may compute
+   its folds in another box's frame (look.ref) instead of its
+   own, and every mount keeps one clock, so where two canvases
+   meet the light carries straight over the join. The same
+   folds can also be printed in a ground's colour rather than
+   the light's (look.depth) — which is how the hero's field goes
+   on under the work stage as deep water (bridge.js).
    ============================================================ */
 
 (() => {
   const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const MAX_DPR = 1.5;
+  /* one clock for every mount, so two canvases continuing one
+     field stay in phase however late either of them started */
+  const T0 = performance.now();
 
   /* The phase the field opens on. Every frame this shader can reach is
      a valid composition, but they are not equally good, and the first
@@ -144,9 +155,13 @@
      round trip is closed. */
   function hexToOklab(hex) {
     const n = parseInt(hex.slice(1), 16);
-    const r = Math.pow(((n >> 16) & 255) / 255, 2.2);
-    const g = Math.pow(((n >> 8) & 255) / 255, 2.2);
-    const b = Math.pow((n & 255) / 255, 2.2);
+    return oklab((n >> 16) & 255, (n >> 8) & 255, n & 255);
+  }
+
+  function oklab(r255, g255, b255) {
+    const r = Math.pow(r255 / 255, 2.2);
+    const g = Math.pow(g255 / 255, 2.2);
+    const b = Math.pow(b255 / 255, 2.2);
     const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
     const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
     const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
@@ -181,6 +196,33 @@
     uniform float uStrength;
     uniform vec4  uRead;      // where the type sits: cx, cy, rx, ry
     uniform vec3  uLab[6];
+
+    /* The frame the folds are computed in, which need not be this
+       canvas: a canvas continuing another's field uses that one's
+       box, so the two meet with no seam. CSS px, y up — this
+       canvas's origin inside the frame (xy), the frame's size (zw). */
+    uniform vec4  uRef;
+    uniform float uDpr;       // device px per CSS px, at this canvas's render scale
+
+    /* Reading light for the fixed bars wherever they cross THIS
+       canvas rather than the frame: a band under each (top t0..t1,
+       bottom b0..b1, as a fraction of the canvas down from its top).
+       uOwn keeps it below a line across the frame (CSS px down from
+       its top), easing in over .y — so a canvas that also carries
+       the hero never touches the hero's own light. .y of 0: no line. */
+    uniform vec4  uBars;
+    uniform vec2  uOwn;
+
+    /* Depth: the same folds, printed in a ground's colour instead
+       of the light's. uGrain is how far a fold may lift (x) or sink
+       (y) the ground, in Oklab lightness — capped per ground so its
+       own inks hold 4.5:1 at the brightest crest. uWater, when its
+       start and end differ, is a waterline across the frame (CSS px
+       down from its top), its edge carried on the folds by .z. */
+    uniform vec3  uGround;
+    uniform vec2  uGrain;
+    uniform float uDepth;
+    uniform vec3  uWater;
 
     /* the preset — see PRESETS in the JS above */
     uniform float uScale;     // how far the domain is scaled down
@@ -233,9 +275,17 @@
       return smoothstep(edge, plateau, length((px - c) / r));
     }
 
+    /* 1 across a band, easing out over half its height either side */
+    float span(float y, vec2 b) {
+      float f = (b.y - b.x) * 0.5;
+      return smoothstep(b.x - f, b.x, y) * smoothstep(b.y + f, b.y, y);
+    }
+
     void main() {
-      vec2 px = gl_FragCoord.xy / uRes;                   // 0..1, y up
-      vec2 p  = (gl_FragCoord.xy * 2.0 - uRes) / uRes.y;  // centred, aspect-true
+      vec2 css = gl_FragCoord.xy / uDpr + uRef.xy;        // the frame, CSS px, y up
+      vec2 px = css / uRef.zw;                            // 0..1, y up
+      vec2 p  = (css * 2.0 - uRef.zw) / uRef.w;           // centred, aspect-true
+      vec2 pl = gl_FragCoord.xy / uRes;                   // this canvas, 0..1
 
       float t = uTime * 0.088;
 
@@ -293,6 +343,7 @@
       float val = clamp((sum / wsum - uWindow.x) / uWindow.y, 0.0, 1.0);
 
       vec3 lab = ramp(val);
+      float base = lab.x;   // the cloth before any light falls on it
 
       /* --------------------------------------------------------
          Illumination, done in Oklab so it behaves like light: the
@@ -309,6 +360,13 @@
          the three surfaces that carry the field set their type in
          three different places. */
       float read = zone(px, uRead.xy, uRead.zw, 0.80, 1.60);
+
+      float own = 0.0;
+      if (uBars.y > uBars.x) own = max(own, span(1.0 - pl.y, uBars.xy));
+      if (uBars.w > uBars.z) own = max(own, span(1.0 - pl.y, uBars.zw));
+      float below = uRef.w - css.y;   // CSS px down from the frame's top
+      if (uOwn.y > 0.0) own *= smoothstep(uOwn.x, uOwn.x + uOwn.y, below);
+      read = max(read, own);
 
       float lift = clamp(0.16 * lamp + 0.18 * read, 0.0, 0.34);
       float sink = clamp(0.30 * pool + 0.16 * sill, 0.0, 0.40) * (1.0 - read * 0.80);
@@ -344,6 +402,35 @@
       float sheen = crest * (0.030 + 0.075 * rake);
       lab.x += sheen;
       lab.yz *= 1.0 - crest * (0.10 + 0.26 * rake);
+
+      /* --------------------------------------------------------
+         Depth. The folds keep their shape and their beat — the
+         raking glint still crosses them — but they are printed in
+         the ground's colour: a crest lifts it, a crease or the
+         body sinks it. Taken from the cloth before the lamp, the
+         pool and the reading light, which belong to the hero's
+         composition and would brighten the water behind type.
+         -------------------------------------------------------- */
+      if (uDepth > 0.0) {
+        float m = uDepth;
+        if (uWater.y > uWater.x) {
+          float down = below + uWater.z * (val - 0.5) * 2.0;
+          m *= smoothstep(uWater.x, uWater.y, down);
+        } else if (m < 1.0) {
+          /* part way to a ground, the water takes the cloth's deep
+             folds first and its crests last, so the light drains out
+             of it rather than the whole frame greying over evenly */
+          float lit = clamp((base - 0.55) / 0.45, 0.0, 1.0);
+          m = smoothstep(0.0, 1.0, (m - lit * 0.7) / 0.3);
+        }
+        float dev = base + sheen - 0.83;
+        float rise = smoothstep(0.0, 0.14, dev);
+        float fall = smoothstep(0.0, 0.26, -dev);
+        vec3 deep = uGround;
+        deep.x += uGrain.x * rise - uGrain.y * fall;
+        deep.yz *= 1.0 + 0.30 * rise;
+        lab = mix(lab, deep, m);
+      }
 
       /* strength, also in Oklab: a clean fade toward paper */
       lab.x = mix(1.0, lab.x, uStrength);
@@ -412,6 +499,15 @@
 
     const uRes = gl.getUniformLocation(prog, "uRes");
     const uTime = gl.getUniformLocation(prog, "uTime");
+    const loc = (name) => gl.getUniformLocation(prog, name);
+    const uDpr = loc("uDpr");
+    const uRef = loc("uRef");
+    const uBars = loc("uBars");
+    const uOwn = loc("uOwn");
+    const uGround = loc("uGround");
+    const uGrain = loc("uGrain");
+    const uDepth = loc("uDepth");
+    const uWater = loc("uWater");
     const P = PRESETS[canvas.dataset.preset] || PRESETS.marble;
 
     gl.uniform1f(gl.getUniformLocation(prog, "uStrength"), strength);
@@ -432,12 +528,30 @@
     gl.uniform4f(gl.getUniformLocation(prog, "uRead"),
       read[0] || 0.34, read[1] || 0.45, read[2] || 0.72, read[3] || 0.62);
 
+    /* What a caller may change after mounting — see the uniforms
+       in the fragment. .before runs ahead of every frame; returning
+       false from it skips the draw, and the canvas keeps showing
+       what it last drew. */
+    const look = {
+      ref: null, bars: [0, 0, 0, 0], own: [0, 0],
+      ground: [1, 0, 0], grain: [0, 0], depth: 0, water: [0, 0, 0],
+    };
+    const handle = { look, before: null, refresh() {}, stop() {} };
+
+    /* a field that sits behind other things can render below the
+       screen's density: the cloth is smooth, so it scales cleanly */
+    const res = parseFloat(canvas.dataset.res) || 1;
+
     let w = 0;
     let h = 0;
+    let cw = 1;
+    let ch = 1;
 
     function resize() {
-      const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+      const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR) * res;
       const rect = canvas.getBoundingClientRect();
+      cw = Math.max(1, rect.width);
+      ch = Math.max(1, rect.height);
       const nw = Math.max(1, Math.round(rect.width * dpr));
       const nh = Math.max(1, Math.round(rect.height * dpr));
       if (nw === w && nh === h) return false;
@@ -448,30 +562,46 @@
       return true;
     }
 
+    function upload() {
+      const r = look.ref || [0, 0, cw, ch];
+      gl.uniform1f(uDpr, w / cw);
+      gl.uniform4f(uRef, r[0], r[1], r[2], r[3]);
+      gl.uniform4fv(uBars, look.bars);
+      gl.uniform2fv(uOwn, look.own);
+      gl.uniform3fv(uGround, look.ground);
+      gl.uniform2fv(uGrain, look.grain);
+      gl.uniform1f(uDepth, look.depth);
+      gl.uniform3fv(uWater, look.water);
+    }
+
     function draw(seconds) {
+      if (handle.before && handle.before(handle) === false) return;
+      upload();
       gl.uniform1f(uTime, seconds);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
 
     resize();
     host.classList.add("silk-live");
+    canvas.silk = handle;
 
     if (REDUCED) {
       // the field is still there — it simply stops moving
       draw(OPEN);
       const onResize = () => { if (resize()) draw(OPEN); };
       window.addEventListener("resize", onResize, { passive: true });
-      return { stop() { window.removeEventListener("resize", onResize); } };
+      handle.refresh = () => draw(OPEN);
+      handle.stop = () => window.removeEventListener("resize", onResize);
+      return handle;
     }
 
     let raf = 0;
     let running = false;
-    const start = performance.now();
 
     function frame(now) {
       if (!running) return;
       resize();
-      draw((now - start) / 1000 + OPEN);
+      draw((now - T0) / 1000 + OPEN);
       raf = requestAnimationFrame(frame);
     }
 
@@ -486,33 +616,41 @@
       cancelAnimationFrame(raf);
     }
 
-    // never render a field nobody is looking at
+    // never render a field nobody is looking at — and a tab coming
+    // back resumes only a field that is on screen: the observer will
+    // not fire again for a view that never changed while it was away
+    let inView = false;
     const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => (e.isIntersecting ? play() : pause())),
+      (entries) => entries.forEach((e) => {
+        inView = e.isIntersecting;
+        if (inView && !document.hidden) play();
+        else pause();
+      }),
       { rootMargin: "120px" }
     );
     io.observe(host);
 
-    const onVis = () => (document.hidden ? pause() : play());
+    const onVis = () => (document.hidden || !inView ? pause() : play());
     document.addEventListener("visibilitychange", onVis);
 
     const onResize = () => { if (!running) { resize(); draw(OPEN); } };
     window.addEventListener("resize", onResize, { passive: true });
 
-    return {
-      stop() {
-        pause();
-        io.disconnect();
-        document.removeEventListener("visibilitychange", onVis);
-        window.removeEventListener("resize", onResize);
-        const ext = gl.getExtension("WEBGL_lose_context");
-        if (ext) ext.loseContext();
-      },
+    // a caller that changed the look while the loop is paused
+    handle.refresh = () => { if (!running) draw((performance.now() - T0) / 1000 + OPEN); };
+    handle.stop = () => {
+      pause();
+      io.disconnect();
+      document.removeEventListener("visibilitychange", onVis);
+      window.removeEventListener("resize", onResize);
+      const ext = gl.getExtension("WEBGL_lose_context");
+      if (ext) ext.loseContext();
     };
+    return handle;
   }
 
   document.querySelectorAll("canvas[data-silk]").forEach(mount);
 
   /* the variant lab drives these; the site itself never touches them */
-  window.Silk = { mount, PRESETS };
+  window.Silk = { mount, PRESETS, oklab };
 })();

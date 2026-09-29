@@ -8,8 +8,9 @@
     monospace bravado) and the student default (bordered
     cartoon cards). Quiet is the claim.
   OWN-WORLD: White paper, one blue family, a fixed hairline
-    4-column grid, and a live WebGL silk light field that
-    appears exactly twice — the opening and the close.
+    4-column grid, and a live WebGL silk light field that the
+    page is lit by — the opening, down into the work, through
+    the experience and About, and the close.
     Source Serif 4 at display size over Geist. [ Brackets ]
     are the only affordance; there are no filled buttons.
   STORY: He ships software and he breaks it. TrendAI, Hydro
@@ -46,6 +47,8 @@
     />
     <link rel="stylesheet" href="site.css" />
     <link rel="stylesheet" href="home.css" />
+    <link rel="stylesheet" href="about.css" />
+    <link rel="stylesheet" href="bridge.css" />
   </head>
 
   <body>
@@ -242,6 +245,9 @@
       </section>
       <!-- ============ 02 · EXPERIENCE ============ -->
       <section class="sec sec--tint" id="experience" aria-labelledby="xp-title">
+        <!-- Seen only without the flight: phones, reduced motion, no
+             WebGL. The flight names itself, so under it this header
+             is kept for screen readers alone (home.css). -->
         <header class="sec-head sec-head--split">
           <div>
             <p class="label rise">02 · Experience</p>
@@ -255,6 +261,24 @@
             <span data-scale-now>2026</span> / 2023
           </p>
         </header>
+
+        <!-- The flight (xp3d.js): a camera carried along a hairline
+             thread from one job to the next, through a world made of
+             the hero's own light. Built from the ledger below, which
+             stays the record — for screen readers, phones, reduced
+             motion and no WebGL. Hidden until the script mounts it. -->
+        <div class="xp-flight" data-flight hidden>
+          <div class="xp-stage" data-field-host>
+            <canvas class="xp-gl" aria-hidden="true"></canvas>
+            <canvas class="xp-lines" aria-hidden="true"></canvas>
+            <div class="xp-tags" aria-hidden="true"></div>
+            <p class="xp-readout" aria-hidden="true">
+              Experience · <span data-xp-year>2023</span>
+            </p>
+            <div class="xp-panel" aria-hidden="true"></div>
+            <nav class="xp-rail" aria-label="Experience stops"></nav>
+          </div>
+        </div>
 
         <!-- Scroll here drives time, not a slideshow. A hairline is
              drawn down the left grid line to the reading position,
@@ -351,103 +375,120 @@
       </section>
 
       <!-- ============ 03 · ABOUT ============ -->
-      <section class="sec" id="about" aria-labelledby="about-title">
-        <header class="sec-head">
-          <p class="label rise">03 · About</p>
-          <h2 class="sec-title rise" id="about-title" style="--d: 0.06s">About</h2>
-        </header>
-
-        <!-- The dossier. About takes the ledger's own 25 / 75 split and
-             hairline rows because it is the same kind of object: a record
-             you scan, not prose you read. There is deliberately no
-             standfirst — the hero already carries the one "who I am"
-             sentence this site needs (DESIGN.md §7). -->
-        <dl class="dossier rise">
-          <div class="dossier-row">
-            <dt class="label">Education</dt>
-            <dd>
-              Carleton University · Computer Science Co-op, AI/ML stream
-              <span class="dossier-meta">3.6 GPA · Dean's Honour List</span>
-            </dd>
+      <!-- The line goes on. The experience flight lets its thread drop
+           out of the bottom of its frame (xp3d.js) at the x marked by
+           [data-thread-in], and About picks it up at that point and
+           keeps drawing it, pen tip on the same reading line, over the
+           hero's own light. Every path ends by running into the column
+           grid, so the close is handed a hairline rather than an edge.
+           It carries the same record the dossier and the toolkit always
+           did, and nothing else. -->
+      <section class="about" id="about" aria-labelledby="about-title">
+        <div class="about-field" data-field-host aria-hidden="true">
+          <div class="silk-host about-silk">
+            <canvas data-silk="1"></canvas>
           </div>
+        </div>
+        <svg class="about-line" aria-hidden="true"></svg>
+        <span class="about-in" data-thread-in="0.7" aria-hidden="true"></span>
 
-          <div class="dossier-row">
-            <dt class="label">Focus</dt>
-            <dd>
-              Agentic AI · optimal control · offensive security ·
-              capture-the-flag
-            </dd>
-          </div>
+        <div class="about-inner">
+          <header class="about-head" data-st>
+            <h2 class="about-title" id="about-title" data-anchor>About</h2>
+          </header>
 
-          <div class="dossier-row">
-            <dt class="label">Languages</dt>
-            <dd>English · French, DELF B2</dd>
-          </div>
+          <!-- The river. The thread swings down the page in long bends,
+               and each fact sits in the crook of one, held by it. At the
+               foot it fans out onto the grid's five rules and runs on
+               through the toolkit as its warp. -->
+          <dl class="rv">
+            <div class="rv-st" data-st>
+              <dt class="label">Education</dt>
+              <dd>
+                <p class="rv-big" data-anchor>Carleton University</p>
+                <p class="rv-text">Computer Science Co-op, AI/ML stream</p>
+                <p class="rv-meta">3.6 GPA · Dean's Honour List</p>
+              </dd>
+            </div>
+            <div class="rv-st rv-st--r" data-st>
+              <dt class="label">Focus</dt>
+              <dd>
+                <p class="rv-big" data-anchor>Agentic AI, optimal control, offensive security, capture-the-flag</p>
+              </dd>
+            </div>
+            <div class="rv-st" data-st>
+              <dt class="label">Languages</dt>
+              <dd>
+                <p class="rv-big" data-anchor>English and French</p>
+                <p class="rv-meta">French · DELF B2</p>
+              </dd>
+            </div>
+            <div class="rv-st rv-st--r" data-st>
+              <dt class="label">Off keyboard</dt>
+              <dd>
+                <p class="rv-big" data-anchor>Soccer, playing and watching Liverpool</p>
+                <p class="rv-text">The gym, most days. Reading on where AI is actually heading.</p>
+              </dd>
+            </div>
+          </dl>
 
-          <div class="dossier-row">
-            <dt class="label">Off keyboard</dt>
-            <dd>
-              Soccer, playing and watching Liverpool · the gym, most days ·
-              reading on where AI is actually heading
-            </dd>
-          </div>
-        </dl>
-
-        <!-- Four groups on the page's four columns, so the toolkit sits on
-             the background grid's own rules rather than drawing new ones
-             (DESIGN.md §2). Marked entries are depth, carried by weight and
-             the display blue — never by a second hue (§3). -->
-        <div class="toolkit rise">
-          <div class="toolkit-head">
-            <p class="label">Toolkit</p>
-            <p class="label toolkit-note">Marked · what I use most</p>
-          </div>
-
-          <div class="toolkit-grid">
-            <div class="toolkit-group">
-              <p class="label">Languages</p>
-              <ul class="tags toolkit-tags">
-                <li class="br br--mono br--depth">[ Python ]</li>
-                <li class="br br--mono br--depth">[ TypeScript ]</li>
-                <li class="br br--mono">[ Go ]</li>
-                <li class="br br--mono">[ C++ ]</li>
-                <li class="br br--mono">[ Java ]</li>
-                <li class="br br--mono">[ SQL ]</li>
-              </ul>
+          <!-- The toolkit closes it: four groups on the page's four
+               columns, so the last stretch of the thread runs down the
+               grid's own rules between them.
+               Marked entries are depth, carried by weight and the display
+               blue — never by a second hue (DESIGN.md §3). -->
+          <div class="about-kit" data-st data-kit>
+            <div class="toolkit-head">
+              <p class="label" data-anchor>Toolkit</p>
+              <p class="label toolkit-note">Marked · what I use most</p>
             </div>
 
-            <div class="toolkit-group">
-              <p class="label">AI &amp; optimisation</p>
-              <ul class="tags toolkit-tags">
-                <li class="br br--mono br--depth">[ Claude Agent SDK ]</li>
-                <li class="br br--mono">[ MCP ]</li>
-                <li class="br br--mono">[ Gemini API ]</li>
-                <li class="br br--mono">[ ONNX ]</li>
-                <li class="br br--mono">[ CMA-ES ]</li>
-                <li class="br br--mono">[ IPOPT ]</li>
-              </ul>
-            </div>
+            <div class="toolkit-grid">
+              <div class="toolkit-group">
+                <p class="label">Languages</p>
+                <ul class="tags toolkit-tags">
+                  <li class="br br--mono br--depth">[ Python ]</li>
+                  <li class="br br--mono br--depth">[ TypeScript ]</li>
+                  <li class="br br--mono">[ Go ]</li>
+                  <li class="br br--mono">[ C++ ]</li>
+                  <li class="br br--mono">[ Java ]</li>
+                  <li class="br br--mono">[ SQL ]</li>
+                </ul>
+              </div>
 
-            <div class="toolkit-group">
-              <p class="label">Cloud &amp; security</p>
-              <ul class="tags toolkit-tags">
-                <li class="br br--mono br--depth">[ AWS ]</li>
-                <li class="br br--mono br--depth">[ MITRE ATT&amp;CK ]</li>
-                <li class="br br--mono br--depth">[ Linux ]</li>
-                <li class="br br--mono">[ Terraform ]</li>
-                <li class="br br--mono">[ Docker ]</li>
-                <li class="br br--mono">[ PowerShell ]</li>
-              </ul>
-            </div>
+              <div class="toolkit-group">
+                <p class="label">AI &amp; optimisation</p>
+                <ul class="tags toolkit-tags">
+                  <li class="br br--mono br--depth">[ Claude Agent SDK ]</li>
+                  <li class="br br--mono">[ MCP ]</li>
+                  <li class="br br--mono">[ Gemini API ]</li>
+                  <li class="br br--mono">[ ONNX ]</li>
+                  <li class="br br--mono">[ CMA-ES ]</li>
+                  <li class="br br--mono">[ IPOPT ]</li>
+                </ul>
+              </div>
 
-            <div class="toolkit-group">
-              <p class="label">Web &amp; tooling</p>
-              <ul class="tags toolkit-tags">
-                <li class="br br--mono">[ FastAPI ]</li>
-                <li class="br br--mono">[ React/Next.js ]</li>
-                <li class="br br--mono">[ GitHub Actions ]</li>
-                <li class="br br--mono">[ Git ]</li>
-              </ul>
+              <div class="toolkit-group">
+                <p class="label">Cloud &amp; security</p>
+                <ul class="tags toolkit-tags">
+                  <li class="br br--mono br--depth">[ AWS ]</li>
+                  <li class="br br--mono br--depth">[ MITRE ATT&amp;CK ]</li>
+                  <li class="br br--mono br--depth">[ Linux ]</li>
+                  <li class="br br--mono">[ Terraform ]</li>
+                  <li class="br br--mono">[ Docker ]</li>
+                  <li class="br br--mono">[ PowerShell ]</li>
+                </ul>
+              </div>
+
+              <div class="toolkit-group">
+                <p class="label">Web &amp; tooling</p>
+                <ul class="tags toolkit-tags">
+                  <li class="br br--mono">[ FastAPI ]</li>
+                  <li class="br br--mono">[ React/Next.js ]</li>
+                  <li class="br br--mono">[ GitHub Actions ]</li>
+                  <li class="br br--mono">[ Git ]</li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -493,7 +534,7 @@
         </div>
 
         <div class="close-inner">
-          <p class="label rise">04 · Contact</p>
+          <p class="label rise">Contact</p>
           <h2 class="close-title rise" id="contact-title" style="--d: 0.06s">
             Have something to build,<br />or something to break?
           </h2>
@@ -533,9 +574,13 @@
     </footer>
 
     <script src="smooth-scroll.js" defer></script>
+    <script src="about.js" defer></script>
     <script src="silk.js" defer></script>
     <script src="chrome.js" defer></script>
     <script src="work.js" defer></script>
+    <script src="bridge.js" defer></script>
+    <script src="xp3d-scenes.js" defer></script>
+    <script src="xp3d.js" defer></script>
     <script src="home.js" defer></script>
   </body>
 </html>

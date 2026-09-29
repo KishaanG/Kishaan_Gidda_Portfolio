@@ -112,6 +112,7 @@
   /* read each ground's values off its slide — home.css is the only
      place they are written — while the slides still carry them */
   function readPalettes() {
+    grounds = slides.map((s) => getComputedStyle(s).getPropertyValue("--st-ground").trim());
     return slides.map((s) => {
       const cs = getComputedStyle(s);
       const p = {};
@@ -146,6 +147,22 @@
   let detach = null;
   let geo = null;
   let colours = null;
+  let at = 0;
+  let grounds = [];
+
+  /* for whatever paints behind the stage (bridge.js): where the
+     runway is, the ground it has blended to, and each project's own */
+  window.WorkStage = {
+    get at() { return at; },
+    get ground() { return colours ? colours["--st-ground"] : null; },
+    groundOf: (k) => grounds[k] || null,
+  };
+
+  /* how far the first ground reaches up past the stage. A bridge
+     that darkens the way down to it sets this (bridge.js), so the
+     chrome takes the ground's ink as soon as it is over deep water
+     rather than when the stage's own edge arrives. */
+  const reach = () => parseFloat(work.style.getPropertyValue("--ground-above")) || 0;
 
   /* ---- the chrome over a ground ---------------------------------
      The bars take a ground's ink, exactly as they step up over the
@@ -176,7 +193,7 @@
   function fadeGrid() {
     const r = stage.getBoundingClientRect();
     const vh = window.innerHeight;
-    const cover = clamp((Math.min(vh, r.bottom) - Math.max(0, r.top)) / vh);
+    const cover = clamp((Math.min(vh, r.bottom) - Math.max(0, r.top - reach())) / vh);
     root.style.setProperty("--grid-a", (1 - cover).toFixed(3));
   }
 
@@ -330,10 +347,11 @@
   function paintChrome() {
     const sr = stage.getBoundingClientRect();
     const moving = Math.abs(sr.top) > 0.5;
+    const above = reach();
     bars.forEach((bar) => {
       const b = bar.getBoundingClientRect();
       const mid = b.top + b.height / 2;
-      if (mid < sr.top || mid > sr.bottom) return setBar(bar, null);
+      if (mid < sr.top - above || mid > sr.bottom) return setBar(bar, null);
       setBar(bar, colours["--st-title"], colours["--st-halo"], moving ? colours["--st-ground"] : null);
     });
   }
@@ -341,6 +359,7 @@
   function paint() {
     if (!geo) return;
     const { P } = locate();
+    at = P;
     const i = clamp(Math.floor(P), 0, n - 2);
     colours = mix(pal[i], pal[i + 1], clamp(P - i));
     Object.keys(colours).forEach((k) => stage.style.setProperty(k, colours[k]));
@@ -503,9 +522,10 @@
       bars.forEach((bar) => {
         const b = bar.getBoundingClientRect();
         const mid = b.top + b.height / 2;
-        const i = slides.findIndex((s) => {
+        const above = reach();
+        const i = slides.findIndex((s, k) => {
           const r = s.getBoundingClientRect();
-          return mid >= r.top && mid <= r.bottom;
+          return mid >= r.top - (k ? 0 : above) && mid <= r.bottom;
         });
         if (i < 0) return setBar(bar, null);
         const c = cards[i].getBoundingClientRect();

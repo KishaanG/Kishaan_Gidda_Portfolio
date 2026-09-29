@@ -1,0 +1,56 @@
+/* ============================================================
+   Kishaan Gidda — the way down from the hero (bridge.js)
+   Everything here is background: the stage's motion, type and
+   runway are home.css and work.js, untouched.
+   ============================================================ */
+
+/* the stage's own field, behind its slides. It shows only while it
+   has folds to draw; at CyberSci it steps aside for the flat ground */
+.stage-silk {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 600ms var(--ease);
+}
+.stage-silk.is-on { opacity: 1; }
+
+/* ---- the descent ---------------------------------------------
+   The hero keeps its box and its first viewport; the field hangs
+   on below it, over a stretch of page with nothing on it, and
+   goes down to PoleLab's water on the way. */
+:root { --descent: 58svh; }
+.hero { margin-bottom: var(--descent); }
+.hero > .silk-host {
+  bottom: calc(-1 * var(--descent));
+  /* the stand-in before the field fades up: the hero's own light,
+     then the same way down */
+  background:
+    linear-gradient(180deg, transparent calc(100% - var(--descent)), #0f2640 100%),
+    linear-gradient(158deg, #eef5fd 0%, #c9e0f6 48%, #eef6fe 100%);
+}
+.hero > .silk-host.silk-fallback {
+  background:
+    linear-gradient(180deg, transparent calc(100% - var(--descent)), #0f2640 100%),
+    radial-gradient(120% 90% at 26% 6%, #ffffff 0%, rgba(255, 255, 255, 0) 54%),
+    radial-gradient(85% 75% at 96% 62%, #6ba6de 0%, rgba(107, 166, 222, 0) 62%),
+    linear-gradient(152deg, #e9f3fd 0%, #b9daf5 46%, #eaf4fd 100%);
+}
+/* stacked, the first ground is flat: the folds settle out over the
+   last stretch so the water meets it without a line */
+.hero > .silk-host.is-stacked canvas {
+  -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 72px), transparent 100%);
+  mask-image: linear-gradient(180deg, #000 calc(100% - 72px), transparent 100%);
+}
+@media (max-width: 900px) {
+  :root { --descent: 34svh; }
+}
+
+/* ---- the chrome crossing the water ---------------------------
+   Where the cloth is darkening under a bar and no ink holds on it
+   bare, the bar keeps the field's ink and its paper scrim comes
+   back (chrome.js, --field-veil). It fades like every scrim does. */
+.bar.on-field.on-field--veil::before { opacity: 1; }

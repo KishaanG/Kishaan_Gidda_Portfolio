@@ -1,0 +1,229 @@
+/* ============================================================
+   Kishaan Gidda — ABOUT: the line goes on
+   ------------------------------------------------------------
+   Loads after home.css. The experience flight drops its thread
+   out of the bottom of its frame and About picks it up at the
+   same x (about.js draws it). The section stands on the hero's
+   own light, ramping up out of the flight's ground at the top
+   and back down to paper for the close at the foot, so neither
+   seam is an edge.
+
+   The record is laid out as a river: each fact sits in the
+   crook of one of the line's bends, alternating sides, and the
+   toolkit hangs between the grid's rules at the foot.
+   ============================================================ */
+
+.about {
+  position: relative;
+  isolation: isolate;
+  padding: clamp(120px, 20svh, 220px) 0 clamp(220px, 38svh, 380px);
+  /* the flight's ground at the top — xp3d-scenes.js SKY_LOW, the
+     colour the stage's own foot resolves to — down to paper */
+  background: linear-gradient(180deg, var(--about-top, #e3effb) 0%, #f4f9fe 55%, #ffffff 100%);
+}
+/* no flight (phones, reduced motion, no WebGL): the ledger's band
+   is above instead, so the ground starts on its tint */
+#experience:not(.is-flight) + .about { --about-top: var(--paper-tint); }
+
+/* ---- the field ---------------------------------------------
+   One viewport of silk, stuck to the viewport while the section
+   scrolls past it, so the light is always full-frame and the
+   GPU only ever draws one screen of it. The wrapper spans the
+   whole section and carries the ramps; about.js writes the ramp
+   ends in px, and hands chrome.js the same numbers as the field's
+   solid range (--field-from/--field-to). */
+.about-field {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--ramp-top, 50svh),
+    #000 var(--ramp-bottom, calc(100% - 38svh)),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--ramp-top, 50svh),
+    #000 var(--ramp-bottom, calc(100% - 38svh)),
+    transparent 100%
+  );
+}
+.about-silk {
+  position: sticky;
+  inset: auto;
+  top: 0;
+  width: 100%;
+  height: 100svh;
+  z-index: auto;
+}
+
+/* ---- the line ----------------------------------------------
+   Drawn in section coordinates. Its last stretch always lands on
+   one of the grid's own rules and fades into it, so the ink
+   hands over to the plain hairline the close is ruled with. */
+.about-line {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 1;
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 38svh), transparent calc(100% - 6svh));
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 38svh), transparent calc(100% - 6svh));
+}
+.about-line path {
+  fill: none;
+  stroke: rgba(39, 81, 126, 0.9);
+  stroke-width: 1;
+}
+/* a station the line has not reached yet is an open ring on the
+   rule; reached, it fills — the same two states as the flight's
+   cubes, which only take their centre dot once they are passed */
+.about-line .node {
+  fill: #f4f9fe;
+  stroke: rgba(39, 81, 126, 0.55);
+  stroke-width: 1;
+  transition: fill 260ms var(--ease), stroke 260ms var(--ease);
+}
+.about-line .node.on { fill: var(--display); stroke: var(--display); }
+.about-line .tip { fill: var(--display); }
+
+/* where the line comes in: the flight reads this x (xp3d.js) and
+   drops its thread to it. --in is the fraction of the container
+   it enters on: the second rule, the river's first bank */
+.about-in {
+  position: absolute;
+  top: 0;
+  left: calc((100% - var(--container)) / 2 + var(--container) * var(--in, 0));
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.about-inner {
+  position: relative;
+  z-index: 2;
+  width: var(--container);
+  margin: 0 auto;
+}
+
+.rv { margin: 0; }
+.rv dd { margin: 0; }
+
+/* the field lifts the crease under the type (data-read), but the
+   mono still steps up to --ink on it, as everywhere on the field */
+.about .label { color: var(--ink); }
+
+.about-title {
+  margin: 0;
+  font-size: clamp(2.8rem, 6.4vw, 6rem);
+  line-height: 0.98;
+  letter-spacing: -0.038em;
+}
+
+/* the record */
+.rv-big {
+  margin-top: 14px;
+  font-family: var(--serif);
+  font-weight: 400;
+  font-variation-settings: "opsz" 60;
+  font-size: clamp(2.1rem, 3.4vw, 3.5rem);
+  line-height: 1.04;
+  letter-spacing: -0.034em;
+  color: var(--display);
+  text-wrap: balance;
+}
+.rv-meta {
+  margin-top: 12px;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.rv-text {
+  margin-top: 16px;
+  max-width: 42ch;
+  font-size: 1.02rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+/* ---- arrival: once, as the pen reaches it ------------------------
+   about.js adds .is-live only when it is drawing with motion, so
+   without script, on reduced motion and before it mounts, the
+   record is simply there. Reached latches (DESIGN.md §6). */
+.about.is-live [data-st] {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 700ms var(--ease), transform 700ms var(--ease);
+}
+.about.is-live [data-st].is-reached { opacity: 1; transform: none; }
+
+/* ---- the toolkit --------------------------------------------- */
+.about-kit { margin-top: clamp(200px, 32svh, 320px); }
+.about-kit .toolkit-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 12px 14px;
+}
+.about-kit .toolkit-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-top: 26px;
+}
+.about-kit .toolkit-group { padding: 0 var(--gutter) 0 12px; }
+.about-kit .toolkit-tags {
+  display: block;
+  margin: 14px 0 0 -10px;
+}
+.about-kit .toolkit-tags .br { display: flex; color: var(--ink); }
+/* depth is weight and the display blue, never a second hue (§3) */
+.tags .br--depth {
+  font-weight: 500;
+  color: var(--display);
+}
+
+/* ============================================================
+   The river — each fact sits in the crook of a bend
+   ============================================================ */
+.about { --in: 0.25; }
+.about-head { padding-left: 28px; max-width: 25%; }
+
+.rv-st {
+  width: 50%;
+  padding: clamp(150px, 26svh, 280px) 24px 0 28px;
+}
+.rv-st--r { margin-left: 50%; }
+
+/* ============================================================
+   Phones and narrow windows — one column, the line down the
+   left edge of the page's single column, every station on it
+   ============================================================ */
+@media (max-width: 900px) {
+  .about { padding: 104px 0 200px; --in: 0; }
+  .about-head,
+  .rv-st,
+  .about-kit { padding-left: 26px; }
+  .about-head { max-width: none; }
+
+  .rv-st, .rv-st--r { width: auto; margin-left: 0; padding-top: 72px; padding-right: 0; }
+
+  .about-kit { margin-top: 88px; }
+  .about-kit .toolkit-head { display: flex; padding: 0 0 12px; }
+  .about-kit .toolkit-grid { grid-template-columns: repeat(2, 1fr); row-gap: 28px; }
+  .about-kit .toolkit-group { padding: 0 12px 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about.is-live [data-st] { opacity: 1; transform: none; transition: none; }
+  .about-line .node { transition: none; }
+}

@@ -16,18 +16,34 @@ a WebGL fragment shader that reads as light moving through poured liquid, in blu
 It is not decoration and never a static gradient imitation: it renders, it drifts,
 it is the reason the page feels alive.
 
-On the home page it appears in exactly **two places**, and nowhere else:
+On the home page it once appeared in exactly two places, the opening and the
+close. On the user's instruction it now lights the whole way down the page, and
+what keeps that from flattening is that each appearance is a different *depth*
+of the same field, never a copy of it:
 
 1. **The hero**, full-bleed, at full strength.
-2. **The close** (contact), rising from the bottom edge, at reduced strength.
+2. **The descent.** The field hangs on for `--descent` (58svh; 34svh on phones)
+   past the hero's box, with nothing on it but the light going down, and
+   darkens in Oklab into PoleLab's water. There is no edge anywhere: the hero's
+   first viewport is untouched, and the work stage rises out of the deep
+   (`bridge.js`, `bridge.css`).
+3. **The work stage's water.** A second canvas behind the pinned stage computes
+   its folds in the *hero's* frame on the same clock, so the folds carry on
+   printed in each project's ground (§3), sliding past at 0.3× once pinned so
+   the stage still reads as sinking while its content holds. It thins through
+   CareRouter and is gone by CyberSci, whose ground is flat: the canvas hides
+   and stops drawing there.
+4. **The experience flight** (§6), a world built from the same shader — haze
+   and ribbons rather than a full frame of cloth.
+5. **About**, one viewport of silk stuck behind the section, ramping up out of
+   the flight's ground at the top and back down to paper for the close.
+6. **The close** (contact), rising from the bottom edge, at reduced strength.
 
-Between those two, one band leaves paper: the **work stage** (§7), which follows
-the hero with nothing between them and takes the hero's light *down* — deep blue,
-then the display blue, then the hero's light again — before handing on to paper.
-It is solid ground, never a third field. So the rhythm is light, depth, paper,
-light. Adding a third silk field to the home page would flatten it.
+So the rhythm is light, depth, light, haze, light, paper, light. Never more than
+two canvases draw at once; each pauses off screen and on a hidden tab, and
+resumes only if it is still on screen when the tab comes back.
 The blog masthead carries the same field once, at 0.85, and the article below it
-is paper — the same rhythm, one beat shorter.
+is paper.
 
 ### The committed field, and the four it was chosen against
 
@@ -157,9 +173,19 @@ Each field declares where it is at full strength as `--field-from`/`--field-to`
 and builds its own mask from those values, so the mask and the scrim can never
 disagree about where the light starts.
 
+**The veil.** The descent is the one place light turns to dark under the bars,
+and across the middle of that turn neither ink holds 4.5:1 on bare cloth. So the
+hero's field also declares `--field-veil`: from there down to `--field-to` a bar
+keeps the field's ink but gets its paper scrim back, for about 90px of scroll.
+Past `--field-to` the bar is over PoleLab's water and takes the ground's ink —
+`work.js` reaches that far up above the stage (`--ground-above`) so the handover
+happens where the water is already deep. On About's field the phone layout keeps
+the scrim throughout, as the stacked work stage does, because copy scrolls under
+the bars the whole way down.
+
 ### The work stage's grounds
 
-The work stage (§7) is the one place the page leaves paper, and it does it
+The work stage (§7) is the one place the page goes to depth, and it does it
 without leaving the family: each project stands on its own blue, and the change
 of ground is what tells you the project changed.
 
@@ -170,8 +196,17 @@ of ground is what tells you the project changed.
 ```
 
 The order is the point: out of the hero's light, down to depth, and back up to
-light before the ledger's paper. Every ink clears 4.5:1 on its own ground (the
-lowest is 4.89:1). The values are written once, in `home.css`, and `work.js`
+light before the flight's haze. Every ink clears 4.5:1 on its own ground (the
+lowest is 4.89:1).
+
+**The grounds are water, not paint.** Pinned, each ground is the silk field's
+folds printed in that ground's own colour (§1), and a fold may lift and sink the
+ground only so far, in Oklab lightness: PoleLab `+0.15 / −0.09`, CareRouter
+`+0.045 / −0.12`, CyberSci none. The lift is the cap that matters — it is set so
+each ground's softest ink still clears 4.5:1 on the brightest crest (PoleLab
+4.88:1, CareRouter 4.58:1). CyberSci's ground is left flat because it is the one
+the section below meets. The grain blends between projects on the same curve as
+the colour, so the texture moves with the ground rather than beside it. The values are written once, in `home.css`, and `work.js`
 reads them back off the slides, then blends ground and inks on the stage between
 projects — the ground in Oklab, for the same reason the field is mixed there,
 and the inks across the middle third of a handover only, so type never sits on a
@@ -291,11 +326,16 @@ animation, and it never runs where it isn't wanted. The loop pauses off screen
 and on a hidden tab, and under `prefers-reduced-motion` it never starts: that
 visitor gets the drawn fan, already complete, exactly as §6 describes.
 
-**Scroll drives two sections, and it must not drive them the same way.** On the
+**Scroll drives three sections, and it must not drive them the same way.** On the
 work stage scroll hands over a *project*: the section pins and each card gives
-way to the next (below). In the
-ledger scroll advances *time*, because the ledger is a
-chronology and the scroll axis is already the time axis: a hairline is drawn down
+way to the next (below). In Experience scroll advances *time*, because it is a
+chronology and the scroll axis is already the time axis: on desktop the flight
+(below) carries a camera along a thread from one job to the next. In About scroll
+*draws*: the flight's thread comes out of its frame and a pen carries it on down
+the page (below).
+
+Where the flight cannot run — phones, reduced motion, no WebGL — the ledger does
+Experience's job flat, and only there is its header shown: a hairline is drawn down
 the left column rule to the reading line, and each job's mark is a station on it.
 Nothing pins at section scale there, and nothing fades. Two states, and the
 difference is the rule above, not an inconsistency:
@@ -324,10 +364,11 @@ project with a handover between each pair — and every frame
 is a pure function of where scroll sits on it, so going back up plays it all in
 reverse.
 
-- **The arrival is already composed.** The stage rises under the hero as the
-  first project at rest — name, meta line, card, caption, rail — and pins. It
-  never opens full bleed: the user ruled that out, because the first thing seen
-  after the hero should be the composition, not a screenshot filling the screen.
+- **The arrival is already composed.** The stage rises out of the descent (§1)
+  as the first project at rest — name, meta line, card, caption, rail — and
+  pins. It never opens full bleed: the user ruled that out, because the first
+  thing seen after the hero should be the composition, not a screenshot filling
+  the screen.
 - **The card is a transform, never a layout.** It rests in a slot sized to the
   height left between the name and the caption, and only ever leaves it by
   transform.
@@ -357,9 +398,46 @@ reduced motion it is simply there. On a phone each card goes square and its
 screenshot is zoomed to a readable scale around the part that matters
 (`--focus`, `--zoom`), rather than shrunk to a thumbnail nobody can read.
 
+**The experience flight.** Pinned by the user to the 3D timeline on
+`https://clevir.li`. Scroll carries a camera along a hairline thread — Ciena
+2023, Hydro Ottawa 2025, TrendAI now — through a world built from the hero's
+own shader (`xp3d.js`, `xp3d-scenes.js`; the ribbon world). Each job is a station:
+a wireframe cube, and a label as real text — the year in mono, the company in the
+display serif, the role. While the camera rests on a job its detail — the
+ledger's own bullets and tags, cloned — settles in on the right half, starting on
+the grid's middle rule. A rail of `[ year · company ]` brackets marks where you
+are and jumps.
+
+- **It arrives straight after the work stage.** There is no header band between
+  them. The stage rises carrying a band of CyberSci's ground across its top edge
+  that shrinks to nothing as it pins, so the two grounds meet without a cut
+  (scroll-driven, `animation-timeline: view()`; without it, the old hairline).
+  The section's heading stays in the page for screen readers.
+- **Every frame is a pure function of scroll**, so going back up flies it in
+  reverse. When the wheel stops mid-flight the page is carried on to the next
+  job, so the camera only ever comes to rest at one.
+- **Every way in lands on the pinned opening frame**, as on the work stage.
+- **The exit hands the thread on.** Over the last 34svh the camera holds on
+  TrendAI, the panel and rail fade, and the thread drops out of the bottom of
+  the frame at the x About picks it up on, to the same reading line (70% of the
+  viewport) About's pen is drawn to. The frame's foot settles to its own ground,
+  which is the colour About's ground starts on.
+
+**About's line.** The flight's thread carries on down the section as one SVG
+stroke, drawn by scroll with the pen tip on that 70% reading line, over About's
+silk field. It swings down the page in long bends — the *river* — and each fact
+sits in the crook of one, alternating sides. Above the toolkit it fans out onto
+the grid's five rules and runs on as the warp the groups hang between, then fades
+into the rules themselves, so the close is handed a hairline rather than an edge.
+A station is an open ring until the pen passes it, then filled — the same two
+states as the flight's cubes. Each fact rises in once as the pen reaches it and
+never replays (`is-reached` latches). On phones the line runs straight down the
+left edge of the single column, a station per block.
+
 Every one of these is `prefers-reduced-motion` guarded. The spine's guard follows
 the silk field's: under `reduce` the line is still there and still complete, it
-simply arrives already drawn instead of scrubbing.
+simply arrives already drawn instead of scrubbing. About's line does the same, and
+the flight does not run at all: that visitor gets the ledger.
 
 ## 7. Components
 
@@ -372,17 +450,24 @@ simply arrives already drawn instead of scrubbing.
   `clamp(14px, 2vw, 30px)`), holding a screenshot and nothing else. No border, no
   shadow, no text inside it; hover is a hairline inside its own edge. It is not
   to be reused anywhere else on the site.
-- **The work stage.** The signature layout, and the page's one scroll-driven
-  showpiece: a full-viewport stage straight after the hero, one project at a
-  time — its name in the display serif, a mono meta line, the card, and a caption
+- **The work stage.** The signature layout: a full-viewport stage straight
+  after the descent, one project at a time — its name in the display serif, a mono meta line, the card, and a caption
   with one bracket link. A rail on the left column rule marks where you are and
   jumps. Scroll hands each project to the next (§6); each stands on its own
   ground (§3).
-- **Experience is a ledger**, not a stack of cards: a hairline-ruled table of
-  date / organisation / role, with detail underneath. Its left column — mark and
-  date — sticks beside its own detail, so you never lose whose work you are
-  reading; the year readout is set in the same mono as the stage's rail, so the
-  two sections' position readouts rhyme without repeating.
+- **Experience is a flight** on desktop (§6), and a **ledger** everywhere else.
+  The ledger stays in the page as the record either way — the flight reads its
+  jobs, bullets and tags off it, and screen readers read it. It is not a stack of
+  cards: a hairline-ruled table of date / organisation / role, with detail
+  underneath. Its left column — mark and date — sticks beside its own detail, so
+  you never lose whose work you are reading; where it shows, its year readout is
+  set in the same mono as the stage's rail, so the two sections' position
+  readouts rhyme without repeating.
+- **About is a river** (§6): the record the dossier always carried — education,
+  focus, languages, off keyboard — and the toolkit, held on the thread the
+  flight hands down. Each fact is set in the display serif in the crook of a
+  bend, its label in mono above it; the toolkit's four groups sit on the page's
+  four columns, marked entries carried by weight and the display blue.
 - **Screenshots are real, never staged.** A project's card is a capture of the
   running product's most important screen: PoleLab's live strategy report for
   Spa; CareRouter's intake chat, run locally and answered with the intake from its
