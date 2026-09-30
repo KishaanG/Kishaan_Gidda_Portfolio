@@ -83,11 +83,12 @@ real capture of its most important screen, taken from the running product:
 - `polelab-report.webp` (2880×1800, plus a 1440 copy) — the live polelab.dev
   strategy report for Spa-Francorchamps: the call is a one-stop, soft 1–15 /
   hard 16–44, pit lap 16–18, tied with five other plans.
-- `carerouter-chat.webp` (2496×1560, plus a 1248 copy) — CareRouter's intake
-  chat run locally, four questions in, answered with the intake from the repo's
-  own `test_location_finder.py`. The results page was not used: its map needs
-  Google Maps billing enabled on the project's key and renders an AuthFailure
-  without it.
+- `carerouter-results.webp` (1456×910) — CareRouter's support pathway for a
+  gambling intake: the message, the assessment summary (urgency soon, severity
+  2/4), the exercise toolbox, the quick contacts, and the Kingston map. Supplied
+  by the user at 1918×911 and cropped to 16:10 from the left edge, dropping the
+  1px browser line along its top. It replaced the intake-chat capture, which
+  stood in while the map had no Maps billing.
 - `cybersci-listing.png` — `CyberSci.png` cropped to the listing's own red box.
   cybersci.ca has no higher-resolution copy of the Off-By-Ones listing.
 

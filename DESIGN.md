@@ -226,7 +226,7 @@ vanish on them.
 
 Each card is a **real screenshot** of the project's most important screen, and
 inside it the project looks the way it ships: PoleLab's pit wall (carbon on
-off-white, one warm red), CareRouter's chat (blush ground, Queen's navy, gold).
+off-white, one warm red), CareRouter's support pathway (white panels, Queen's navy, the map).
 Restyling them in blues would make them pictures of this site. Nothing inside a
 card leaks out of it — no red on the page, no navy or gold in the chrome.
 
@@ -470,12 +470,11 @@ the flight does not run at all: that visitor gets the ledger.
   four columns, marked entries carried by weight and the display blue.
 - **Screenshots are real, never staged.** A project's card is a capture of the
   running product's most important screen: PoleLab's live strategy report for
-  Spa; CareRouter's intake chat, run locally and answered with the intake from its
-  own tests; CyberSci's results listing, cropped to its own box. Nothing is edited
-  beyond cropping, and nothing may be styled to look like a product screen that
-  does not exist. Where the real screen cannot be shown honestly — CareRouter's
-  results page, whose map fails without Maps billing — a different real screen is
-  used rather than a patched one. PRODUCT.md records where each came from.
+  Spa; CareRouter's support pathway, with its map of Kingston; CyberSci's results
+  listing, cropped to its own box. Nothing is edited beyond cropping, and nothing
+  may be styled to look like a product screen that does not exist. Where the real
+  screen cannot be shown honestly, a different real screen is used rather than a
+  patched one. PRODUCT.md records where each came from.
 
 ## 8. Prohibitions
 
