@@ -144,7 +144,7 @@ main { position: relative; z-index: 1; }
   --st-text: #dde9f6;
   --st-soft: #c9dcf0;
   --st-halo: rgba(244, 248, 253, 0.12);
-  --focus: 50% 60%;
+  --focus: 0% 35%;
   --zoom: 1.2;
 }
 .work:not(.is-pinned) .stage-slide[data-ground="ctf"] {
