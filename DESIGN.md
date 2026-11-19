@@ -30,9 +30,9 @@ of the same field, never a copy of it:
 3. **The work stage's water.** A second canvas behind the pinned stage computes
    its folds in the *hero's* frame on the same clock, so the folds carry on
    printed in each project's ground (§3), sliding past at 0.3× once pinned so
-   the stage still reads as sinking while its content holds. It thins through
-   CareRouter and is gone by CyberSci, whose ground is flat: the canvas hides
-   and stops drawing there.
+   the stage still reads as sinking while its content holds. It runs through all
+   three grounds, each in its own colour, with each ground's accent on its
+   sharp lines (§3).
 4. **The experience flight** (§6), a world built from the same shader — haze
    and ribbons rather than a full frame of cloth.
 5. **About**, one viewport of silk stuck behind the section, ramping up out of
@@ -95,6 +95,46 @@ white, the deep face saturates.
 Interleaved gradient noise dithers the result at ±1.7/255. The flats here are very
 wide, and banding is the one artefact that would give the whole illusion away.
 
+### The stir: the disc moves the cloth
+
+The disc (§7) is the one thing on the page that touches the field. The user asked
+for the cursor to *move the water*, and everything tried before the stir failed
+the same way, which is the rule this section exists to keep.
+
+`folds(p, t)` is a closed formula: a point and a time in, a value out. So anything
+laid over its output — a ripple, a wake, a swell, a comb, tilted lines, a flowmap,
+a height-field of waves, a trail line drawn into the ribbons — plays over a
+picture that carries on unchanged underneath, and the user reads it at once as
+**a layer over a video**. Each of those was built, looked at and refused. A local
+effect that returns to rest is the same mistake whatever it looks like.
+
+What shipped instead moves the field's own phase. Each stretch of the disc's
+travel leaves a **deposit**: a broad offset (σ 0.6 in p units, where the frame is
+2 high) to the two oscillators the turbulence iterates on, signed by the
+direction the disc went. It enters only inside the turbulence loop's `cos` and
+`sin`, so every pass after it carries it on, and the waves themselves evolve
+differently where the disc has been. A deposit holds for 3s, then spreads until,
+at 7s, it belongs to the whole field and is folded into one offset for every
+point. That offset is never taken back: a stirred field is a different field from
+then on, not one that relaxes to what it was.
+
+What keeps it from turning back into a layer:
+
+- **It is only ever a phase inside the turbulence.** Never add to the ribbon
+  band, the palette value, `p` or `q`.
+- **It is broad and persistent.** Nothing path-shaped: no feature narrower than a
+  deposit, nothing that traces where the cursor went.
+- **It grows only by the disc's own movement**, so scrolling past a still disc
+  stirs nothing. It is kept in the frame each canvas computes its folds in, so it
+  stays on the cloth as the page scrolls.
+- **One state is shared by every canvas**; only the canvas the disc is over takes
+  its movement. The work stage's sharp lines (§3) sample `folds()` too, so lines
+  the stir makes take the accent like any other.
+
+Tune it only through `STIRRING` in `silk.js`. The user approved the feel at gain
+0.6, 16 deposits and a 7s life (2026-11-19). There is no stir on touch or under
+`prefers-reduced-motion`.
+
 ### The reading light
 
 Each mount declares where its own type sits, as `data-read="cx cy rx ry"`. The
@@ -113,11 +153,15 @@ the hero's copy ever moves, `data-read` moves with it.
 
 **Fallback:** if WebGL is unavailable, a layered radial-gradient standing in at the
 same colours. Under `prefers-reduced-motion`, the shader renders **one static
-frame** — the field is still there, it simply stops moving.
+frame** — the field is still there, it simply stops moving, and the disc does not
+stir it.
 
 **Budget:** DPR capped at 1.5; the shader pauses via `IntersectionObserver` when
 its section leaves the viewport. It must never run offscreen. Measured at a locked
-60fps (16.7ms median) on a 1.28M-pixel canvas.
+60fps (16.7ms median) on a 1.28M-pixel canvas, before the stir. The stir adds up
+to 16 gaussians to every `folds()` call, and the work stage's line sampling calls
+`folds()` up to three times a pixel; that cost has not yet been measured on
+integrated graphics.
 
 ## 2. The column grid
 
@@ -183,28 +227,61 @@ happens where the water is already deep. On About's field the phone layout keeps
 the scrim throughout, as the stacked work stage does, because copy scrolls under
 the bars the whole way down.
 
+**The disc inverts lightness, never hue.** Its lens is `invert(1)
+hue-rotate(180deg)`: the inversion turns the hue round and the rotation turns it
+back, so the site's blue stays blue inside the disc and a project's red stays
+red. That is why it can pass over the field, paper and every ground without
+bringing a second hue onto the page. Its arrow is white on a dark keyline, so it
+reads on whatever the lens turns the ground into: a screenshot's white goes black
+in it, PoleLab's carbon goes pale. Without `backdrop-filter` it falls back to a
+plain `difference` inversion, hue and all.
+
 ### The work stage's grounds
 
-The work stage (§7) is the one place the page goes to depth, and it does it
-without leaving the family: each project stands on its own blue, and the change
-of ground is what tells you the project changed.
+The work stage (§7) is the one place the page goes to depth: each project
+stands on its own ground, and the change of ground is what tells you the
+project changed.
 
 ```
-[data-ground="pole"]  #0f2640 · title #eef5fc · text #c2d6ea · soft #a9c4df   deep water — PoleLab
-[data-ground="care"]  #27517e · title #f4f8fd · text #dde9f6 · soft #c9dcf0   the display blue — CareRouter
-[data-ground="ctf"]   #d9e8f7 · title #27517e · text #1b4c78 · soft #3a6590   the hero's light — CyberSci
+[data-ground="pole"]  #0b0d14 · title #f2f4f8 · text #c6ccd6 · soft #aab3c0 · accent #ff1e00   carbon — PoleLab
+[data-ground="care"]  #3a4a5c · title #f5f7fa · text #dfe5ec · soft #c8d1dc · accent #f5b800   grey-blue — CareRouter
+[data-ground="ctf"]   #f4f5f7 · title #16181d · text #2a2f38 · soft #4a5260 · accent #e0241b   white — CyberSci
 ```
 
 The order is the point: out of the hero's light, down to depth, and back up to
 light before the flight's haze. Every ink clears 4.5:1 on its own ground (the
 lowest is 4.89:1).
 
+**PoleLab's ground is its screenshot's, not the page's** (user, 2026-11-18). It
+was deep navy water, and when PoleLab's card became its near-black home page the
+descent read as a hard cut: light silk falling into saturated blue, then a black
+slab dropped on it. So that ground is now PoleLab's own carbon — a blue-black
+`#0b0d14`, a shade above the screenshot's black so the card keeps an edge, with
+the faintest cool cast so the hero's blue can fall into it — and its inks are the
+screenshot's silver rather than the page's blue-whites. Its folds lift to the
+grey of the screenshot's horizon (`#323540` at the cap), not to blue.
+
+**Every ground now takes its project's world, accent and all** (user,
+2026-11-18): PoleLab carbon with its Warm Red, CareRouter grey-blue with Queen's
+gold, CyberSci white with red. The accent is never a fill or a glow (a red aura
+behind PoleLab's card was tried and refused). It lives in exactly two places:
+the rail's active tick, and **the sharp lines in the ground's folds** — the
+places where the water's shading turns over in a few pixels, a crest pinched
+against its crease. The broad waves keep the ground's own colour. `silk.js`
+finds those lines by steepness, sampling the fold field one CSS px either way
+wherever a cheap 2×2 derivative says a line is near (the derivative alone is
+blocky at the stage's 0.66 render scale), so they stay smooth at any scale and
+cost nothing in the broad water. PoleLab's red lines run up the descent too, so
+the water has them before the stage arrives. `--st-accent` blends with the
+inks between projects. Each accent clears 3:1 for a graphical object on its
+ground's brightest or darkest fold.
+
 **The grounds are water, not paint.** Pinned, each ground is the silk field's
 folds printed in that ground's own colour (§1), and a fold may lift and sink the
-ground only so far, in Oklab lightness: PoleLab `+0.15 / −0.09`, CareRouter
-`+0.045 / −0.12`, CyberSci none. The lift is the cap that matters — it is set so
+ground only so far, in Oklab lightness: PoleLab `+0.17 / −0.06`, CareRouter
+`+0.06 / −0.10`, CyberSci `0 / −0.05` (white can only sink). The lift is the cap that matters — it is set so
 each ground's softest ink still clears 4.5:1 on the brightest crest (PoleLab
-4.88:1, CareRouter 4.58:1). CyberSci's ground is left flat because it is the one
+5.77:1, CareRouter 4.54:1). CyberSci's ground is left flat because it is the one
 the section below meets. The grain blends between projects on the same curve as
 the colour, so the texture moves with the ground rather than beside it. The values are written once, in `home.css`, and `work.js`
 reads them back off the slides, then blends ground and inks on the stage between
@@ -217,18 +294,25 @@ or chrome — the chrome only borrows a ground's ink while it is over one (below
 
 **The chrome over a ground.** Pinned, nothing scrolls under the bars, so they
 drop the paper scrim and take the ground's title ink, exactly as they step up
-over the field. On the stacked phone layout copy does scroll under them, so the
-scrim stays — in the ground's colour rather than paper's. Over a card they keep
-the paper scrim: the screenshots are paper-light and a ground's light ink would
-vanish on them.
+over the field. That holds for the footer too, although the pinned cards run
+under it: the stage lays a band of its own ground across the cards' width at
+the bottom of the screen, solid as high as the footer's tallest item reaches,
+so the cards sink into the ground there rather than putting a screenshot under
+the footer's type (worst pixel 5.28:1, CareRouter at 1280×720). On the stacked
+phone layout copy does scroll under the bars, so the scrim stays — in the
+ground's colour rather than paper's. Over a stacked card they keep the paper
+scrim: the screenshots are paper-light and a ground's light ink would vanish on
+them.
 
 ### Inside a card, the project speaks for itself
 
 Each card is a **real screenshot** of the project's most important screen, and
-inside it the project looks the way it ships: PoleLab's pit wall (carbon on
-off-white, one warm red), CareRouter's support pathway (white panels, Queen's navy, the map).
+inside it the project looks the way it ships: PoleLab's home page (carbon black,
+one warm red, the season globe), CareRouter's support pathway (white panels, Queen's navy, the map).
 Restyling them in blues would make them pictures of this site. Nothing inside a
-card leaks out of it — no red on the page, no navy or gold in the chrome.
+card leaks out of it as a fill: the grounds borrow each project's world (above),
+but only as their ground, their inks and an accent drawn in lines — never a
+coloured panel, glow or badge.
 
 ## 4. Type
 
@@ -298,7 +382,8 @@ One idea: **things arrive by settling, and light never stops moving.**
   staggered by `--d`. **Reveals do not replay on scroll-back.** The old site
   re-animated every pass; that reads as restless here.
 - Hover is a hairline or ground change, 160ms. Nothing scales, nothing tilts,
-  nothing bounces.
+  nothing bounces. The disc (below) is the one exception, because it is not a
+  hover state of anything: it follows the cursor everywhere.
 - The constellation draws itself once when scrolled into view (below).
 
 **The constellation is the one diagram that answers back, and the one that keeps
@@ -325,6 +410,17 @@ conditions — the drift is slow and small enough to read as buoyancy rather tha
 animation, and it never runs where it isn't wanted. The loop pauses off screen
 and on a hidden tab, and under `prefers-reduced-motion` it never starts: that
 visitor gets the drawn fan, already complete, exactly as §6 describes.
+
+**The disc follows the cursor; it does not replace it.** Pinned by the user to
+skiper-ui's "Hover members" (`https://skiper-ui.com/v1/skiper6`). It trails the
+cursor on a loose spring (ζ ≈ 0.84), so it drifts after it and settles a little
+past; over a link it closes in on a stiffer one (ζ ≈ 0.94), so the arrow sits on
+the link. It scales in when the cursor comes into the window and out when it
+leaves, and comes back under the cursor rather than flying in from where it last
+was. When the cursor stops, the disc settles and its loop sleeps, so it is not
+perpetual motion. Its movement is what stirs the silk (§1). Under
+`prefers-reduced-motion` it sits exactly on the cursor, with no spring, and stirs
+nothing.
 
 **Scroll drives three sections, and it must not drive them the same way.** On the
 work stage scroll hands over a *project*: the section pins and each card gives
@@ -365,24 +461,53 @@ is a pure function of where scroll sits on it, so going back up plays it all in
 reverse.
 
 - **The arrival is already composed.** The stage rises out of the descent (§1)
-  as the first project at rest — name, meta line, card, caption, rail — and
+  as the first project at rest — name, meta line, copy, rail, card — and
   pins. It never opens full bleed: the user ruled that out, because the first
   thing seen after the hero should be the composition, not a screenshot filling
   the screen.
-- **The card is a transform, never a layout.** It rests in a slot sized to the
-  height left between the name and the caption, and only ever leaves it by
-  transform.
-- **A handover.** The card leaving tips toward you and drops away, fading; the
-  next rises from just behind it and straightens. The one leaving is in front,
-  because it is coming toward you. Names and meta lines roll through their own
-  line boxes — the meta a beat behind the name — and the caption hands over under
-  them. The ground blends as §3 describes.
-- **The snap.** When the wheel stops partway through a handover, the page glides
-  on to the nearer rest *in the direction you were going*: past a tenth of the
-  way, it carries on; short of that, it settles back. So a flick always finishes
-  the move it started, as on the reference, but scroll is never taken away — the
-  stage only ever moves where the page's own damped scroller would take it, and
-  only after a wheel, never against touch, keys or the scrollbar.
+- **The picture is as big as the width allows.** On the user's sketch
+  (2026-11-18) the name and copy sit at the top and the card takes the
+  container's whole width below them, running on off the bottom of the screen.
+  The card hangs from one line shared by every project (each head and caption
+  takes the tallest one's height), keeps its screenshot's own shape
+  (`--card-ratio`: 16:10 unless the slide says otherwise; PoleLab's home page is
+  1999:922, and forcing it to 16:10 would crop away its headline or its
+  countdown), and is cut by the screen's edge, not fitted to it. The listing
+  has no shape to keep, so its card fills what shows and the listing sits in
+  the middle of it.
+- **The card is a transform, never a layout.** It hangs from its line and only
+  ever leaves it by transform.
+- **A handover.** The next card comes up from under the fold, over the one at
+  rest, and lands where it was; the one it covers sinks back — 6% smaller, 18px
+  lower, and 60% of the way into the ground — and is wholly covered by the time
+  the new one lands. The one arriving is in front because it is the one coming
+  up. Names and meta lines roll through their own line boxes — the meta a beat
+  behind the name — and the copy hands over under them. The ground blends as §3
+  describes. Card, names and ground all ride one sine curve, so they cross the
+  middle together and nothing moves faster than about one and a half times the
+  scroll. (The cubic this replaced moved things at three times the scroll
+  through the middle of a handover, which read as a lurch.)
+- **The snap.** A wheel that stops partway through a handover has the page
+  carried on to the nearer rest *in the direction you were going*: past a tenth
+  of the way, it carries on; short of that, it settles back. So a flick always
+  finishes the move it started, as on the reference, but scroll is never taken
+  away — only after a wheel, never against touch, keys or the scrollbar, and a
+  wheel that keeps going goes straight through.
+
+  It is decided from where the wheel alone would have put the page
+  (`Scroller.aim`), not where the page is or where a snap is taking it, so the
+  same wheel total lands on the same rest as a plain accumulate-then-snap would
+  (checked for 8 and 12 notches, two touchpad-style streams, and a reversal
+  mid-glide). A wheel that commits finishes the handover on that event, while
+  the page still has its speed. The glide that finishes it (`Scroller.glide`) is a
+  cubic that leaves at the page's own measured speed and arrives at rest, timed
+  by distance (480–1100ms). The old snap waited for the page to stop, then
+  started the damped glide at its fastest: measured, the page came to a dead
+  stop for ~300ms and then lurched at 4.8 px/ms, three times its own scrolling
+  speed. Now a four-notch scroll into a handover is one rise and fall peaking
+  at 1.35 px/ms. A wheel during a glide adds its notch to where the glide is
+  going and re-times it, rather than dropping back to the damped glide, which
+  would leave at its fastest.
 - **Every way in lands at rest.** `[ Work ]`, `[ View work ]`, the rail and deep
   links to a project all go to that project resting and pinned, not to the
   section's top edge with the stage still rising.
@@ -449,12 +574,17 @@ the flight does not run at all: that visitor gets the ledger.
   follow the reference: one rounded card per project (`--card-r`,
   `clamp(14px, 2vw, 30px)`), holding a screenshot and nothing else. No border, no
   shadow, no text inside it; hover is a hairline inside its own edge. It is not
-  to be reused anywhere else on the site.
+  to be reused anywhere else on the site. Pinned, it runs off the bottom of the
+  screen, so only its top corners are ever seen.
 - **The work stage.** The signature layout: a full-viewport stage straight
-  after the descent, one project at a time — its name in the display serif, a mono meta line, the card, and a caption
-  with one bracket link. A rail on the left column rule marks where you are and
-  jumps. Scroll hands each project to the next (§6); each stands on its own
-  ground (§3).
+  after the descent, one project at a time. At the top, on the grid's second
+  rule: its name in the display serif, a mono meta line, and a few lines of copy
+  with one bracket link beside them. Below, the card across all four columns,
+  running off the bottom of the screen. The markup is in that same order, so
+  reading order and visual order agree. A rail in the first column, beside the
+  name, marks where you are and jumps. Scroll hands each project to the next
+  (§6); each stands on its own ground (§3). On phones the copy starts at the
+  edge and the card sits under it, square, as before.
 - **Experience is a flight** on desktop (§6), and a **ledger** everywhere else.
   The ledger stays in the page as the record either way — the flight reads its
   jobs, bullets and tags off it, and screen readers read it. It is not a stack of
@@ -468,9 +598,16 @@ the flight does not run at all: that visitor gets the ledger.
   flight hands down. Each fact is set in the display serif in the crook of a
   bend, its label in mono above it; the toolkit's four groups sit on the page's
   four columns, marked entries carried by weight and the display blue.
+- **The disc.** An 80px lens that trails the cursor on every classic page
+  (`follow.js`; `.disc` in `site.css`). It is one size always and never grows
+  over a link; instead an arrow turns in it toward where the link goes — down or
+  up the page to an anchor, out (↗) to anything else. The native cursor stays as
+  it is. The disc is `aria-hidden` and takes no pointer events, so it never
+  changes what a click does. Fine pointers only: on touch there is no cursor to
+  follow, and it never mounts.
 - **Screenshots are real, never staged.** A project's card is a capture of the
-  running product's most important screen: PoleLab's live strategy report for
-  Spa; CareRouter's support pathway, with its map of Kingston; CyberSci's results
+  running product's most important screen: PoleLab's live home page, chosen by
+  the user (2026-11-18); CareRouter's support pathway, with its map of Kingston; CyberSci's results
   listing, cropped to its own box. Nothing is edited beyond cropping, and nothing
   may be styled to look like a product screen that does not exist. Where the real
   screen cannot be shown honestly, a different real screen is used rather than a
@@ -484,7 +621,9 @@ generic bans.
 - No thick ink outlines, no hard offset `box-shadow` "sticker" edges, no
   `border-radius: 22px` cards (the work stage's screenshot card is the one
   exception, §7), no comic halftone dot fields.
-- No filled pill buttons, no gold. No hue outside the blue family. (Inside a work
+- No filled pill buttons, no gold fills. Outside the work stage, no hue outside
+  the blue family; inside it, each project's ground and its one accent, drawn
+  only as lines (§3). (Inside a work
   card's screenshot the project's own interface is shown as it ships, pills and
   gold included — §3. That exemption stops at the card's edge.)
 - No emoji as interface furniture (📮, ☁️, 🏆, 📖 all go).

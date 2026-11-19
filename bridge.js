@@ -17,10 +17,10 @@
    moving.
 
    The stage's motion is untouched. This reads where the runway
-   is (window.WorkStage) and paints behind it, nothing more. The
-   texture thins through CareRouter and has gone by CyberSci,
-   whose ground is left exactly as it was: the canvas hides and
-   stops drawing there, and the stage's own flat ground shows.
+   is (window.WorkStage) and paints behind it, nothing more. Each
+   project's water is printed in its own ground's colour, with its
+   accent on the sharp lines (GRAIN, below). A ground given no grain
+   at all would be left flat: the canvas hides and stops drawing.
    ============================================================ */
 
 (() => {
@@ -41,9 +41,16 @@
   /* How far a fold may lift and sink each ground, in Oklab
      lightness. The lift is the ceiling that matters: it is set so
      the ground's softest ink still clears 4.5:1 on the brightest
-     crest (PoleLab 4.88:1, CareRouter 4.58:1 at the cap). CyberSci
-     carries none: its ground is the one the section below meets. */
-  const GRAIN = { pole: [0.15, 0.09], care: [0.045, 0.12], ctf: [0, 0] };
+     crest (PoleLab 5.77:1, CareRouter 4.54:1 at the cap). PoleLab's
+     ground is near-neutral carbon, so its crests come up the grey of
+     its screenshot's horizon (#323540 at the cap) rather than blue,
+     and its sink is small: there is little darker left to go.
+     CyberSci's is near-white, so its folds only sink, and only a
+     little — just enough for its red lines to have water to run
+     through. Each ground's accent (its --st-accent) colours the sharp
+     lines in its folds (silk.js), and clears 3:1 on the crest the way
+     the rail's tick must. */
+  const GRAIN = { pole: [0.17, 0.06], care: [0.06, 0.1], ctf: [0, 0.05] };
 
   /* Pinned, the water slides past at this fraction of the scroll,
      so the stage still feels like it is sinking while its content
@@ -55,7 +62,7 @@
   const lerp = (a, b, t) => a + (b - a) * t;
   // the same curve work.js blends the ground on, so the grain moves
   // with the colour rather than beside it
-  const inOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  const inOut = (t) => (1 - Math.cos(Math.PI * t)) / 2;
 
   function lab(str) {
     const s = (str || "").trim();
@@ -142,6 +149,10 @@
     L.depth = 1;
     L.ground = lab(Stage.groundOf(0)) || L.ground;
     L.grain = GRAIN.pole;
+    // PoleLab's red lines run up the descent too, so the water has
+    // them before the stage arrives and there is no seam where it does
+    L.accent = lab(Stage.accentOf(0)) || L.accent;
+    L.accentAmt = 1;
     L.water = [a, b, w];
     // the canvas runs below the hero, but its folds are still the
     // hero's: computed in the hero's own box, not the taller one
@@ -185,6 +196,8 @@
     L.ref = [sr.left - hr.left, hr.height - refTop - sr.height, hr.width, hr.height];
     L.ground = lab(Stage.ground) || L.ground;
     L.grain = grain;
+    L.accent = lab(Stage.accent) || L.accent;
+    L.accentAmt = 1;
     L.depth = 1;
     L.water = water(hr.height);
     return true;

@@ -129,30 +129,42 @@ main { position: relative; z-index: 1; }
    blends them on the stage itself — which is why they stop applying
    to the slides once it is pinned. This is the only place they are
    written. */
+/* Each ground takes its project's own world, so the page goes the
+   colour of the screenshot it is showing (user, 2026-11-18):
+   PoleLab's carbon with its Warm Red, CareRouter's grey-blue with
+   Queen's gold, CyberSci's white with its red. The accent is not a
+   fill anywhere: it is the rail's tick and the sharp lines in the
+   ground's folds (bridge.js), nothing else. The hero's light falls
+   into PoleLab's carbon on the way down (bridge.js reads it here).
+   Every ink clears 4.5:1 on its ground and on its brightest or
+   darkest fold; every accent clears 3:1 there. */
 .work:not(.is-pinned) .stage-slide[data-ground="pole"] {
-  --st-ground: #0f2640;
-  --st-title: #eef5fc;
-  --st-text: #c2d6ea;
-  --st-soft: #a9c4df;
-  --st-halo: rgba(238, 245, 252, 0.1);
+  --st-ground: #0b0d14;
+  --st-title: #f2f4f8;
+  --st-text: #c6ccd6;
+  --st-soft: #aab3c0;
+  --st-halo: rgba(242, 244, 248, 0.1);
+  --st-accent: #ff1e00;
   --focus: 0% 30%;
   --zoom: 1.4;
 }
 .work:not(.is-pinned) .stage-slide[data-ground="care"] {
-  --st-ground: #27517e;
-  --st-title: #f4f8fd;
-  --st-text: #dde9f6;
-  --st-soft: #c9dcf0;
-  --st-halo: rgba(244, 248, 253, 0.12);
+  --st-ground: #3a4a5c;
+  --st-title: #f5f7fa;
+  --st-text: #dfe5ec;
+  --st-soft: #c8d1dc;
+  --st-halo: rgba(245, 247, 250, 0.12);
+  --st-accent: #f5b800;
   --focus: 0% 35%;
   --zoom: 1.2;
 }
 .work:not(.is-pinned) .stage-slide[data-ground="ctf"] {
-  --st-ground: #d9e8f7;
-  --st-title: #27517e;
-  --st-text: #1b4c78;
-  --st-soft: #3a6590;
-  --st-halo: rgba(39, 81, 126, 0.08);
+  --st-ground: #f4f5f7;
+  --st-title: #16181d;
+  --st-text: #2a2f38;
+  --st-soft: #4a5260;
+  --st-halo: rgba(22, 24, 29, 0.06);
+  --st-accent: #e0241b;
 }
 
 .work {
@@ -160,7 +172,10 @@ main { position: relative; z-index: 1; }
   /* the card's corner, at the size it is read. The only rounded
      surface on the site: DESIGN.md §7. */
   --card-r: clamp(14px, 2vw, 30px);
-  --st-gap: clamp(14px, 2.4vh, 28px);
+  /* the copy hangs on the grid's second rule; the card takes all
+     four columns. Both resolve against the slide, which is full
+     width, so the 100% inside --container is the viewport's. */
+  --copy-in: calc(var(--container) / 4);
 }
 .stage { position: relative; }
 
@@ -170,17 +185,22 @@ main { position: relative; z-index: 1; }
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: clamp(20px, 3vw, 32px);
-  padding: clamp(72px, 11vw, 120px) var(--gutter);
+  padding: clamp(72px, 11vw, 120px) 0;
   background: var(--st-ground);
   color: var(--st-text);
 }
 
-.stage-head {
-  max-width: 100%;
-  text-align: center;
+/* the name, a few lines of copy, then the picture: the reading
+   order and the markup's order are the same */
+.stage-head,
+.stage-caption,
+.stage-frame {
+  width: var(--container);
+  margin-inline: auto;
 }
+.stage-head,
+.stage-caption { padding-left: var(--copy-in); }
+
 /* each line is a window its text rolls through, so the mask is the
    line box itself. The padding lets the serif's descenders out of
    the clip; the negative margin gives the space back. */
@@ -201,7 +221,7 @@ main { position: relative; z-index: 1; }
   text-wrap: balance;
 }
 .stage-meta {
-  margin-top: 20px;
+  margin-top: 16px;
   font-family: var(--mono);
   font-size: 0.7rem;
   letter-spacing: 0.14em;
@@ -210,11 +230,42 @@ main { position: relative; z-index: 1; }
 }
 .roll { display: inline-block; }
 
+.stage-caption {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px 36px;
+  margin-top: clamp(14px, 2.2svh, 22px);
+}
+.stage-text {
+  max-width: 64ch;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--st-text);
+}
+.stage-text strong { color: var(--st-title); }
+/* a phone number never breaks at its hyphens */
+.stage-text .nowrap { white-space: nowrap; }
+.stage-links {
+  flex: none;
+  margin: -6px 0 0;
+}
+.stage .br { color: var(--st-soft); }
+.stage .br:hover,
+.stage .br:focus-visible {
+  color: var(--st-title);
+  background: var(--st-halo);
+}
+.stage :focus-visible { outline-color: var(--st-title); }
+
+/* a card takes its screenshot's own shape: 16:10 unless the slide
+   says otherwise. PoleLab's home page is a wide screen, and squeezing
+   it to 16:10 would crop away either its headline or its countdown. */
+.stage-slide[data-ground="pole"] { --card-ratio: 1999 / 922; }
+
 .stage-frame {
   position: relative;
-  width: min(100%, 1100px);
-  aspect-ratio: 16 / 10;
-  margin: 0;
+  aspect-ratio: var(--card-ratio, 16 / 10);
+  margin-block: clamp(32px, 5svh, 56px) 0;
 }
 .stage-card {
   position: absolute;
@@ -237,7 +288,7 @@ main { position: relative; z-index: 1; }
    the entries either side of it. */
 .stage-card--record { display: grid; place-items: center; }
 .stage-card--record img {
-  width: min(52%, 480px);
+  width: min(40%, 480px);
   height: auto;
 }
 /* hover is a hairline, as everywhere else — here drawn inside the
@@ -253,51 +304,25 @@ main { position: relative; z-index: 1; }
 }
 .stage-card:hover::after { box-shadow: inset 0 0 0 1px var(--st-soft); }
 
-.stage-caption {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px 40px;
-  width: min(100%, 1100px);
-}
-.stage-text {
-  max-width: 62ch;
-  font-size: 0.98rem;
-  line-height: 1.58;
-  color: var(--st-text);
-}
-.stage-text strong { color: var(--st-title); }
-/* a phone number never breaks at its hyphens */
-.stage-text .nowrap { white-space: nowrap; }
-.stage-links {
-  flex: none;
-  margin: -7px -12px 0 0;
-}
-.stage .br { color: var(--st-soft); }
-.stage .br:hover,
-.stage .br:focus-visible {
-  color: var(--st-title);
-  background: var(--st-halo);
-}
-.stage :focus-visible { outline-color: var(--st-title); }
-
 .stage-rail { display: none; }
 
 /* ---- stacked reveal: work.js adds .is-reveal when it can run
-   the motion, so without script nothing here is ever hidden ---- */
+   the motion, so without script nothing here is ever hidden. In
+   reading order — the name, its line, the copy — and the card
+   last, coming up from below as it does on the pinned stage. ---- */
 .work.is-reveal .roll {
   transform: translateY(108%);
   transition: transform 900ms var(--ease);
 }
-.work.is-reveal .stage-meta .roll { transition-delay: 140ms; }
-.work.is-reveal .stage-card {
-  opacity: 0;
-  transform: perspective(1400px) translate3d(0, 24px, -120px) rotateX(8deg);
-  transition: opacity 700ms var(--ease), transform 1100ms var(--ease);
-}
+.work.is-reveal .stage-meta .roll { transition-delay: 120ms; }
 .work.is-reveal .stage-caption {
   opacity: 0;
-  transition: opacity 700ms var(--ease) 260ms;
+  transition: opacity 700ms var(--ease) 220ms;
+}
+.work.is-reveal .stage-card {
+  opacity: 0;
+  transform: translate3d(0, 56px, 0);
+  transition: opacity 700ms var(--ease) 280ms, transform 1100ms var(--ease) 280ms;
 }
 .work.is-reveal .stage-slide.is-in .roll,
 .work.is-reveal .stage-slide.is-in .stage-card { opacity: 1; transform: none; }
@@ -317,70 +342,124 @@ main { position: relative; z-index: 1; }
   overflow: hidden;
   background: var(--st-ground);
   color: var(--st-text);
+  --top-in: clamp(10px, 3.2svh, 40px);
+  /* the band the cards sink into at the bottom (below): solid as high
+     as the footer's tallest item reaches, then fading over 48px */
+  --sink-solid: calc(var(--bar) / 2 + 22px);
+  --sink: calc(var(--sink-solid) + 48px);
 }
 
 /* the slides stack in the stage and keep one layout between them,
-   so their titles and cards sit in exactly the same place. They are
+   so their names and cards sit in exactly the same place. They are
    hidden by opacity and transform, never visibility, so every project
    stays in the accessibility tree and in find-in-page; only the one
    at rest takes the pointer, or the transparent slides stacked above
-   it would swallow its clicks. */
+   it would swallow its clicks. Later slides stack above earlier ones,
+   which is the handover's own order: the card arriving comes up over
+   the one at rest. */
 .work.is-pinned .stage-slide {
   position: absolute;
   inset: 0;
-  justify-content: center;
-  gap: var(--st-gap);
-  padding: calc(var(--bar-top) + var(--st-gap)) var(--gutter) calc(var(--bar) + var(--st-gap));
+  padding: calc(var(--bar-top) + var(--top-in)) 0 0;
   background: none;
   pointer-events: none;
 }
 .work.is-pinned .stage-slide.is-live { pointer-events: auto; }
-/* the one leaving passes in front of the one arriving: it is
-   coming toward you */
-.work.is-pinned .stage-slide.is-leaving { z-index: 2; }
 
 /* the head and caption keep their natural height — their masks clip
    overflow, which would otherwise let flex crush them to nothing on a
-   short screen. The card is what gives. */
+   short screen. Each takes the tallest slide's height (work.js), so
+   every card hangs from the same line. */
 .work.is-pinned .stage-head,
 .work.is-pinned .stage-caption { flex: none; }
 .work.is-pinned .stage-head {
-  width: 100%;
   min-height: var(--head-h, 0px);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
 }
+.work.is-pinned .stage-caption { min-height: var(--cap-h, 0px); }
 
-/* The frame is the card's resting slot, sized by work.js to the
-   height left over between the title and the caption. The card only
-   ever leaves it by transform. */
+/* The frame is whatever is left of the screen under the copy. The
+   card hangs from its top edge at its own 16:10 and runs on off the
+   bottom of the screen, so the picture is as big as the width allows
+   rather than as big as the height does. It only ever leaves its
+   place by transform. */
 .work.is-pinned .stage-frame {
-  width: var(--card-w, 60vw);
-  flex: none;
-  perspective: 1600px;
+  flex: 1 1 auto;
+  min-height: 0;
+  aspect-ratio: auto;
 }
 .work.is-pinned .stage-card {
-  transform-origin: 50% 50%;
+  inset: 0 auto auto 0;
+  /* a definite width, so the height cap below only ever trims the
+     height: left as auto, aspect-ratio would carry the cap across
+     into the width and shrink the whole card */
+  width: 100%;
+  aspect-ratio: var(--card-ratio, 16 / 10);
+  /* the screen's edge cuts it, so it stops there: what shows is the
+     same, from the screenshot's top down */
+  max-height: 100%;
+  transform-origin: 50% 0;
   will-change: transform, opacity;
 }
+.work.is-pinned .stage-card img { object-position: 50% 0; }
+/* the listing is no screen, so it has no 16:10 to keep: its card
+   fills the frame, and the listing sits in the middle of what shows
+   above the band at the bottom */
+.work.is-pinned .stage-card--record {
+  inset: 0;
+  aspect-ratio: auto;
+  border-radius: var(--card-r) var(--card-r) 0 0;
+  padding-bottom: var(--sink);
+  container-type: size;
+}
+/* and on a short screen it gives way to the height, not the band:
+   at most 86% of what shows, at the listing's own 319:209 */
+.work.is-pinned .stage-card--record img { width: min(40%, 480px, 131cqh); }
 /* a card is only a link once it has landed — mid-flight it would
    take clicks meant for the one arriving. The slide's own
    pointer-events already say so; this is the card's. */
 .work.is-pinned .stage-slide:not(.is-live) .stage-card { pointer-events: none; }
-.work.is-pinned .stage-caption {
-  width: var(--cap-w, var(--card-w, 60vw));
-  min-height: var(--cap-h, 0px);
+
+/* Where the cards run off the screen they sink into the ground. The
+   footer's type needs the ground under it, not a screenshot, so the
+   ground is solid as high as the tallest thing in the footer reaches
+   (the 34px icon links, centred in the bar) and only then lets the
+   picture through. It belongs to the stage, not to any card, so when
+   the stage lets go, the cut edge leaves already dissolved into the
+   ground the next section opens on. */
+.work.is-pinned .stage::after {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: var(--container);
+  height: var(--sink);
+  margin-inline: auto;
+  background: linear-gradient(
+    to top,
+    var(--st-ground) 0,
+    var(--st-ground) var(--sink-solid),
+    color-mix(in srgb, var(--st-ground) 80%, transparent) calc(var(--sink-solid) + 12px),
+    color-mix(in srgb, var(--st-ground) 48%, transparent) calc(var(--sink-solid) + 24px),
+    color-mix(in srgb, var(--st-ground) 16%, transparent) calc(var(--sink-solid) + 37px),
+    transparent 100%
+  );
+  pointer-events: none;
 }
 
-/* the rail: where you are, and a way to jump */
+/* the rail: where you are, and a way to jump. It sits in the first
+   column beside the name, where the copy leaves room, clear of the
+   picture below. */
 .work.is-pinned .stage-rail {
   display: block;
   position: absolute;
   z-index: 4;
   left: max(var(--gutter), calc((100% - var(--container)) / 2));
-  top: 50%;
-  transform: translateY(-50%);
+  top: calc(var(--bar-top) + var(--top-in));
 }
 .stage-rail .label {
   margin-bottom: 16px;
@@ -415,7 +494,12 @@ main { position: relative; z-index: 1; }
 }
 .stage-rail a:hover,
 .stage-rail a.on { color: var(--st-title); }
-.stage-rail a.on .stage-tick::before { transform: none; }
+/* the tick you are on takes the ground's accent: PoleLab's red,
+   CareRouter's gold, CyberSci's red */
+.stage-rail a.on .stage-tick::before {
+  transform: none;
+  background: var(--st-accent, currentColor);
+}
 
 /* the column grid steps back while the stage has the viewport: the
    stage is the one surface the rules do not pass across */
@@ -973,8 +1057,13 @@ main { position: relative; z-index: 1; }
   }
   .stage-slide[data-ground="ctf"] .stage-frame { aspect-ratio: 4 / 3; }
   .stage-card--record img { width: min(84%, 420px); }
+  /* one column and no rules to hang on: the copy starts at the
+     edge, over the picture */
+  .stage-head,
+  .stage-caption { padding-left: 0; }
   .stage-caption { flex-direction: column; gap: 14px; }
   .stage-links { margin: 0 0 0 -12px; }
+  .stage-frame { margin-top: 28px; }
 
   /* [ Claude Agent SDK ] has no room to sit beside a sibling here */
   .toolkit-grid { grid-template-columns: 1fr; row-gap: 26px; }
@@ -1066,9 +1155,9 @@ main { position: relative; z-index: 1; }
     pointer-events: none;
     background: linear-gradient(
       in oklab 180deg,
-      #d9e8f7 0%,
-      rgb(217 232 247 / 0.5) 38%,
-      rgb(217 232 247 / 0) 100%
+      #f4f5f7 0%,
+      rgb(244 245 247 / 0.5) 38%,
+      rgb(244 245 247 / 0) 100%
     );
     transform-origin: 50% 0;
     animation: xp-rise linear both;

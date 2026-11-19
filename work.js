@@ -5,17 +5,21 @@
 
    Desktop: the section is a runway and the stage sticks inside
    it. It rises under the hero already composed — PoleLab at rest,
-   its name over its card — and pins. From there scroll hands
-   each project to the next. The card leaving tips toward you and
-   drops away, the next rises from behind it, the names roll over
-   through their masks, and the ground blends from one blue to the
-   next. Every frame is a pure function of scroll position, so
-   going back up plays it all in reverse.
+   its name and copy at the top, its card across the container and
+   running off the bottom of the screen — and pins. From there
+   scroll hands each project to the next. The next card comes up
+   from under the fold, over the one at rest, and settles where it
+   was; the one it covers sinks back a little and dims into the
+   ground. The names roll over through their masks, and the ground
+   blends from one blue to the next. Every frame is a pure function
+   of scroll position, so going back up plays it all in reverse.
 
-   When the wheel stops mid-handover the page glides on to the
-   nearer rest in the direction it was going, so a flick always
-   finishes the move it started — the reference's feel, without
-   ever taking the scroll away from you.
+   When the wheel stops partway through a handover, the page is
+   carried on to the nearer rest in the direction it was going —
+   decided from where the page is headed, while it is still moving,
+   and glided there at the speed it already has, so a flick
+   finishes the move it started without the page ever stopping
+   first.
 
    Phones, reduced motion and no script get the same markup as a
    stack of three grounds (home.css). On phones each project rolls
@@ -39,7 +43,6 @@
   const titles = part(".stage-title .roll");
   const metas = part(".stage-meta .roll");
   const captions = part(".stage-caption");
-  const rail = stage.querySelector(".stage-rail");
   const railLinks = Array.from(stage.querySelectorAll(".stage-rail a[data-go]"));
   const bars = Array.from(document.querySelectorAll(".bar"));
   if (!n || cards.some((c) => !c)) return;
@@ -58,10 +61,29 @@
   SEGS.forEach((s) => { s.from = acc; acc += s.len; });
   const TOTAL = acc;
 
+  /* ---- the handover's shape -------------------------------------
+     Everything in a handover rides one sine curve, so the card, the
+     names and the ground all cross at its middle together. The card
+     coming up starts below the fold; the one it covers sinks back
+     this far: a little smaller, a little lower, and most of the way
+     into the ground. */
+  const SINK = { scale: 0.06, drop: 18, dim: 0.6 };
+  // how far below the frame's bottom edge the arriving card starts,
+  // so not even its corner shows before it is due
+  const UNDER = 12;
+  // how far into a handover the wheel has to carry the page before
+  // the snap finishes it rather than settling back
+  const COMMIT = 0.1;
+  // the quiet after the last wheel event at which the snap decides
+  const SNAP_IDLE = 140;
+
   /* ---- maths ---- */
   const clamp = (v, lo = 0, hi = 1) => Math.min(hi, Math.max(lo, v));
   const lerp = (a, b, t) => a + (b - a) * t;
-  const inOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  // the page's handovers ride on sine curves: their steepest point
+  // moves things about one and a half times as fast as the scroll
+  // does, where a cubic moved them three times as fast
+  const inOut = (t) => (1 - Math.cos(Math.PI * t)) / 2;
   const band = (a, b, t) => {
     const x = clamp((t - a) / (b - a));
     return x * x * (3 - 2 * x);
@@ -107,12 +129,13 @@
     return `rgb(${rgb.join(", ")})`;
   }
 
-  const INKS = ["--st-ground", "--st-title", "--st-text", "--st-soft"];
+  const INKS = ["--st-ground", "--st-title", "--st-text", "--st-soft", "--st-accent"];
 
   /* read each ground's values off its slide — home.css is the only
      place they are written — while the slides still carry them */
   function readPalettes() {
     grounds = slides.map((s) => getComputedStyle(s).getPropertyValue("--st-ground").trim());
+    accents = slides.map((s) => getComputedStyle(s).getPropertyValue("--st-accent").trim());
     return slides.map((s) => {
       const cs = getComputedStyle(s);
       const p = {};
@@ -149,6 +172,7 @@
   let colours = null;
   let at = 0;
   let grounds = [];
+  let accents = [];
 
   /* for whatever paints behind the stage (bridge.js): where the
      runway is, the ground it has blended to, and each project's own */
@@ -156,6 +180,10 @@
     get at() { return at; },
     get ground() { return colours ? colours["--st-ground"] : null; },
     groundOf: (k) => grounds[k] || null,
+    // the colour of the sharp lines in the ground's folds: blended
+    // with the inks, so it changes over as the names do
+    get accent() { return colours ? colours["--st-accent"] : null; },
+    accentOf: (k) => accents[k] || null,
   };
 
   /* how far the first ground reaches up past the stage. A bridge
@@ -167,12 +195,19 @@
   /* ---- the chrome over a ground ---------------------------------
      The bars take a ground's ink, exactly as they step up over the
      field (chrome.js). Pinned, nothing scrolls under them, so the
-     paper scrim goes and they sit on the ground itself. Stacked, copy
-     does scroll under them, so the scrim stays — in the ground's own
-     colour, passed as bg. Over a card they keep the paper scrim: the
-     screenshots are paper-light, and a ground's light ink would
-     vanish on them. */
+     paper scrim goes and they sit on the ground itself — the footer
+     included, because the stage sinks its cards into the ground
+     across the footer's band (home.css). Stacked, copy does scroll
+     under them, so the scrim stays — in the ground's own colour,
+     passed as bg. Over a stacked card they keep the paper scrim:
+     the screenshots are paper-light, and a ground's light ink would
+     vanish on them. Each bar is only written when what it shows
+     changes. */
+  const shown = new Map();
   function setBar(bar, ink, halo, bg) {
+    const key = ink ? `${ink}|${halo}|${bg || ""}` : "";
+    if (shown.get(bar) === key) return;
+    shown.set(bar, key);
     bar.classList.toggle("on-ground", !!ink);
     bar.classList.toggle("on-ground--scrim", !!(ink && bg));
     if (!ink) return;
@@ -184,14 +219,21 @@
   function clearBars() {
     bars.forEach((b) => {
       b.classList.remove("on-ground", "on-ground--scrim");
+      shown.delete(b);
       ["--ground-ink", "--ground-halo", "--ground-bg"].forEach((k) => b.style.removeProperty(k));
     });
   }
 
+  // the bars are fixed, so where their middles sit only changes
+  // with the window
+  const barMids = () => bars.map((b) => {
+    const r = b.getBoundingClientRect();
+    return r.top + r.height / 2;
+  });
+
   /* the column grid steps back by however much of the viewport the
      grounds are covering */
-  function fadeGrid() {
-    const r = stage.getBoundingClientRect();
+  function fadeGrid(r = stage.getBoundingClientRect()) {
     const vh = window.innerHeight;
     const cover = clamp((Math.min(vh, r.bottom) - Math.max(0, r.top - reach())) / vh);
     root.style.setProperty("--grid-a", (1 - cover).toFixed(3));
@@ -201,62 +243,30 @@
      PINNED
      ================================================================ */
 
+  /* Every slide's head and caption take the tallest one's height, so
+     a name that wraps or a longer paragraph cannot push one card off
+     the line the others hang from. The card's width is the
+     container's and its height is the rest of the screen, so nothing
+     else here needs sizing. */
   function measure() {
-    const vw = stage.clientWidth;
-    const vh = stage.clientHeight;
-    const cs = getComputedStyle(slides[0]);
-    const pad = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
-    const gap = parseFloat(cs.rowGap) || 0;
-    // every slide's head and caption take the tallest one's height,
-    // so a name that wraps cannot push its card out of line with the
-    // others — they all rest in exactly the same slot
     stage.style.removeProperty("--head-h");
     stage.style.removeProperty("--cap-h");
     const headH = Math.max(...heads.map((h) => h.offsetHeight));
+    const capH = Math.max(...captions.map((c) => c.offsetHeight));
     stage.style.setProperty("--head-h", headH + "px");
-    // the card keeps clear of the rail, and stays centred, so the
-    // same margin comes off both sides
-    const side = rail.offsetLeft + rail.offsetWidth + 40;
-    const availW = Math.max(320, vw - side * 2);
-
-    // the caption's height depends on the card's width, which depends
-    // on the caption's height. A narrower card can only wrap the
-    // caption onto more lines, so keeping the tallest height seen
-    // walks one way to a width that fits, in a pass or two. The
-    // caption never goes narrower than CAP_MIN, or on a short screen
-    // that walk runs away — each extra line shrinks the card, which
-    // wraps the caption again.
-    const CAP_MIN = Math.min(600, availW);
-    let capH = 0;
-    let w = 0;
-    for (let pass = 0; pass < 4; pass++) {
-      const availH = vh - pad - headH - capH - gap * 2;
-      w = Math.round(Math.max(280, Math.min(availW, availH * 1.6)));
-      stage.style.setProperty("--card-w", w + "px");
-      stage.style.setProperty("--cap-w", Math.max(w, CAP_MIN) + "px");
-      const next = Math.max(...captions.map((c) => c.offsetHeight));
-      if (next <= capH) break;
-      capH = next;
-    }
-    // if the walk ran out of passes, size the card for the caption
-    // height that is actually being reserved
-    const fit = Math.round(Math.max(280, Math.min(availW, (vh - pad - headH - capH - gap * 2) * 1.6)));
-    if (fit !== w) {
-      w = fit;
-      stage.style.setProperty("--card-w", w + "px");
-      stage.style.setProperty("--cap-w", Math.max(w, CAP_MIN) + "px");
-    }
     stage.style.setProperty("--cap-h", capH + "px");
 
     geo = {
-      slotH: frames[0].offsetHeight,
+      // from resting to wholly under the fold
+      rise: frames[0].offsetHeight + UNDER,
       travel: work.offsetHeight - stage.offsetHeight,
+      mids: barMids(),
     };
   }
 
-  /* where the runway is: which segment, and how far through it */
-  function locate() {
-    const into = -work.getBoundingClientRect().top;
+  /* where the runway is, `into` px past the section's top: which
+     segment, and how far through it */
+  function locate(into) {
     // still rising under the hero: the first project, at rest
     if (into <= 0 || !geo.travel) return { seg: SEGS[0], t: 0, P: 0 };
     const x = clamp(into / geo.travel) * TOTAL;
@@ -273,28 +283,25 @@
      0 resting, 1 gone) */
   function placeCard(i, d) {
     const c = cards[i];
-    let ty = 0, tz = 0, rx = 0, op = 1;
+    let ty = 0;
+    let sc = 1;
+    let op = 1;
 
     if (d > -1 && d < 0) {
-      // arriving: up from behind the one leaving, and straightening
-      const t = 1 + d;
-      const e = inOut(t);
-      tz = -(1 - e) * 140;
-      rx = (1 - e) * 9;
-      op = band(0, 0.55, t);
+      // arriving: up from under the fold, over the one at rest,
+      // settling as it lands
+      ty = (1 - inOut(1 + d)) * geo.rise;
     } else if (d > 0 && d < 1) {
-      // leaving: tips toward you and drops away
+      // covered: sinks back under the one arriving
       const e = inOut(d);
-      ty = e * geo.slotH * 0.7;
-      tz = e * 160;
-      rx = -e * 22;
-      op = 1 - band(0.15, 0.8, d);
+      sc = 1 - SINK.scale * e;
+      ty = SINK.drop * e;
+      op = 1 - SINK.dim * e;
     } else if (d !== 0) {
       op = 0;
     }
 
-    c.style.transform =
-      `translate3d(0, ${ty.toFixed(2)}px, ${tz.toFixed(1)}px) rotateX(${rx.toFixed(2)}deg)`;
+    c.style.transform = `translate3d(0, ${ty.toFixed(2)}px, 0) scale(${sc.toFixed(4)})`;
     c.style.opacity = op.toFixed(3);
   }
 
@@ -313,7 +320,6 @@
     const d = P - i;
     const lit = d > -1 && d < 1;
     const s = slides[i];
-    s.classList.toggle("is-leaving", d > 0 && d < 1);
     s.classList.toggle("is-live", Math.abs(d) < 0.02);
     if (!lit) {
       // out of frame: put it in its waiting (or gone) state once, so a
@@ -331,38 +337,50 @@
 
     placeCard(i, d);
     roll(titles[i], d, 0.2, 0.2);
-    roll(metas[i], d, 0.4, 0.4);
+    roll(metas[i], d, 0.35, 0.35);
 
-    const a = d < 0 ? band(0.6, 1, 1 + d) : 1 - band(0, 0.35, d);
+    const a = d < 0 ? band(0.55, 1, 1 + d) : 1 - band(0, 0.4, d);
     const cap = captions[i];
     cap.style.opacity = a.toFixed(3);
-    cap.style.transform = `translateY(${((1 - a) * (d < 0 ? 12 : -12)).toFixed(1)}px)`;
+    cap.style.transform = `translateY(${((1 - a) * (d < 0 ? 10 : -10)).toFixed(1)}px)`;
   }
 
-  /* the cards rest between the bars, so a bar is either over the
-     stage's ground or not over the stage at all. While the stage is
-     still rising or leaving, its copy moves under the bars, so they
-     keep a scrim in the ground's colour; pinned, nothing moves under
-     them and they sit on the ground itself. */
-  function paintChrome() {
-    const sr = stage.getBoundingClientRect();
+  /* the bars sit over the stage's ground, or off the stage entirely.
+     While the stage is still rising or letting go, its copy moves
+     under the bars, so they keep a scrim in the ground's colour;
+     pinned, nothing moves under them and they sit on the ground
+     itself. */
+  function paintChrome(sr) {
     const moving = Math.abs(sr.top) > 0.5;
     const above = reach();
-    bars.forEach((bar) => {
-      const b = bar.getBoundingClientRect();
-      const mid = b.top + b.height / 2;
+    bars.forEach((bar, j) => {
+      const mid = geo.mids[j];
       if (mid < sr.top - above || mid > sr.bottom) return setBar(bar, null);
       setBar(bar, colours["--st-title"], colours["--st-halo"], moving ? colours["--st-ground"] : null);
     });
   }
 
+  // the stage's colours, written only when the blend has moved them
+  const written = {};
+  function writeColours() {
+    Object.keys(colours).forEach((k) => {
+      if (written[k] === colours[k]) return;
+      written[k] = colours[k];
+      stage.style.setProperty(k, colours[k]);
+    });
+  }
+
+  /* every read comes before every write, so a frame never forces the
+     page to lay itself out halfway through */
   function paint() {
     if (!geo) return;
-    const { P } = locate();
+    const into = -work.getBoundingClientRect().top;
+    const sr = stage.getBoundingClientRect();
+    const { P } = locate(into);
     at = P;
     const i = clamp(Math.floor(P), 0, n - 2);
     colours = mix(pal[i], pal[i + 1], clamp(P - i));
-    Object.keys(colours).forEach((k) => stage.style.setProperty(k, colours[k]));
+    writeColours();
 
     for (let j = 0; j < n; j++) paintSlide(j, P);
 
@@ -373,18 +391,20 @@
       else a.removeAttribute("aria-current");
     });
 
-    paintChrome();
-    fadeGrid();
+    paintChrome(sr);
+    fadeGrid(sr);
   }
 
   /* ---- scrolling to a place on the runway ---- */
-  function yAt(x) {
-    const top = work.getBoundingClientRect().top + window.scrollY;
-    return top + (x / TOTAL) * geo.travel;
-  }
+  const workTop = () => work.getBoundingClientRect().top + window.scrollY;
+  const yAt = (x) => workTop() + (x / TOTAL) * geo.travel;
 
-  function glide(y) {
-    if (window.Scroller) window.Scroller.to(y);
+  // a snap corrects where the wheel was going and leaves the wheel's
+  // own aim alone; a jump (the rail, a link, focus) is a new place to go
+  function glide(y, snap = false) {
+    const S = window.Scroller;
+    if (S && S.glide) S.glide(y, { snap });
+    else if (S) S.to(y);
     else window.scrollTo({ top: y, behavior: "smooth" });
   }
 
@@ -396,14 +416,38 @@
 
   const goTo = (k) => glide(yAt(restX(k)));
 
-  /* the snap: a wheel that stops mid-move finishes it. Past a tenth
-     of a handover in the direction you were going, it carries on;
-     short of that, it settles back where you came from. */
-  function snap(dir) {
-    const { seg, t } = locate();
-    if (seg.kind === "rest" || t <= 0.002 || t >= 0.998) return;
-    const on = dir > 0 ? t > 0.1 : t > 0.9;
-    glide(yAt(on ? restX(seg.k + 1) : seg.from - REST * 0.12));
+  /* the snap: a move the wheel leaves unfinished is finished. Past a
+     tenth of a handover in the direction you were going, it carries
+     on; short of that, it settles back where you came from. `into`
+     is where the page is headed, not where it is. */
+  function snapTo(dir, into) {
+    if (!geo) return null;
+    const { seg, t } = locate(into);
+    if (seg.kind === "rest" || t <= 0.002 || t >= 0.998) return null;
+    // how far the page has come in the direction it is going
+    const come = dir > 0 ? t : 1 - t;
+    const commit = come > COMMIT;
+    const later = dir > 0 ? commit : !commit;
+    return { commit, y: yAt(later ? restX(seg.k + 1) : seg.from - REST * 0.12) };
+  }
+
+  function snap(dir, into) {
+    const s = snapTo(dir, into);
+    if (s) glide(s.y, true);
+  }
+
+  /* The pictures are big now, and a 2880px screenshot decoded for the
+     first time on the frame it comes up costs that frame. Decode them
+     all as the stage mounts. A picture that fails to load has nothing
+     to recover here: the card shows the browser's own broken image,
+     as it would without this. */
+  function warm() {
+    cards.forEach((c) => {
+      const img = c.querySelector("img");
+      if (!img) return;
+      img.loading = "eager";
+      if (img.decode) img.decode().catch(() => {});
+    });
   }
 
   function mountPinned() {
@@ -412,12 +456,14 @@
     work.classList.add("is-pinned");
     work.style.setProperty("--runway", `calc(100svh + ${TOTAL}svh)`);
     measure();
+    warm();
 
     let ticking = false;
     let lastY = window.scrollY;
     let dir = 1;
-    let lastInput = -1e9;
-    let idle = 0;
+    let lastKey = -1e9;
+    let wheelIdle = 0;
+    let keyIdle = 0;
 
     const onScroll = () => {
       const y = window.scrollY;
@@ -430,14 +476,47 @@
           paint();
         });
       }
-      clearTimeout(idle);
-      if (performance.now() - lastInput < 1500) idle = setTimeout(() => snap(dir), 170);
+      // a scrolling key moves the page natively, with no target to
+      // read ahead, so its snap waits for the page to come to rest
+      if (performance.now() - lastKey < 1500) {
+        clearTimeout(keyIdle);
+        const d = dir;
+        keyIdle = setTimeout(() => {
+          const s = snapTo(d, -work.getBoundingClientRect().top);
+          if (s) glide(s.y);
+        }, 170);
+      }
     };
-    // the snap arms after a wheel or a scrolling key — never after touch,
-    // whose own momentum it would fight
-    const arm = () => { lastInput = performance.now(); };
+    // The wheel's snap reads where the wheel alone would have put the
+    // page (Scroller.aim), not where it is. A wheel that carries that
+    // past the commit point finishes the handover there and then,
+    // while the page still has the speed to hand on, so the move never
+    // slows and picks up again. One that stops short waits for the
+    // wheel to go quiet, then settles back. Reading the aim rather
+    // than the snap's own destination is what keeps a wheel's travel
+    // what it always was: notches after a snap count from where the
+    // wheel had got to, not from the rest the snap is heading for.
+    // Never after touch, whose own momentum it would fight.
+    const headed = () => {
+      const S = window.Scroller;
+      const y = S ? (S.aim !== undefined ? S.aim : S.target) : window.scrollY;
+      return y - workTop();
+    };
+    const onWheel = (e) => {
+      if (e.ctrlKey || !e.deltaY) return;
+      // the page's scroller takes a wheel by cancelling it; one it
+      // left alone (a nested scroller, a locked page) is not the
+      // page's to move
+      if (window.Scroller && !e.defaultPrevented) return;
+      const d = e.deltaY > 0 ? 1 : -1;
+      dir = d;
+      clearTimeout(wheelIdle);
+      const s = snapTo(d, headed());
+      if (s && s.commit) return glide(s.y, true);
+      wheelIdle = setTimeout(() => snap(d, headed()), SNAP_IDLE);
+    };
     const SCROLL_KEYS = new Set([" ", "PageDown", "PageUp", "ArrowDown", "ArrowUp", "Home", "End"]);
-    const onKey = (e) => { if (SCROLL_KEYS.has(e.key)) arm(); };
+    const onKey = (e) => { if (SCROLL_KEYS.has(e.key)) lastKey = performance.now(); };
     // tabbing into a project that is not showing brings it on stage
     const onFocus = (e) => {
       const k = slides.findIndex((s) => s.contains(e.target));
@@ -463,7 +542,7 @@
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("wheel", arm, { passive: true });
+    window.addEventListener("wheel", onWheel, { passive: true });
     window.addEventListener("keydown", onKey);
     window.addEventListener("resize", onResize, { passive: true });
     document.addEventListener("click", onClick, true);
@@ -471,18 +550,23 @@
     paint();
 
     return () => {
-      clearTimeout(idle);
+      clearTimeout(wheelIdle);
+      clearTimeout(keyIdle);
+      // a glide still heading for a rest on the runway being taken
+      // down would land somewhere that no longer means anything
+      if (window.Scroller) window.Scroller.sync();
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("wheel", arm);
+      window.removeEventListener("wheel", onWheel);
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("resize", onResize);
       document.removeEventListener("click", onClick, true);
       stage.removeEventListener("focusin", onFocus);
       work.classList.remove("is-pinned");
       work.style.removeProperty("--runway");
-      INKS.concat("--st-halo", "--card-w", "--cap-w", "--head-h", "--cap-h").forEach((k) => stage.style.removeProperty(k));
+      INKS.concat("--st-halo", "--head-h", "--cap-h").forEach((k) => stage.style.removeProperty(k));
+      Object.keys(written).forEach((k) => delete written[k]);
       slides.forEach((s) => {
-        s.classList.remove("is-leaving", "is-live");
+        s.classList.remove("is-live");
         delete s.dataset.out;
       });
       [...cards, ...titles, ...metas, ...captions].forEach((el) => {
@@ -563,7 +647,7 @@
   mount();
   wide.addEventListener("change", mount);
 
-  // the title's height feeds the card's size, and it settles with
+  // the copy's height sets where the cards hang, and it settles with
   // the web font
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(() => {

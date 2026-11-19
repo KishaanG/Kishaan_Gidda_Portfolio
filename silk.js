@@ -179,6 +179,161 @@
     return LAB_CACHE.get(key);
   }
 
+  /* ------------------------------------------------------------
+     THE STIR — the disc moving the cloth.
+
+     The field is a closed formula: give folds() a point and a time
+     and it returns a value. So anything added to its output, or to
+     the phase the palette is read at, plays over a video that goes
+     on unchanged underneath. The disc (follow.js, published each
+     frame as window.Disc) does not do that. It moves the phases the
+     turbulence iterates on, so the waves themselves evolve
+     differently where it has been.
+
+     Each stretch of the disc's travel leaves a deposit: a broad
+     offset in the turbulence's two oscillators, signed by the
+     direction it went, centred on the stretch. As it ages the
+     deposit spreads, until it belongs to the whole field and is
+     folded into one offset for every point. That offset is never
+     taken back, so a stirred field is a different field from then
+     on, not one that relaxes to what it was.
+
+     The state is shared by every canvas, each of which has its own
+     GL context; only the canvas the disc is over takes its
+     movement. It is kept in the frame the canvas computes its folds
+     in, so it stays on the cloth as the page scrolls, and it grows
+     only by the disc's own movement, so scrolling past a still disc
+     stirs nothing. There is none on touch or under
+     prefers-reduced-motion.
+     ------------------------------------------------------------ */
+  const STIR = !REDUCED && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const STIRRING = {
+    n: 16, // deposits kept
+    gain: 0.6, // radians of phase per p-unit the disc travels
+    sigma: 0.6, // a deposit's radius as made, p units (frame height is 2)
+    grow: 0.25, // p² per second its radius² gains
+    hold: 3.0, // s before it starts spreading across the whole frame
+    life: 7.0, // s at which it has become part of the whole field
+    step: 0.5, // p units of travel that close a deposit
+    every: 500, // ms that close one regardless
+    idle: 140, // ms of a still (or unseen) disc that ends a stroke
+    settle: 0, // per second the whole-field offset relaxes; 0 = it stays changed
+  };
+
+  const TAU = Math.PI * 2;
+  const wrapTau = (v) => ((v % TAU) + TAU) % TAU;
+
+  // shared by every canvas
+  let deposits = []; // { x, y, a, d, born }: centre in p, phases (rad), ms
+  let pending = null; // the open deposit: { fx, fy, x, y, a, d, since }
+  let base = [0, 0]; // the whole field's offset, rad, in [0, 2π)
+  let cx = NaN; // where the disc was, client px
+  let cy = NaN;
+  let lastT = -Infinity; // when its movement was last taken
+  let baseT = performance.now(); // when base was last relaxed
+
+  const hasPhase = (p) => Math.abs(p.a) + Math.abs(p.d) >= 1e-4;
+  const hasRoom = () => deposits.length < STIRRING.n - 1;
+
+  // the pending deposit, closed: kept if it moved anything, dropped otherwise
+  function closePending(now) {
+    const p = pending;
+    if (!hasPhase(p)) return;
+    deposits = deposits.concat({ x: (p.fx + p.x) / 2, y: (p.fy + p.y) / 2, a: p.a, d: p.d, born: now });
+  }
+
+  function feedStir(now, rect, ref) {
+    const D = window.Disc;
+    if (!D || !(D.s > 0.5) || !rect) return;
+    if (D.y < rect.top || D.y > rect.bottom || D.x < rect.left || D.x > rect.right) return;
+    if (D.x === cx && D.y === cy) return;
+
+    const k = 2 / ref[3];
+    const x = (D.x - rect.left + ref[0]) * k - ref[2] / ref[3];
+    const y = (rect.bottom - D.y + ref[1]) * k - 1;
+
+    if (pending === null || now - lastT > STIRRING.idle || Number.isNaN(cx)) {
+      // a new stroke, starting under the disc, having moved nothing
+      if (pending !== null && hasRoom()) closePending(now);
+      pending = { fx: x, fy: y, x, y, a: 0, d: 0, since: now };
+    } else {
+      pending = {
+        ...pending,
+        x,
+        y,
+        a: pending.a + STIRRING.gain * (D.x - cx) * k,
+        d: pending.d - STIRRING.gain * (D.y - cy) * k, // y is up in p
+      };
+    }
+    cx = D.x;
+    cy = D.y;
+    lastT = now;
+
+    const closes = Math.hypot(x - pending.fx, y - pending.fy) >= STIRRING.step
+      || now - pending.since >= STIRRING.every;
+    if (closes && hasRoom()) {
+      closePending(now);
+      pending = { fx: x, fy: y, x, y, a: 0, d: 0, since: now };
+    }
+  }
+
+  // idempotent within a frame, so every canvas may call it
+  function ageStir(now) {
+    const lifeMs = STIRRING.life * 1000;
+    const done = deposits.filter((e) => now - e.born >= lifeMs);
+    if (done.length) {
+      base = [
+        wrapTau(done.reduce((s, e) => s + e.a, base[0])),
+        wrapTau(done.reduce((s, e) => s + e.d, base[1])),
+      ];
+      deposits = deposits.filter((e) => now - e.born < lifeMs);
+    }
+
+    if (STIRRING.settle > 0 && now > baseT) {
+      const keep = Math.exp((-STIRRING.settle * (now - baseT)) / 1000);
+      // the shorter way round the circle: (-π, π], scaled, wrapped back
+      base = base.map((v) => wrapTau((v > Math.PI ? v - TAU : v) * keep));
+    }
+    baseT = Math.max(baseT, now);
+
+    if (pending !== null && now - lastT > STIRRING.idle) {
+      if (hasRoom()) closePending(now);
+      pending = null;
+    }
+  }
+
+  /* One canvas's side of the stir: the shared deposits, as this
+     program's uniforms. */
+  function makeStir(gl, prog) {
+    const N = STIRRING.n;
+    const spot = new Float32Array(N * 4);
+    const wide = new Float32Array(N * 2);
+    const uStir = gl.getUniformLocation(prog, "uStir[0]");
+    const uStirW = gl.getUniformLocation(prog, "uStirW[0]");
+    const uStirN = gl.getUniformLocation(prog, "uStirN");
+    const uStirBase = gl.getUniformLocation(prog, "uStirBase");
+
+    function upload(now) {
+      let n = 0;
+      const put = (x, y, a, d, age) => {
+        const t = Math.min(1, Math.max(0, (age - STIRRING.hold) / (STIRRING.life - STIRRING.hold)));
+        spot.set([x, y, a, d], n * 4);
+        wide.set([1 / (STIRRING.sigma * STIRRING.sigma + STIRRING.grow * age), t * t * (3 - 2 * t)], n * 2);
+        n += 1;
+      };
+      deposits.forEach((e) => put(e.x, e.y, e.a, e.d, (now - e.born) / 1000));
+      if (pending !== null && hasPhase(pending)) {
+        put((pending.fx + pending.x) / 2, (pending.fy + pending.y) / 2, pending.a, pending.d, 0);
+      }
+      gl.uniform4fv(uStir, spot);
+      gl.uniform2fv(uStirW, wide);
+      gl.uniform1f(uStirN, n);
+      gl.uniform2f(uStirBase, base[0], base[1]);
+    }
+
+    return { upload };
+  }
+
   const VERT = `
     attribute vec2 aPos;
     void main() { gl_Position = vec4(aPos, 0.0, 1.0); }
@@ -223,6 +378,13 @@
     uniform vec2  uGrain;
     uniform float uDepth;
     uniform vec3  uWater;
+
+    /* The ground's accent (Oklab), and how much of it the sharp lines
+       take: only where the folds turn over fastest, never the broad
+       waves. Needs screen-space derivatives; without them, no lines
+       take it. */
+    uniform vec3  uAccent;
+    uniform float uAccentAmt;
 
     /* the preset — see PRESETS in the JS above */
     uniform float uScale;     // how far the domain is scaled down
@@ -281,20 +443,41 @@
       return smoothstep(b.x - f, b.x, y) * smoothstep(b.y + f, b.y, y);
     }
 
-    void main() {
-      vec2 css = gl_FragCoord.xy / uDpr + uRef.xy;        // the frame, CSS px, y up
-      vec2 px = css / uRef.zw;                            // 0..1, y up
-      vec2 p  = (css * 2.0 - uRef.zw) / uRef.w;           // centred, aspect-true
-      vec2 pl = gl_FragCoord.xy / uRes;                   // this canvas, 0..1
+    /* The fold field at p (centred, aspect-true) and time t: the
+       value the palette is read at. A function so the depth's sharp
+       lines can sample it either side of a pixel (below). */
+    #ifdef SILK_STIR
+    /* THE STIR (in the JS above): deposits of phase, each a centre in
+       p and the two amounts it adds to the turbulence's oscillators,
+       with 1/radius² and how far it has spread over the whole frame
+       (0 local, 1 everywhere). uStirBase is what has spread fully. */
+    uniform vec4  uStir[STIR_N];
+    uniform vec2  uStirW[STIR_N];
+    uniform float uStirN;
+    uniform vec2  uStirBase;
 
-      float t = uTime * 0.088;
+    /* The phase offset at p, in radians. Broad and smooth: each
+       deposit is a gaussian that widens into a constant, so no
+       feature of it is narrower than the deposit itself. It is only
+       ever read as a phase, inside the turbulence's own sines. */
+    vec2 stir(vec2 p) {
+      vec2 s = uStirBase;
+      for (int i = 0; i < STIR_N; i++) {
+        if (float(i) >= uStirN) break;
+        vec2 r = p - uStir[i].xy;
+        s += uStir[i].zw * mix(exp(-dot(r, r) * uStirW[i].x), 1.0, uStirW[i].y);
+      }
+      return s;
+    }
+    #endif
 
-      /* --------------------------------------------------------
-         Three layers of iterated sine turbulence. The domain is
-         scaled right down on purpose: the chaos comes from
-         iterating, not from spatial frequency, so the folds stay
-         enormous and long-wavelength instead of busy.
-         -------------------------------------------------------- */
+    float folds(vec2 p, float t) {
+      // the phase offset the disc has left here (THE STIR, in the JS above)
+      vec2 st = vec2(0.0);
+      #ifdef SILK_STIR
+        st = stir(p);
+      #endif
+
       float sum = 0.0;
       float wsum = 0.0;
 
@@ -304,10 +487,12 @@
         float a =  1.7 + fi * 0.90;
         float d = -0.6 + fi * 1.30;
 
+        // st moves the phase of each pass, not the values: the
+        // iteration carries the offset through every fold after it
         for (int j = 2; j < 9; j++) {
           float fj = float(j);
-          a += cos(fj + d * 1.2 + q.x * 2.0 - t);
-          d += sin(fj * q.y + a - t * 0.8);
+          a += cos(fj + d * 1.2 + q.x * 2.0 - t + st.x);
+          d += sin(fj * q.y + a - t * 0.8 + st.y);
         }
 
         /* The ribbon phase, and the balance that decides the whole
@@ -340,7 +525,31 @@
       /* Stretch the middle of the range and let both ends clip. The
          flat white plateaus and the pooled deep blues are what make
          this satin rather than a gradient. */
-      float val = clamp((sum / wsum - uWindow.x) / uWindow.y, 0.0, 1.0);
+      return clamp((sum / wsum - uWindow.x) / uWindow.y, 0.0, 1.0);
+    }
+
+    /* The water's shading at a field value: + where a crest lifts
+       the ground, - where a crease sinks it (the depth, below). */
+    float rimShade(float v, float sheen) {
+      float dev = ramp(v).x + sheen - 0.83;
+      return smoothstep(0.0, 0.14, dev) - smoothstep(0.0, 0.26, -dev);
+    }
+
+    void main() {
+      vec2 css = gl_FragCoord.xy / uDpr + uRef.xy;        // the frame, CSS px, y up
+      vec2 px = css / uRef.zw;                            // 0..1, y up
+      vec2 p  = (css * 2.0 - uRef.zw) / uRef.w;           // centred, aspect-true
+      vec2 pl = gl_FragCoord.xy / uRes;                   // this canvas, 0..1
+
+      float t = uTime * 0.088;
+
+      /* --------------------------------------------------------
+         Three layers of iterated sine turbulence. The domain is
+         scaled right down on purpose: the chaos comes from
+         iterating, not from spatial frequency, so the folds stay
+         enormous and long-wavelength instead of busy.
+         -------------------------------------------------------- */
+      float val = folds(p, t);
 
       vec3 lab = ramp(val);
       float base = lab.x;   // the cloth before any light falls on it
@@ -429,6 +638,27 @@
         vec3 deep = uGround;
         deep.x += uGrain.x * rise - uGrain.y * fall;
         deep.yz *= 1.0 + 0.30 * rise;
+        /* The sharp lines are where the water's shading turns over
+           fastest: a crest pinched against its crease, rise to fall
+           in a few pixels. That is a steepness, so it is measured as
+           one — on the shading itself, per CSS px, the same lines at
+           every render scale — and only they take the ground's
+           accent. The broad waves keep the ground's own colour. */
+        #ifdef SILK_DERIV
+          float shade = rise - fall;
+          // a 2x2-pixel estimate: blocky, so it only decides where to look
+          float near = fwidth(shade) * uDpr;
+          if (uAccentAmt > 0.0 && near > 0.03) {
+            // one CSS px, in p's units, sampled either way across —
+            // the stir is inside folds(), so the lines it makes take the
+            // accent like any line the field makes itself
+            float e = 2.0 / uRef.w;
+            float sx = rimShade(folds(p + vec2(e, 0.0), t), sheen);
+            float sy = rimShade(folds(p + vec2(0.0, e), t), sheen);
+            float steep = length(vec2(sx - shade, sy - shade));
+            deep = mix(deep, uAccent, uAccentAmt * smoothstep(0.08, 0.26, steep));
+          }
+        #endif
         lab = mix(lab, deep, m);
       }
 
@@ -477,8 +707,15 @@
     if (!gl) return host.classList.add("silk-fallback");
 
     const vs = compile(gl, gl.VERTEX_SHADER, VERT);
-    const fs = compile(gl, gl.FRAGMENT_SHADER, FRAG);
-    if (!vs || !fs) return host.classList.add("silk-fallback");
+    // the accent's sharp lines need derivatives; where WebGL1 has no
+    // such extension the shader compiles without them, untinted
+    const deriv = gl.getExtension("OES_standard_derivatives")
+      ? "#extension GL_OES_standard_derivatives : enable\n#define SILK_DERIV 1\n"
+      : "";
+    if (!vs) return host.classList.add("silk-fallback");
+    const stirDef = STIR ? `#define SILK_STIR 1\n#define STIR_N ${STIRRING.n}\n` : "";
+    const fs = compile(gl, gl.FRAGMENT_SHADER, deriv + stirDef + FRAG);
+    if (!fs) return host.classList.add("silk-fallback");
 
     const prog = gl.createProgram();
     gl.attachShader(prog, vs);
@@ -508,6 +745,8 @@
     const uGrain = loc("uGrain");
     const uDepth = loc("uDepth");
     const uWater = loc("uWater");
+    const uAccent = loc("uAccent");
+    const uAccentAmt = loc("uAccentAmt");
     const P = PRESETS[canvas.dataset.preset] || PRESETS.marble;
 
     gl.uniform1f(gl.getUniformLocation(prog, "uStrength"), strength);
@@ -519,6 +758,7 @@
     gl.uniform1f(gl.getUniformLocation(prog, "uFall"), P.fall);
     gl.uniform2f(gl.getUniformLocation(prog, "uWindow"), P.window[0], P.window[1]);
     gl.uniform1f(gl.getUniformLocation(prog, "uCrest"), P.crest);
+    const stir = STIR ? makeStir(gl, prog) : null;
 
     /* Where this surface puts its type, as "cx cy rx ry" in 0..1 with
        y measured up from the bottom. The field lights that patch so
@@ -535,6 +775,7 @@
     const look = {
       ref: null, bars: [0, 0, 0, 0], own: [0, 0],
       ground: [1, 0, 0], grain: [0, 0], depth: 0, water: [0, 0, 0],
+      accent: [1, 0, 0], accentAmt: 0,
     };
     const handle = { look, before: null, refresh() {}, stop() {} };
 
@@ -546,10 +787,12 @@
     let h = 0;
     let cw = 1;
     let ch = 1;
+    let box = null; // the canvas's client rect, as of the last frame
 
     function resize() {
       const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR) * res;
       const rect = canvas.getBoundingClientRect();
+      box = rect;
       cw = Math.max(1, rect.width);
       ch = Math.max(1, rect.height);
       const nw = Math.max(1, Math.round(rect.width * dpr));
@@ -572,11 +815,21 @@
       gl.uniform2fv(uGrain, look.grain);
       gl.uniform1f(uDepth, look.depth);
       gl.uniform3fv(uWater, look.water);
+      gl.uniform3fv(uAccent, look.accent);
+      gl.uniform1f(uAccentAmt, look.accentAmt);
     }
 
     function draw(seconds) {
       if (handle.before && handle.before(handle) === false) return;
       upload();
+      // after before(): the stage rewrites its frame every frame
+      if (stir) {
+        const now = performance.now();
+        const ref = look.ref || [0, 0, cw, ch];
+        feedStir(now, box, ref);
+        ageStir(now);
+        stir.upload(now);
+      }
       gl.uniform1f(uTime, seconds);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
