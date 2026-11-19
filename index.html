@@ -298,20 +298,23 @@
             <div class="ledger-what">
               <h3>TrendAI</h3>
               <p class="ledger-role">Product Team, AVTD</p>
+              <!-- Each point is the résumé's own line. On desktop the
+                   flight sets them out as callouts (xp3d-callouts.js),
+                   each under its data-key label. -->
               <ul class="ledger-list">
-                <li>Built a read-only SOC alert-triage agent on the Claude Agent SDK that chains multi-step tool calls across six custom MCP tools to triage alerts and correlate cloud-asset CVEs</li>
-                <li>Fixed a two-region production incident where Azure zonal-capacity failures left zombie VMs marked healthy and stranded 30+ scans, then killed the failure class for good with idempotent teardown and launch guards</li>
-                <li>Shipped AWS region eu-south-2 end to end for agentless vulnerability scanning and VPC Flow Logs (CloudFormation, pipelines, tests), then codified the 15-task runbook into a reusable Claude Code skill</li>
-                <li>Expanded weekly BlackDuck and Fortify SCA/SAST scans from 22 repos to all 52 with GitHub Actions, then remediated 270+ critical and high findings across 23 repos, driving the critical backlog to near zero</li>
-                <li>Cut a live nine-service disaster-recovery simulation from 10 hours to 5, orchestrating AI subagents through three end-to-end dry runs to clear every CI failure</li>
+                <li data-key="Agents">Built a lightweight, read-only agent on the Claude Agent SDK that wraps the Vision One API in 6 custom MCP tools, pulling only the alert data each prompt needs to keep token costs low</li>
+                <li data-key="Incident">Restored 30+ stuck scans as sole responder to a two-region production outage, then fixed the root cause in Go</li>
+                <li data-key="Cloud">Launched vulnerability scanning in a new AWS region end to end, from CloudFormation to CI/CD and tests</li>
+                <li data-key="AppSec">Fixed 270+ critical/high SAST/SCA findings in 23 repos and scaled Black Duck/Fortify to 52 repos</li>
+                <li data-key="Recovery">Halved a 9-service disaster-recovery drill from 10 hours to 5 by using AI subagents to fix its automation</li>
               </ul>
               <ul class="tags">
                 <li class="br br--mono">[ Claude Agent SDK ]</li>
                 <li class="br br--mono">[ MCP ]</li>
+                <li class="br br--mono">[ Go ]</li>
                 <li class="br br--mono">[ AWS ]</li>
-                <li class="br br--mono">[ Azure ]</li>
                 <li class="br br--mono">[ CloudFormation ]</li>
-                <li class="br br--mono">[ Vulnerability management ]</li>
+                <li class="br br--mono">[ SAST · SCA ]</li>
               </ul>
             </div>
           </li>
@@ -327,19 +330,18 @@
               <h3>Hydro Ottawa</h3>
               <p class="ledger-role">Cybersecurity Analyst Intern</p>
               <ul class="ledger-list">
-                <li>Built a third-party app-risk pipeline that scrapes Google Workspace Marketplace listings and scores each app's terms of service and security policies with Gemini's REST API</li>
-                <li>Wrote four incident-response playbooks, 20 to 30 pages each, covering AI data leaks, web exploits, ransomware and insider threats, then validated every one of them end to end in test environments</li>
-                <li>Deployed AWS GuardDuty with Terraform to secure S3, built a Lambda pipeline that auto-quarantines malicious files with SNS alerts, and migrated 20+ PGP secrets into Secrets Manager</li>
-                <li>Emulated Living-off-the-Land attacks by chaining 10 to 25 MITRE ATT&amp;CK abilities in Caldera, which is where I learned how quiet a real intrusion looks</li>
-                <li>Tested DNS connections with a PowerShell script driving Cloudflare API calls</li>
+                <li data-key="AI">Built an LLM pipeline that uses Gemini to score the security risk of third-party Google Workspace apps</li>
+                <li data-key="Response">Co-wrote 4 incident-response playbooks (NIST SP 800-61) that the security team adopted</li>
+                <li data-key="Red team">Emulated Living-off-the-Land attacks in MITRE Caldera, chaining 10–25 ATT&amp;CK techniques</li>
+                <li data-key="Cloud">Deployed AWS security controls in Terraform, like GuardDuty and Lambda auto-quarantine of malicious files</li>
               </ul>
               <ul class="tags">
-                <li class="br br--mono">[ AWS ]</li>
-                <li class="br br--mono">[ Terraform ]</li>
-                <li class="br br--mono">[ MITRE ATT&amp;CK ]</li>
                 <li class="br br--mono">[ Gemini API ]</li>
-                <li class="br br--mono">[ IAM ]</li>
-                <li class="br br--mono">[ PowerShell ]</li>
+                <li class="br br--mono">[ NIST SP 800-61 ]</li>
+                <li class="br br--mono">[ MITRE ATT&amp;CK ]</li>
+                <li class="br br--mono">[ Caldera ]</li>
+                <li class="br br--mono">[ Terraform ]</li>
+                <li class="br br--mono">[ AWS ]</li>
               </ul>
             </div>
           </li>
@@ -355,17 +357,11 @@
               <h3>Ciena</h3>
               <p class="ledger-role">Software Developer Intern</p>
               <ul class="ledger-list">
-                <li>Automated daily test-result reports with a cron-scheduled Python tool, writing SQL against Oracle and emailing formatted tables to every deploying team. It is still running today, which I am still quietly proud of</li>
-                <li>Built the Angular and TypeScript front end of an internal IAM permission-assignment tool</li>
-                <li>Learned DevOps and Agile in practice, with Jira and Git</li>
+                <li data-key="Automation">Automated daily test-result reports for every deploying team with a Python and SQL tool that is still in use</li>
               </ul>
               <ul class="tags">
                 <li class="br br--mono">[ Python ]</li>
                 <li class="br br--mono">[ SQL ]</li>
-                <li class="br br--mono">[ Angular ]</li>
-                <li class="br br--mono">[ TypeScript ]</li>
-                <li class="br br--mono">[ Oracle ]</li>
-                <li class="br br--mono">[ Linux ]</li>
               </ul>
             </div>
           </li>
@@ -579,6 +575,7 @@
     <script src="follow.js" defer></script>
     <script src="bridge.js" defer></script>
     <script src="xp3d-scenes.js" defer></script>
+    <script src="xp3d-callouts.js" defer></script>
     <script src="xp3d.js" defer></script>
     <script src="home.js" defer></script>
   </body>

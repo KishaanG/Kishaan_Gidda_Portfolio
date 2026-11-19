@@ -30,7 +30,8 @@
   const sec = document.getElementById("experience");
   const flight = sec && sec.querySelector("[data-flight]");
   const Scenes = window.XpScenes;
-  if (!flight || !Scenes) return;
+  const Callouts = window.XpCallouts;
+  if (!flight || !Scenes || !Callouts) return;
 
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const wide = window.matchMedia("(min-width: 901px)");
@@ -238,7 +239,9 @@
     return { el, w: 0, h: 0, rect: null };
   });
 
-  const details = stops.map((s) => {
+  // a job's detail: its date line, its points as callouts on an arc
+  // (xp3d-callouts.js), then its tags
+  const details = stops.map((s, k) => {
     const el = document.createElement("div");
     el.className = "xp-detail";
     const when = document.createElement("p");
@@ -250,7 +253,7 @@
     }
     when.append(document.createTextNode(`${s.when} · ${s.role}`));
     el.append(when);
-    if (s.list) el.append(s.list.cloneNode(true));
+    Callouts.build(s, el, k);
     if (s.tags) el.append(s.tags.cloneNode(true));
     panel.append(el);
     return el;
@@ -298,6 +301,7 @@
     };
     panelRect = box(panel);
     railRect = box(rail);
+    Callouts.measure(stage);
     // the same rounding about.js applies to the same element
     if (handoff) dropX = Math.round(handoff.getBoundingClientRect().left) + 0.5 - sr.left;
     // labels are measured at scale 1 and scaled by transform after
@@ -454,7 +458,7 @@
   }
 
   /* the hairlines never cross type: they are rubbed out, softly,
-     from under the detail and under the label being read */
+     from under the callouts and under the label being read */
   function knockOut(rect, pad, blur) {
     if (!rect) return;
     ctx.save();
@@ -471,7 +475,13 @@
     const drawn = key <= 1 ? lerp(0.3, 1, key) : 1 + 2 * (key - 1);
     drawThread(cam, drawn);
     ST.forEach((_, k) => drawCube(cam, k, key));
-    knockOut(panelRect, 20, 16);
+    // the leaders run out from each station's own point, behind its
+    // label: the label is rubbed out after them
+    const stationAt = (k) => {
+      const c = toView(cam, ST[k]);
+      return c[2] > NEAR ? toScreen(c) : null;
+    };
+    Callouts.draw(ctx, stationAt, knockOut, tagRect);
     if (tagRect) knockOut([tagRect[0] + 4, tagRect[1], tagRect[2], tagRect[3]], 4, 6);
     drawDrop(cam);
   }
@@ -580,6 +590,7 @@
       el.style.opacity = e.toFixed(3);
       el.style.transform = `translate3d(0, ${((1 - e) * 26).toFixed(1)}px, 0)`;
       el.style.pointerEvents = e > 0.9 ? "auto" : "none";
+      Callouts.update(k, e);
     });
     const now = clamp(Math.round(key) - 1, 0, n - 1);
     if (now !== shown) {
