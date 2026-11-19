@@ -37,7 +37,9 @@ of the same field, never a copy of it:
    and ribbons rather than a full frame of cloth.
 5. **About**, one viewport of silk stuck behind the section, ramping up out of
    the flight's ground at the top and back down to paper for the close.
-6. **The close** (contact), rising from the bottom edge, at reduced strength.
+6. **The close** (contact), at reduced strength, filling the section from its
+   top rule. It rises out of About's paper over a short fixed ramp (96px), so
+   the seam is not an edge and there is no band of bare paper above the type.
 
 So the rhythm is light, depth, light, haze, light, paper, light. Never more than
 two canvases draw at once; each pauses off screen and on a hidden tab, and
