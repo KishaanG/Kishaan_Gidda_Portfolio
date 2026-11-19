@@ -212,8 +212,10 @@ job: `chrome.js` drops it whenever a bar's band sits over a field's solid range,
 and the chrome sits on raw light instead. That leaves the nav as the only type on
 the site with nothing under it at all, and `--ink` bottoms out at 3.97:1 in the
 top-right corner where the field's own reading floor barely reaches. `--ink-field`
-is one rung deeper and clears 4.5:1 across the whole drift. It appears nowhere
-else; on paper the scrim is back and `--ink-soft` is correct again.
+is one rung deeper and clears 4.5:1 across the whole drift. As type it appears
+nowhere else; on paper the scrim is back and `--ink-soft` is correct again. Its
+one other use is as a ground: the curtain (§6), the deepest blue the family has,
+standing in for the reference's black.
 
 Each field declares where it is at full strength as `--field-from`/`--field-to`
 and builds its own mask from those values, so the mask and the scrim can never
@@ -416,6 +418,36 @@ was. When the cursor stops, the disc settles and its loop sleeps, so it is not
 perpetual motion. Its movement is what stirs the silk (§1). Under
 `prefers-reduced-motion` it sits exactly on the cursor, with no spring, and stirs
 nothing.
+
+**The curtain covers the load, and lifts in stairs.** Pinned by the user on
+2026-11-19 to skiper-ui's "Stairs preloader" (`https://skiper-ui.com/v1/skiper9`),
+because a cold load was slow. Home page only (`curtain.css`, `curtain.js`). The
+name sets word by word, white serif on `--ink-field`; then the words fade out
+in reading order and the ground collapses to the top in stairs, the right
+column leading. The reference's motion was measured frame by frame and kept:
+a 900ms fade in, 200ms apart, and stairs 480ms each with an ease-out, 50ms apart,
+starting 420ms into the exit. Three things are adapted:
+
+- **Four stairs on the page's own grid**, not the reference's five equal ones.
+  The inner two are one grid column each and the outer two take the margins, so
+  the steps open along the columns the content is set on.
+- **The exit fade is quicker** (560ms, 120ms apart). The stairs uncover the hero's
+  heading right where the name sits, and a name still half there reads as a
+  ghost over it.
+- **It lifts on readiness, not a timer.** It waits for `load` and for the hero's
+  silk to have a first frame (`silk:ready`, which fires on every path out of
+  `mount`, the fallback included), and never before the name has fully set.
+  Whatever is still loading, it lifts by 4.5s. The name waits for Source Serif 4
+  (up to 1.2s), because `display=swap` would otherwise change its face halfway
+  through the fade.
+
+The page's entrance waits for it: `home.js` holds the `.rise` reveals until
+`curtain:lift`, so the hero settles while the stairs pull away. Scroll input is
+held while it is up. Hiding the scrollbar would reflow the page twice. It sits
+over the chrome and under the disc, which stays the pointer. Under
+`prefers-reduced-motion` the name is simply there and the whole curtain fades. With
+no script it never shows: an inline script in the head raises it, and also takes
+it down at 7s if `curtain.js` never does.
 
 **Scroll drives three sections, and it must not drive them the same way.** On the
 work stage scroll hands over a *project*: the section pins and each card gives
