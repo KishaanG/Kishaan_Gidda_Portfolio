@@ -137,49 +137,6 @@ strong { font-weight: 500; color: var(--display); }
 }
 
 /* ============================================================
-   The column grid — DESIGN.md §2
-   Fixed, full-height hairlines behind everything. Content
-   aligns to these; nothing on the page floats free of them.
-   ============================================================ */
-
-/* Drawn OVER the page, not behind it — as in the reference,
-   where the rules pass across content. Above main (1), below
-   the fixed chrome (100). */
-.col-grid {
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  pointer-events: none;
-  display: flex;
-  justify-content: center;
-}
-.col-grid > span {
-  width: var(--container);
-  height: 100%;
-  background-image: repeating-linear-gradient(
-    to right,
-    var(--rule) 0 1px,
-    transparent 1px calc(25% + 0.25px)
-  );
-  background-position: left top;
-}
-/* the closing rule on the right edge, which the repeat can't reach */
-.col-grid > span::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  width: 1px;
-  background: var(--rule);
-}
-.col-grid > span { position: relative; }
-
-@media (max-width: 900px) {
-  .col-grid { display: none; }
-}
-
-/* ============================================================
    Fixed chrome — top bar and footer bar
    ============================================================ */
 

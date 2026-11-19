@@ -231,14 +231,6 @@
     return r.top + r.height / 2;
   });
 
-  /* the column grid steps back by however much of the viewport the
-     grounds are covering */
-  function fadeGrid(r = stage.getBoundingClientRect()) {
-    const vh = window.innerHeight;
-    const cover = clamp((Math.min(vh, r.bottom) - Math.max(0, r.top - reach())) / vh);
-    root.style.setProperty("--grid-a", (1 - cover).toFixed(3));
-  }
-
   /* ================================================================
      PINNED
      ================================================================ */
@@ -395,7 +387,6 @@
     });
 
     paintChrome(sr);
-    fadeGrid(sr);
   }
 
   /* ---- scrolling to a place on the runway ---- */
@@ -619,7 +610,6 @@
         if (mid >= c.top && mid <= c.bottom) return setBar(bar, null);
         setBar(bar, pal[i]["--st-title"], pal[i]["--st-halo"], pal[i]["--st-ground"]);
       });
-      fadeGrid();
     };
     const onScroll = () => {
       if (ticking) return;
@@ -643,7 +633,6 @@
   function mount() {
     if (detach) detach();
     clearBars();
-    root.style.removeProperty("--grid-a");
     detach = wide.matches && !REDUCED ? mountPinned() : mountStacked();
   }
 

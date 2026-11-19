@@ -167,11 +167,14 @@ integrated graphics.
 
 ## 2. The column grid
 
-A **fixed, full-height hairline column grid** sits behind all content, spanning
-the content container: 4 columns, 5 rules. It is the site's structural signature
-and it is visible on every screen ≥ 900px. Content aligns to it; nothing floats
-free of it. Below 900px the grid drops to a single centred column and the rules
-hide.
+Content sits on a **4-column grid** spanning the content container, and nothing
+floats free of it. Below 900px it drops to a single centred column.
+
+**The grid is not drawn.** Until 2026-11-19 five fixed, full-height hairline
+rules marked it on every screen ≥ 900px, over all content. The user removed them.
+Don't bring them back. The columns remain as positions: the hero's type, the
+work stage, the ledger, About's river and the curtain's stairs still land on
+them.
 
 Container: `min(1320px, 100% - 96px)`.
 
@@ -538,8 +541,6 @@ reverse.
 - **Every way in lands at rest.** `[ Work ]`, `[ View work ]`, the rail and deep
   links to a project all go to that project resting and pinned, not to the
   section's top edge with the stage still rising.
-- **While the stage has the viewport the column grid steps back.** The stage is
-  the one surface the grid's rules do not pass across.
 - **The card is only a link once it has landed.** Mid-flight it would take
   clicks meant for the one arriving.
 
@@ -596,8 +597,8 @@ marks where you are and jumps.
 stroke, drawn by scroll with the pen tip on that 70% reading line, over About's
 silk field. It swings down the page in long bends — the *river* — and each fact
 sits in the crook of one, alternating sides. Above the toolkit it fans out onto
-the grid's five rules and runs on as the warp the groups hang between, then fades
-into the rules themselves, so the close is handed a hairline rather than an edge.
+the grid's five column lines and runs on as the warp the groups hang between, then
+fades out above the close, so the ink ends softly rather than at an edge.
 A station is an open ring until the pen passes it, then filled — the same two
 states as the flight's cubes. Each fact rises in once as the pen reaches it and
 never replays (`is-reached` latches). On phones the line runs straight down the
