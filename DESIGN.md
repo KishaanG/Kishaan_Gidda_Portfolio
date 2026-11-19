@@ -236,6 +236,26 @@ reads on whatever the lens turns the ground into: a screenshot's white goes blac
 in it, PoleLab's carbon goes pale. Without `backdrop-filter` it falls back to a
 plain `difference` inversion, hue and all.
 
+**On a control the disc snaps, iPad-style** (user, 2026-11-19). Over any link
+or button it leaves the cursor and takes the control's own box, plus 6px
+padding and the control's corners (never sharper than 6px). It sits over the
+control as a faint tint in the control's ink (13%; on the stage, the accent at
+32%), and leans toward the mouse by up to 6px. A project's card snaps too, on the user's word. Because it is
+wider than 480×160 it takes half the tint. The lens no longer carries an arrow: the
+snap is what says a thing is clickable. A press sinks the disc to 0.92. Three seconds
+without the mouse moving fades it out. Under reduced motion it snaps without a
+spring. The system cursor is hidden wherever the disc runs: the disc is the pointer
+(user, 2026-11-19), 60px off a control.
+
+**Over the work stage the disc is the project's accent, at 42%** (user,
+2026-11-19): PoleLab's and CyberSci's red, CareRouter's gold. There the lens
+gives way to a see-through fill (the user asked to see through it), because
+the stage already carries each project's hue.
+Pinned, `work.js` writes the blended accent to the root as `--stage-accent`, so
+the disc turns from red to gold across a handover with the names. Stacked, it
+takes the accent of the ground under the cursor. Off the stage it is the lens
+again.
+
 ### The work stage's grounds
 
 The work stage (§7) is the one place the page goes to depth: each project
@@ -263,9 +283,10 @@ grey of the screenshot's horizon (`#323540` at the cap), not to blue.
 
 **Every ground now takes its project's world, accent and all** (user,
 2026-11-18): PoleLab carbon with its Warm Red, CareRouter grey-blue with Queen's
-gold, CyberSci white with red. The accent is never a fill or a glow (a red aura
-behind PoleLab's card was tried and refused). It lives in exactly two places:
-the rail's active tick, and **the sharp lines in the ground's folds** — the
+gold, CyberSci white with red. The accent is never a fill or a glow on the
+stage itself (a red aura behind PoleLab's card was tried and refused). It lives
+in exactly three places: the disc while it is over the stage (above), the
+rail's active tick, and **the sharp lines in the ground's folds** — the
 places where the water's shading turns over in a few pixels, a crest pinched
 against its crease. The broad waves keep the ground's own colour. `silk.js`
 finds those lines by steepness, sampling the fold field one CSS px either way
@@ -528,10 +549,27 @@ screenshot is zoomed to a readable scale around the part that matters
 2023, Hydro Ottawa 2025, TrendAI 2026 — through a world built from the hero's
 own shader (`xp3d.js`, `xp3d-scenes.js`; the ribbon world). Each job is a station:
 a wireframe cube, and a label as real text — the year in mono, the company in the
-display serif, the role. While the camera rests on a job its detail — the
-ledger's own bullets and tags, cloned — settles in on the right half, starting on
-the grid's middle rule. A rail of `[ year · company ]` brackets marks where you
-are and jumps.
+display serif, the role. While the camera rests on a job its detail settles in
+on the right half, starting on the grid's middle rule: the date line, the job's
+points as **callouts**, then its tags. A rail of `[ year · company ]` brackets
+marks where you are and jumps.
+
+- **The points are callouts, not a list** (user, 2026-11-19; chosen over a
+  hung-figure list, a lede with labelled pairs, a hover index and a
+  scroll-stepped sequence). A bulleted list in a box read as notes pasted into
+  the scene. Each point is the ledger's own line under a mono label (`data-key`),
+  and they stand on an arc about the station, the middle ones furthest out, so
+  every leader is about as long (`xp3d-callouts.js`). A hairline runs from the
+  station's own point to each callout. The leaders leave the station as one
+  line, run on behind its label (rubbed out, like the thread), and only part at
+  the label's far edge, so the fan opens from the company's name. They draw out
+  as the camera settles, a beat apart, and each callout shows only once its
+  leader reaches it. They are drawn on the flight's hairline canvas, in the
+  thread's ink at a lighter weight; nothing is knocked out between the
+  callouts, because that air is where the leaders run.
+- **On a short screen it gives up air, then the tags.** At 780px tall or less
+  the tags are dropped from the flight (never from the ledger): each names
+  something a callout already says.
 
 - **It arrives straight after the work stage.** There is no header band between
   them. The stage rises carrying a band of CyberSci's ground across its top edge
@@ -598,11 +636,9 @@ the flight does not run at all: that visitor gets the ledger.
   flight hands down. Each fact is set in the display serif in the crook of a
   bend, its label in mono above it; the toolkit's four groups sit on the page's
   four columns, marked entries carried by weight and the display blue.
-- **The disc.** An 80px lens that trails the cursor on every classic page
-  (`follow.js`; `.disc` in `site.css`). It is one size always and never grows
-  over a link; instead an arrow turns in it toward where the link goes — down or
-  up the page to an anchor, out (↗) to anything else. The native cursor stays as
-  it is. The disc is `aria-hidden` and takes no pointer events, so it never
+- **The disc.** A 60px lens that trails the mouse on every classic page
+  (`follow.js`; `.disc` in `site.css`), and is the pointer: the system cursor is
+  hidden. On a link or button it snaps to the control's box (§3). The disc is `aria-hidden` and takes no pointer events, so it never
   changes what a click does. Fine pointers only: on touch there is no cursor to
   follow, and it never mounts.
 - **Screenshots are real, never staged.** A project's card is a capture of the

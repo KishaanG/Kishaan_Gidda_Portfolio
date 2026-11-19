@@ -1251,10 +1251,52 @@ main { position: relative; z-index: 1; }
   text-transform: uppercase;
   color: var(--ink);
 }
-.xp-detail .ledger-list { margin-top: 16px; }
-.xp-detail .ledger-list li { font-size: 0.92rem; line-height: 1.55; padding: 8px 0 8px 22px; }
-.xp-detail .ledger-list li::before { top: 17px; }
+/* The points are callouts, not a list: each stands on an arc about
+   the station (--off, set by xp3d-callouts.js), its label in mono
+   over the résumé's own line, and a hairline runs to it from the
+   station. Every ink is --ink: the ribbons pass behind the panel. */
+.xp-calls {
+  display: grid;
+  gap: clamp(12px, 2.4vh, 24px);
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.xp-call {
+  --arc: 64px;
+  margin-left: calc(var(--off, 0) * var(--arc));
+  max-width: calc(100% - var(--arc));
+}
+.xp-call-key {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.xp-call-text {
+  margin: 5px 0 0;
+  max-width: 46ch;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.xp-detail .tags { margin-top: 20px; }
 .xp-detail .tags .br { color: var(--ink); }
+
+/* 1280×720 leaves the panel about 450px between the readout and
+   the rail. It gives up air first, then the tags: every tag names
+   something a callout above it already says. */
+@media (max-height: 820px) {
+  .xp-call-text { font-size: 0.85rem; line-height: 1.45; }
+  .xp-detail .tags { margin-top: 12px; }
+}
+@media (max-height: 780px) {
+  .xp-calls { gap: 10px; margin-top: 16px; }
+  .xp-call-text { font-size: 0.82rem; margin-top: 3px; }
+  .xp-detail .tags { display: none; }
+}
 
 .xp-rail {
   position: absolute;

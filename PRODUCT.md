@@ -28,18 +28,37 @@ It ships as **two parallel front doors** to the same person:
 **Positioning:** Aspiring Cybersecurity Analyst & AI/ML Engineer. The through-line
 is that he ships software *and* breaks it — development plus vulnerability work.
 
-**Experience**
-- **TrendAI** — Product Team, AVTD. *May – Aug 2026.* Contributed to software
-  development on the AVTD product team; identified and resolved vulnerabilities.
-- **Hydro Ottawa** — Cybersecurity Analyst Intern. *May – Aug 2025.* IR playbooks
-  for AI data leaks, web exploits, ransomware, insider threats; Living-Off-The-Land
-  simulation with MITRE ATT&CK + Caldera on Linux; AWS GuardDuty as IaC and S3/IAM
-  hardening; Gemini REST API against Google Workspace data for quantified risk
-  assessment; AWS Lambda quarantine workflow for malicious S3 files with SNS
-  alerting; PowerShell + Cloudflare API DNS connection testing.
-- **Ciena** — Software Developer Intern. *Feb – Aug 2023.* Automated Python report
-  generator on Linux against Oracle databases; Angular/TypeScript front end;
-  DevOps in Agile with Jira and Git.
+**Experience** — the points the site shows are the lines of the user's résumé
+(*Kishaan_Gidda_AI_Developer.pdf*, supplied 2026-11-19), word for word. Each
+one's mono label on the site (Agents, Incident, …) is not résumé wording.
+- **TrendAI** — Product Team, AVTD. *May – Aug 2026.* (The résumé names this
+  role Software Engineer (Co-op), Trend Micro, Vision One Cloud Security; the
+  site keeps the names above until the user says otherwise.)
+  - A lightweight, read-only agent on the Claude Agent SDK wrapping the Vision
+    One API in 6 custom MCP tools, pulling only the alert data each prompt
+    needs to keep token costs low.
+  - Restored 30+ stuck scans as sole responder to a two-region production
+    outage, then fixed the root cause in Go.
+  - Launched vulnerability scanning in a new AWS region end to end, from
+    CloudFormation to CI/CD and tests.
+  - Fixed 270+ critical/high SAST/SCA findings in 23 repos; scaled Black
+    Duck/Fortify to 52 repos.
+  - Halved a 9-service disaster-recovery drill from 10 hours to 5 using AI
+    subagents to fix its automation.
+- **Hydro Ottawa** — Cybersecurity Analyst Intern. *May – Aug 2025.*
+  - An LLM pipeline using Gemini to score the security risk of third-party
+    Google Workspace apps.
+  - Co-wrote 4 incident-response playbooks (NIST SP 800-61) the security team
+    adopted.
+  - Emulated Living-off-the-Land attacks in MITRE Caldera, chaining 10–25
+    ATT&CK techniques.
+  - Deployed AWS security controls in Terraform, like GuardDuty and Lambda
+    auto-quarantine of malicious files.
+- **Ciena** — Software Developer Intern (the résumé says Co-op). *Feb – Aug
+  2023.* Automated daily test-result reports for every deploying team with a
+  Python and SQL tool that is still in use. (Earlier copy also listed an
+  Angular/TypeScript front end and DevOps in Agile; the résumé drops them, and
+  so does the site.)
 
 **Projects**
 - **CareRouter** — AI mental-health triage and navigation. Next.js / Gemini.

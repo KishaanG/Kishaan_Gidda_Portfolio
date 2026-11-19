@@ -367,6 +367,9 @@
       if (written[k] === colours[k]) return;
       written[k] = colours[k];
       stage.style.setProperty(k, colours[k]);
+      // the disc lives on the body, not in the stage: it takes the
+      // accent from the root, blending as the names hand over
+      if (k === "--st-accent") root.style.setProperty("--stage-accent", colours[k]);
     });
   }
 
