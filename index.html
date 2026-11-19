@@ -496,37 +496,6 @@
           <canvas data-silk="0.72" data-read="0.50 0.30 1.02 0.60"></canvas>
         </div>
 
-        <!-- everything the work is made of, radiating from one fixed
-             point. Every line runs to the hub, so the families only
-             name themselves when you hover one of their members and
-             that slice of the fan gathers. -->
-        <div class="constellation" aria-hidden="true">
-          <svg class="constellation-lines"><g></g></svg>
-
-          <!-- --cx/--cy are the phone positions: the type does not
-               shrink with the field, so the wide layout cannot simply
-               be scaled down -->
-          <span class="cn-hub" data-node="hub" style="--x: 50%; --y: 80%; --cx: 50%; --cy: 82%"
-            >The Work<em>build it, then break it</em></span
-          >
-
-          <span class="cn-node" data-node="ai"  data-of="hub" style="--x: 10%; --y: 26%; --cx: 15%; --cy: 18%">AI&thinsp;/&thinsp;ML</span>
-          <span class="cn-node" data-node="sec" data-of="hub" style="--x: 5%;  --y: 58%; --cx: 9%;  --cy: 42%">Security</span>
-          <span class="cn-node" data-node="sys" data-of="hub" style="--x: 28%; --y: 76%; --cx: 17%; --cy: 64%">Systems</span>
-
-          <!-- data-compact drops a satellite on phones, where the
-               field has nothing like the room for nine of them -->
-          <span class="cn-sat" data-of="ai"  data-compact="off" style="--x: 32%; --y: 48%">reinforcement learning</span>
-          <span class="cn-sat" data-of="ai"  data-compact="off" style="--x: 52%; --y: 34%">agentic AI</span>
-          <span class="cn-sat" data-of="ai"  style="--x: 86%; --y: 40%; --cx: 79%; --cy: 40%">risk scoring</span>
-          <span class="cn-sat" data-of="sec" data-compact="off" style="--x: 30%; --y: 58%">playbooks</span>
-          <span class="cn-sat" data-of="sec" data-compact="off" style="--x: 66%; --y: 53%">ATT&amp;CK</span>
-          <span class="cn-sat" data-of="sec" style="--x: 93%; --y: 63%; --cx: 72%; --cy: 62%">capture the flag</span>
-          <span class="cn-sat" data-of="sys" style="--x: 60%; --y: 22%; --cx: 62%; --cy: 16%">solvers</span>
-          <span class="cn-sat" data-of="sys" data-compact="off" style="--x: 80%; --y: 80%">IAM &middot; GuardDuty</span>
-          <span class="cn-sat" data-of="sys" data-compact="off" style="--x: 66%; --y: 92%">pipelines</span>
-        </div>
-
         <div class="close-inner">
           <p class="label rise">Contact</p>
           <h2 class="close-title rise" id="contact-title" style="--d: 0.06s">

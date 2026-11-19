@@ -355,14 +355,9 @@ the serif carries all the identity while the sans is deliberately neutral
 furniture. If the pin is ever lifted, this is the first thing to revisit.
 
 The display face is reserved for: the hero line, section titles, the contact
-address, project names on the work stage, blog article titles, and **every label in
-the constellation**. **It never sets body copy, and it is never bolded** — weight
-400, occasionally 300 at the largest sizes. Size comes from scale, not weight.
-
-The constellation is the one place the serif is set small, and it is the reason
-that diagram holds together: hub, topics and satellites are one face at three
-sizes, the satellites in italic, so the whole fan reads as a single voice rather
-than a diagram assembled from mono tags. Mono would have made it furniture.
+address, project names on the work stage, and blog article titles. **It never
+sets body copy, and it is never bolded** — weight 400, occasionally 300 at the
+largest sizes. Size comes from scale, not weight.
 
 **Separator.** Mono labels separate their parts with a middle dot: `01 · Selected
 work`, `Next.js · Gemini · 2026`, `Previously · Product Team, AVTD at TrendAI`.
@@ -405,32 +400,9 @@ One idea: **things arrive by settling, and light never stops moving.**
 - Hover is a hairline or ground change, 160ms. Nothing scales, nothing tilts,
   nothing bounces. The disc (below) is the one exception, because it is not a
   hover state of anything: it follows the cursor everywhere.
-- The constellation draws itself once when scrolled into view (below).
-
-**The constellation is the one diagram that answers back, and the one that keeps
-moving.** It is a spring field: every label but the hub floats the whole time the
-section is on screen, drawn along by two slow waves per axis whose frequencies
-never line up, so no label retraces a loop and the twelve never fall into step.
-Satellites swing about ±11px, topics half that, the hub not at all. Every line
-runs to one of two anchors on the hub, so the fan breathes with them.
-
-Hovering any label lights its family and **drops it toward the cursor under
-gravity** — no drag, no spring, so a label starts slowly and arrives fast, near
-ones in half a second and far ones in three. Since every line runs to the hub,
-that gather is the *only* way the groupings are legible, which is what earns it.
-
-Two rules keep the fall honest. A label crossing the field passes *over* the
-dimmed labels standing still — they are at a third opacity and it is on top of
-them for a moment — but it never passes the hub or another label falling with it,
-so the pile at the cursor is a real pile and the hub is never obscured. And the
-field is a box: nothing leaves it, however hard it was falling.
-
-This is a deliberate exception to §1 and §8, made on the user's instruction: the
-silk field is no longer the only perpetual motion on the page. It survives on two
-conditions — the drift is slow and small enough to read as buoyancy rather than
-animation, and it never runs where it isn't wanted. The loop pauses off screen
-and on a hidden tab, and under `prefers-reduced-motion` it never starts: that
-visitor gets the drawn fan, already complete, exactly as §6 describes.
+- The close is type alone. Until 2026-11-19 a constellation sat above it: "The
+  Work" as a hub, with a floating fan of topics and skills that gathered toward
+  the cursor. The user removed it because it didn't fit. Don't bring it back.
 
 **The disc follows the cursor; it does not replace it.** Pinned by the user to
 skiper-ui's "Hover members" (`https://skiper-ui.com/v1/skiper6`). It trails the

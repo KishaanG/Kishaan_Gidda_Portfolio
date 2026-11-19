@@ -803,8 +803,7 @@ main { position: relative; z-index: 1; }
 }
 
 /* ============================================================
-   CLOSE — the silk rises again, and the work's three
-   territories converge on the address
+   CLOSE — the silk rises again under the address
    ============================================================ */
 
 .close {
@@ -827,114 +826,6 @@ main { position: relative; z-index: 1; }
   mask-image: linear-gradient(to bottom, transparent 0%, #000 var(--field-from));
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 var(--field-from));
   background: linear-gradient(180deg, rgba(234, 243, 252, 0) 0%, #d8e9f9 60%, #eff6fd 100%);
-}
-
-.constellation {
-  position: relative;
-  height: clamp(240px, 25vw, 340px);
-  margin-bottom: clamp(40px, 5vw, 70px);
-  pointer-events: none;
-}
-.constellation-lines {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-.constellation-lines path {
-  fill: none;
-  /* the three topics carry a little more ink than their satellites,
-     which is the only hierarchy the fan needs */
-  stroke: rgba(39, 81, 126, 0.16);
-  stroke-width: 1;
-  stroke-dasharray: var(--len);
-  stroke-dashoffset: var(--len);
-}
-.constellation-lines path[data-rank="node"] { stroke: rgba(39, 81, 126, 0.3); }
-.constellation.in .constellation-lines path {
-  transition: stroke-dashoffset 1100ms var(--ease) var(--delay, 0s);
-  stroke-dashoffset: 0;
-}
-/* once the draw-on has finished the dash is only in the way — from
-   here the lines are re-pathed every frame */
-.constellation.live .constellation-lines path {
-  stroke-dasharray: none;
-  transition: stroke 340ms var(--ease);
-}
-.constellation.live .constellation-lines path.on { stroke: rgba(39, 81, 126, 0.52); }
-.constellation.live .constellation-lines path.dim { stroke: rgba(39, 81, 126, 0.07); }
-
-.cn-hub,
-.cn-node,
-.cn-sat {
-  position: absolute;
-  left: var(--x);
-  top: var(--y);
-  /* --dx/--dy are driven by the field in home.js; the -50% keeps the
-     authored --x/--y reading as the label's centre */
-  transform: translate(-50%, -50%) translate3d(var(--dx, 0px), var(--dy, 0px), 0);
-  white-space: nowrap;
-  opacity: 0;
-}
-.constellation.in .cn-hub,
-.constellation.in .cn-node,
-.constellation.in .cn-sat {
-  opacity: 1;
-  transition: opacity 900ms var(--ease) var(--delay, 0s);
-}
-/* the delay above belongs to the draw-on only; hover states after it
-   have to answer immediately */
-.constellation.live .cn-node,
-.constellation.live .cn-sat {
-  will-change: transform;
-  transition: opacity 300ms var(--ease), color 300ms var(--ease);
-}
-.constellation.live .cn-sat.dim,
-.constellation.live .cn-node.dim { opacity: 0.32; }
-.constellation.live .cn-sat.on { color: var(--display); }
-
-/* the fixed point — the only label that never moves */
-.cn-hub {
-  display: block;
-  text-align: center;
-  font-family: var(--serif);
-  font-variation-settings: "opsz" 60;
-  font-size: clamp(2.5rem, 5.6vw, 4.7rem);
-  line-height: 1;
-  letter-spacing: -0.035em;
-  color: var(--display);
-}
-.cn-hub em {
-  display: block;
-  margin-top: 0.3em;
-  /* proportional to the word, but never smaller than the mono labels
-     elsewhere on the page */
-  font-size: max(0.245em, 0.63rem);
-  font-style: italic;
-  font-variation-settings: "opsz" 14;
-  letter-spacing: 0;
-  color: var(--ink-soft);
-}
-.cn-node {
-  font-family: var(--serif);
-  font-variation-settings: "opsz" 24;
-  font-size: clamp(1.05rem, 1.55vw, 1.25rem);
-  letter-spacing: -0.015em;
-  color: var(--display);
-}
-/* satellites are the same serif, italic and a size down — the fan is
-   one voice at three volumes, not three typefaces */
-.cn-sat {
-  font-family: var(--serif);
-  font-variation-settings: "opsz" 14;
-  font-style: italic;
-  font-size: clamp(0.74rem, 0.98vw, 0.84rem);
-  letter-spacing: 0;
-  /* --ink-faint is the register the reference sets these in, but it
-     lands near 2:1 on white; --ink-soft keeps them subordinate to the
-     topics and still clears AA */
-  color: var(--ink-soft);
 }
 
 .close-inner { position: relative; }
@@ -1012,9 +903,6 @@ main { position: relative; z-index: 1; }
   /* the status dot belongs on the first line once this wraps */
   .hero-now { align-items: flex-start; }
   .hero-now .dot { margin-top: 0.45em; }
-
-  .constellation { height: 270px; }
-  .cn-sat { font-size: 0.76rem; }
 }
 
 @media (max-width: 620px) {
@@ -1026,21 +914,6 @@ main { position: relative; z-index: 1; }
   .br:focus-visible { --br-pad: 11px; --br-open: 0.24em; }
   .hero-actions { gap: 8px; margin-left: -8px; }
   .hero-actions .turn { margin-left: 8px; }
-  .constellation { height: 220px; }
-  .cn-hub { font-size: 1.9rem; }
-  .cn-node { font-size: 0.95rem; }
-  .cn-sat { font-size: 0.72rem; }
-  /* one satellite per topic is all this width can carry —
-     home.js drops the hidden ones out of the field entirely */
-  .cn-sat[data-compact="off"] { display: none; }
-  /* and the survivors move to their phone coordinates; home.js reads
-     the same two custom properties, so type and physics agree */
-  .cn-hub,
-  .cn-node,
-  .cn-sat {
-    left: var(--cx, var(--x));
-    top: var(--cy, var(--y));
-  }
 
   .sec-head--split { display: block; }
   .ledger-scale { margin-top: 16px; padding-bottom: 0; }
@@ -1354,15 +1227,4 @@ main { position: relative; z-index: 1; }
   .ledger.is-traced .ledger-mark::before,
   .ledger.is-traced .ledger-mark::after,
   .ledger-scale [data-scale-now] { transition: none; }
-
-  /* the fan arrives already drawn rather than scrubbing itself on */
-  .constellation-lines path,
-  .constellation.in .constellation-lines path {
-    stroke-dasharray: none;
-    stroke-dashoffset: 0;
-    transition: none;
-  }
-  .constellation.in .cn-hub,
-  .constellation.in .cn-node,
-  .constellation.in .cn-sat { transition: none; }
 }

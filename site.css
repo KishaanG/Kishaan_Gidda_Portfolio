@@ -12,8 +12,8 @@
 
   /* ---- one blue family, no second hue ---- */
   /* --ink-soft is the floor for real text: 4.5:1 on white.
-     --ink-faint is decorative only (constellation satellites,
-     hairline furniture) and never carries information alone. */
+     --ink-faint is decorative only (hairline furniture) and
+     never carries information alone. */
   --display: #27517e;
   --ink: #1b4c78;
   --ink-soft: #547aa3;
