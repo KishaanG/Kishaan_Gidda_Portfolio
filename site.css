@@ -516,8 +516,8 @@ strong { font-weight: 500; color: var(--display); }
    One size always. It inverts the lightness of what is under it and
    keeps the hue (invert, then turn the hue back round), so the
    site's blue stays blue inside it and a project's red stays red.
-   Over a link an arrow turns in it toward where the link goes. The
-   cursor itself is left alone. It is also what moves the water
+   It is the pointer: the system cursor is hidden, and on a control
+   it snaps to the control's box (below). It is also what moves the water
    (silk.js). Pinned by the user to skiper-ui's "Hover members".
    Fine pointers only — follow.js never mounts it on touch. */
 .disc {
@@ -527,29 +527,58 @@ strong { font-weight: 500; color: var(--display); }
   z-index: 250;
   display: grid;
   place-items: center;
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   color: #ffffff;
   pointer-events: none;
   -webkit-backdrop-filter: invert(1) hue-rotate(180deg);
   backdrop-filter: invert(1) hue-rotate(180deg);
   transform: translate3d(-1000px, -1000px, 0) scale(0);
-  transition: color 220ms var(--ease);
+  transition: color 220ms var(--ease), background-color 220ms var(--ease), opacity 200ms var(--ease);
   will-change: transform;
 }
 /* no backdrop filter: a plain inversion, hue and all */
 @supports not ((backdrop-filter: invert(1)) or (-webkit-backdrop-filter: invert(1))) {
   .disc { background: #ffffff; mix-blend-mode: difference; }
 }
-.disc svg {
-  width: 26px;
-  height: 26px;
-  opacity: 0;
-  transform: rotate(var(--turn, -45deg)) scale(0.4);
-  transition: opacity 160ms var(--ease), transform 280ms var(--ease);
+/* over the work stage: the project's accent, see-through (user,
+   2026-11-19). work.js blends it on the root while pinned; the
+   ground under the cursor gives it when the stage is stacked. */
+.disc.on-stage {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  mix-blend-mode: normal;
+  /* see-through: the project shows through its own accent */
+  background: color-mix(in srgb, var(--stage-accent, var(--disc-accent, #e0241b)) 42%, transparent);
 }
-.disc.is-link svg {
-  opacity: 1;
-  transform: rotate(var(--turn, -45deg)) scale(1);
+/* Snapped to a control, the way an iPad's pointer snaps: follow.js
+   sets its size and corners to the control's box, and it is a faint
+   tint in the control's own ink — on the stage, in the project's
+   accent. */
+.disc.is-snapped {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  mix-blend-mode: normal;
+  background: color-mix(in srgb, var(--snap-ink, #1b4c78) 13%, transparent);
+}
+.disc.on-stage.is-snapped {
+  background: color-mix(in srgb, var(--stage-accent, var(--disc-accent, #e0241b)) 32%, transparent);
+}
+/* a wide control — a project's card — takes a fainter tint over its
+   picture */
+.disc.is-snapped.is-wide {
+  background: color-mix(in srgb, var(--snap-ink, #1b4c78) 7%, transparent);
+}
+.disc.on-stage.is-snapped.is-wide {
+  background: color-mix(in srgb, var(--stage-accent, var(--disc-accent, #e0241b)) 14%, transparent);
+}
+/* the disc is the pointer wherever it runs (fine pointers only), so
+   the system cursor goes */
+html.has-disc,
+html.has-disc * { cursor: none; }
+/* still for three seconds: it fades, and the next move brings it back */
+.disc.is-idle {
+  opacity: 0;
+  transition: color 220ms var(--ease), background-color 220ms var(--ease), opacity 600ms var(--ease);
 }
