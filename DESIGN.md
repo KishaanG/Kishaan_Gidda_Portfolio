@@ -95,6 +95,46 @@ white, the deep face saturates.
 Interleaved gradient noise dithers the result at ±1.7/255. The flats here are very
 wide, and banding is the one artefact that would give the whole illusion away.
 
+### The stir: the disc moves the cloth
+
+The disc (§7) is the one thing on the page that touches the field. The user asked
+for the cursor to *move the water*, and everything tried before the stir failed
+the same way, which is the rule this section exists to keep.
+
+`folds(p, t)` is a closed formula: a point and a time in, a value out. So anything
+laid over its output — a ripple, a wake, a swell, a comb, tilted lines, a flowmap,
+a height-field of waves, a trail line drawn into the ribbons — plays over a
+picture that carries on unchanged underneath, and the user reads it at once as
+**a layer over a video**. Each of those was built, looked at and refused. A local
+effect that returns to rest is the same mistake whatever it looks like.
+
+What shipped instead moves the field's own phase. Each stretch of the disc's
+travel leaves a **deposit**: a broad offset (σ 0.6 in p units, where the frame is
+2 high) to the two oscillators the turbulence iterates on, signed by the
+direction the disc went. It enters only inside the turbulence loop's `cos` and
+`sin`, so every pass after it carries it on, and the waves themselves evolve
+differently where the disc has been. A deposit holds for 3s, then spreads until,
+at 7s, it belongs to the whole field and is folded into one offset for every
+point. That offset is never taken back: a stirred field is a different field from
+then on, not one that relaxes to what it was.
+
+What keeps it from turning back into a layer:
+
+- **It is only ever a phase inside the turbulence.** Never add to the ribbon
+  band, the palette value, `p` or `q`.
+- **It is broad and persistent.** Nothing path-shaped: no feature narrower than a
+  deposit, nothing that traces where the cursor went.
+- **It grows only by the disc's own movement**, so scrolling past a still disc
+  stirs nothing. It is kept in the frame each canvas computes its folds in, so it
+  stays on the cloth as the page scrolls.
+- **One state is shared by every canvas**; only the canvas the disc is over takes
+  its movement. The work stage's sharp lines (§3) sample `folds()` too, so lines
+  the stir makes take the accent like any other.
+
+Tune it only through `STIRRING` in `silk.js`. The user approved the feel at gain
+0.6, 16 deposits and a 7s life (2026-11-19). There is no stir on touch or under
+`prefers-reduced-motion`.
+
 ### The reading light
 
 Each mount declares where its own type sits, as `data-read="cx cy rx ry"`. The
@@ -113,11 +153,15 @@ the hero's copy ever moves, `data-read` moves with it.
 
 **Fallback:** if WebGL is unavailable, a layered radial-gradient standing in at the
 same colours. Under `prefers-reduced-motion`, the shader renders **one static
-frame** — the field is still there, it simply stops moving.
+frame** — the field is still there, it simply stops moving, and the disc does not
+stir it.
 
 **Budget:** DPR capped at 1.5; the shader pauses via `IntersectionObserver` when
 its section leaves the viewport. It must never run offscreen. Measured at a locked
-60fps (16.7ms median) on a 1.28M-pixel canvas.
+60fps (16.7ms median) on a 1.28M-pixel canvas, before the stir. The stir adds up
+to 16 gaussians to every `folds()` call, and the work stage's line sampling calls
+`folds()` up to three times a pixel; that cost has not yet been measured on
+integrated graphics.
 
 ## 2. The column grid
 
@@ -182,6 +226,15 @@ Past `--field-to` the bar is over PoleLab's water and takes the ground's ink —
 happens where the water is already deep. On About's field the phone layout keeps
 the scrim throughout, as the stacked work stage does, because copy scrolls under
 the bars the whole way down.
+
+**The disc inverts lightness, never hue.** Its lens is `invert(1)
+hue-rotate(180deg)`: the inversion turns the hue round and the rotation turns it
+back, so the site's blue stays blue inside the disc and a project's red stays
+red. That is why it can pass over the field, paper and every ground without
+bringing a second hue onto the page. Its arrow is white on a dark keyline, so it
+reads on whatever the lens turns the ground into: a screenshot's white goes black
+in it, PoleLab's carbon goes pale. Without `backdrop-filter` it falls back to a
+plain `difference` inversion, hue and all.
 
 ### The work stage's grounds
 
@@ -329,7 +382,8 @@ One idea: **things arrive by settling, and light never stops moving.**
   staggered by `--d`. **Reveals do not replay on scroll-back.** The old site
   re-animated every pass; that reads as restless here.
 - Hover is a hairline or ground change, 160ms. Nothing scales, nothing tilts,
-  nothing bounces.
+  nothing bounces. The disc (below) is the one exception, because it is not a
+  hover state of anything: it follows the cursor everywhere.
 - The constellation draws itself once when scrolled into view (below).
 
 **The constellation is the one diagram that answers back, and the one that keeps
@@ -356,6 +410,17 @@ conditions — the drift is slow and small enough to read as buoyancy rather tha
 animation, and it never runs where it isn't wanted. The loop pauses off screen
 and on a hidden tab, and under `prefers-reduced-motion` it never starts: that
 visitor gets the drawn fan, already complete, exactly as §6 describes.
+
+**The disc follows the cursor; it does not replace it.** Pinned by the user to
+skiper-ui's "Hover members" (`https://skiper-ui.com/v1/skiper6`). It trails the
+cursor on a loose spring (ζ ≈ 0.84), so it drifts after it and settles a little
+past; over a link it closes in on a stiffer one (ζ ≈ 0.94), so the arrow sits on
+the link. It scales in when the cursor comes into the window and out when it
+leaves, and comes back under the cursor rather than flying in from where it last
+was. When the cursor stops, the disc settles and its loop sleeps, so it is not
+perpetual motion. Its movement is what stirs the silk (§1). Under
+`prefers-reduced-motion` it sits exactly on the cursor, with no spring, and stirs
+nothing.
 
 **Scroll drives three sections, and it must not drive them the same way.** On the
 work stage scroll hands over a *project*: the section pins and each card gives
@@ -533,6 +598,13 @@ the flight does not run at all: that visitor gets the ledger.
   flight hands down. Each fact is set in the display serif in the crook of a
   bend, its label in mono above it; the toolkit's four groups sit on the page's
   four columns, marked entries carried by weight and the display blue.
+- **The disc.** An 80px lens that trails the cursor on every classic page
+  (`follow.js`; `.disc` in `site.css`). It is one size always and never grows
+  over a link; instead an arrow turns in it toward where the link goes — down or
+  up the page to an anchor, out (↗) to anything else. The native cursor stays as
+  it is. The disc is `aria-hidden` and takes no pointer events, so it never
+  changes what a click does. Fine pointers only: on touch there is no cursor to
+  follow, and it never mounts.
 - **Screenshots are real, never staged.** A project's card is a capture of the
   running product's most important screen: PoleLab's live home page, chosen by
   the user (2026-11-18); CareRouter's support pathway, with its map of Kingston; CyberSci's results
