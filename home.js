@@ -36,7 +36,15 @@ if (yearEl) yearEl.textContent = String(new Date().getFullYear());
     },
     { threshold: 0.1, rootMargin: "0px 0px -8% 0px" }
   );
-  items.forEach((el) => io.observe(el));
+  const watch = () => items.forEach((el) => io.observe(el));
+
+  // the curtain (curtain.js) holds the entrance until its stairs go,
+  // so the hero settles as they pull away rather than unseen beneath
+  if (document.documentElement.dataset.curtain === "held") {
+    document.addEventListener("curtain:lift", watch, { once: true });
+  } else {
+    watch();
+  }
 })();
 
 /* ============================================================

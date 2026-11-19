@@ -163,22 +163,65 @@
     ].filter(Boolean);
   }
 
+  /* The d strings river() and narrow() write, absolute M, C and L,
+     split into one standalone path per segment. */
+  function segments(d) {
+    const out = [];
+    let from = "";
+    for (const [, cmd, args] of d.matchAll(/([MCL])([^MCL]*)/g)) {
+      const nums = args.trim().split(/\s+/);
+      if (cmd !== "M") out.push(`M ${from} ${cmd} ${args.trim()}`);
+      from = nums.slice(-2).join(" ");
+    }
+    return out.length ? out : [d];
+  }
+
+  /* getPointAtLength walks the path from its start on every call, so
+     sampling a long river every 4px through the whole path is
+     quadratic: about a third of a second per build, and the page
+     builds as it loads, again when its fonts land and again when its
+     height settles. Each segment is measured on its own instead,
+     through one scratch path. It is the same curve, so the samples
+     are the same points. */
+  const scratch = document.createElementNS(NS, "path");
+
   function sample(el) {
     const total = el.getTotalLength();
     const lens = [];
     const ys = [];
+    // the points themselves, kept for nearest()
+    const px = [];
+    const py = [];
     let top = -Infinity;
     const step = 4;
+
+    const segs = segments(el.getAttribute("d"));
+    svg.append(scratch);
+    let i = 0;
+    let from = 0; // where the scratch's segment starts on the whole path
+    scratch.setAttribute("d", segs[0]);
+    let len = scratch.getTotalLength();
+
     for (let s = 0; s <= total + step; s += step) {
       const at = Math.min(s, total);
-      const p = el.getPointAtLength(at);
+      // the last segment keeps whatever rounding is left at the end
+      while (at > from + len && i < segs.length - 1) {
+        from += len;
+        i += 1;
+        scratch.setAttribute("d", segs[i]);
+        len = scratch.getTotalLength();
+      }
+      const p = scratch.getPointAtLength(Math.min(at - from, len));
       // never let the path read as climbing, even by a rounding error
       top = Math.max(top, p.y);
       lens.push(at);
       ys.push(top);
+      px.push(p.x);
+      py.push(p.y);
       if (at === total) break;
     }
-    return { total, lens, ys };
+    scratch.remove();
+    return { total, lens, ys, px, py };
   }
 
   /* how far along a line the pen is when its tip is at height y */
@@ -196,12 +239,15 @@
     return lens[lo];
   }
 
+  /* Reads the points sample() already took. getPointAtLength walks the
+     path from its start on every call, so calling it here for every
+     sample of every station took about 1.5s of the main thread on
+     load, and the page could not paint until it was done. */
   function nearest(line, x, y) {
     let best = 0;
     let bd = Infinity;
     for (let i = 0; i < line.lens.length; i++) {
-      const p = line.el.getPointAtLength(line.lens[i]);
-      const dd = (p.x - x) ** 2 + (p.y - y) ** 2;
+      const dd = (line.px[i] - x) ** 2 + (line.py[i] - y) ** 2;
       if (dd < bd) { bd = dd; best = line.lens[i]; }
     }
     return best;

@@ -6,7 +6,7 @@
   Every state the field passed through, live and side by side,
   under the real hero type so legibility is judged too.
 
-  Keys 1–5 switch. G toggles the grid. Not linked from
+  Keys 1–5 switch. Not linked from
   anywhere; delete it before deploying if you'd rather.
   ============================================================
 -->
@@ -95,7 +95,6 @@
   </head>
 
   <body>
-    <div class="col-grid" aria-hidden="true"><span></span></div>
 
     <header class="bar bar--top">
       <a class="wordmark" href="index.html">Kishaan Gidda</a>
@@ -194,10 +193,6 @@
         addEventListener("keydown", (e) => {
           const i = "12345".indexOf(e.key);
           if (i >= 0) select(ORDER[i][0]);
-          if (e.key.toLowerCase() === "g") {
-            const g = document.querySelector(".col-grid");
-            g.style.display = g.style.display === "none" ? "" : "none";
-          }
         });
 
         const want = new URLSearchParams(location.search).get("preset");

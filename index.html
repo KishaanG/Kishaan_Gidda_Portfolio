@@ -7,7 +7,7 @@
     category default (dark terminal ground, neon accent,
     monospace bravado) and the student default (bordered
     cartoon cards). Quiet is the claim.
-  OWN-WORLD: White paper, one blue family, a fixed hairline
+  OWN-WORLD: White paper, one blue family, an unseen
     4-column grid, and a live WebGL silk light field that the
     page is lit by — the opening, down into the work, through
     the experience and About, and the close.
@@ -16,7 +16,7 @@
   STORY: He ships software and he breaks it. TrendAI, Hydro
     Ottawa, Ciena, a CTF win. Then: email him.
   FIRST VIEWPORT: Silk field full-bleed. One serif line at
-    ~7vw, low and left, over four hairline columns. Beneath
+    ~7vw, low and left, on the first of four columns. Beneath
     it two sentences, then "↳ Get in touch" and [ View work ].
     Fixed wordmark and bracket nav above; © and socials below.
   FORM: Reference world pinned by the user to the register of
@@ -35,6 +35,15 @@
       content="Kishaan Gidda builds AI systems and then goes looking for the way in. Computer science co-op student at Carleton University (AI/ML stream) who most recently shipped cloud security software at TrendAI. Claude Agent SDK, MCP, AWS, Terraform, MITRE ATT&amp;CK, and a 1st-place CyberSci CTF finish."
     />
     <meta name="theme-color" content="#dceaf8" />
+    <!-- The curtain (curtain.js) is up from the first paint, and only
+         when scripts run. If curtain.js never takes it down, this does,
+         well after the curtain's own latest exit. -->
+    <script>
+      document.documentElement.classList.add("curtain-up");
+      setTimeout(function () {
+        document.documentElement.classList.remove("curtain-up");
+      }, 7000);
+    </script>
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23dceaf8'/%3E%3Ctext x='32' y='45' font-family='Georgia,serif' font-size='38' fill='%2327517e' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E"
@@ -49,13 +58,25 @@
     <link rel="stylesheet" href="home.css" />
     <link rel="stylesheet" href="about.css" />
     <link rel="stylesheet" href="bridge.css" />
+    <link rel="stylesheet" href="curtain.css" />
+    <!-- first of the deferred scripts: it has to be listening before
+         silk.js draws -->
+    <script src="curtain.js" defer></script>
   </head>
 
   <body>
-    <a class="skip-link" href="#work">Skip to work</a>
+    <!-- ============ THE CURTAIN (curtain.css) ============ -->
+    <div class="curtain" aria-hidden="true">
+      <div class="curtain-stairs">
+        <i style="--i: 0"></i><i style="--i: 1"></i><i style="--i: 2"></i><i style="--i: 3"></i>
+      </div>
+      <p class="curtain-words">
+        <span style="--i: 0">Kishaan</span>
+        <span style="--i: 1">Gidda</span>
+      </p>
+    </div>
 
-    <!-- the structural grid everything aligns to -->
-    <div class="col-grid" aria-hidden="true"><span></span></div>
+    <a class="skip-link" href="#work">Skip to work</a>
 
     <!-- ===================== TOP CHROME ===================== -->
     <header class="bar bar--top">
@@ -393,7 +414,7 @@
 
           <!-- The river. The thread swings down the page in long bends,
                and each fact sits in the crook of one, held by it. At the
-               foot it fans out onto the grid's five rules and runs on
+               foot it fans out onto the grid's five lines and runs on
                through the toolkit as its warp. -->
           <dl class="rv">
             <div class="rv-st" data-st>

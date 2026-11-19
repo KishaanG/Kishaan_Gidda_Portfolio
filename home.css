@@ -501,10 +501,6 @@ main { position: relative; z-index: 1; }
   background: var(--st-accent, currentColor);
 }
 
-/* the column grid steps back while the stage has the viewport: the
-   stage is the one surface the rules do not pass across */
-.col-grid { opacity: var(--grid-a, 1); }
-
 /* the chrome over a ground: no paper scrim — the ground is the
    surface, the same way the field is — and the ground's own ink */
 .bar.on-ground::before { opacity: 0; }

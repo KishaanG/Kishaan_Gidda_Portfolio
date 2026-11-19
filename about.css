@@ -10,7 +10,7 @@
 
    The record is laid out as a river: each fact sits in the
    crook of one of the line's bends, alternating sides, and the
-   toolkit hangs between the grid's rules at the foot.
+   toolkit hangs between the line's five strands at the foot.
    ============================================================ */
 
 .about {
@@ -62,9 +62,9 @@
 }
 
 /* ---- the line ----------------------------------------------
-   Drawn in section coordinates. Its last stretch always lands on
-   one of the grid's own rules and fades into it, so the ink
-   hands over to the plain hairline the close is ruled with. */
+   Drawn in section coordinates. Its last stretch runs down the
+   grid's column lines and fades out above the close, so the ink
+   ends softly rather than at an edge. */
 .about-line {
   position: absolute;
   left: 0;

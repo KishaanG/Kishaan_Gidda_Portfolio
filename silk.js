@@ -692,6 +692,23 @@
     const host = canvas.parentElement || canvas;
     const strength = parseFloat(canvas.dataset.silk) || 1;
 
+    /* The field has a first frame up, or there won't be one. The
+       curtain (curtain.js) waits on the hero's so it never lifts onto
+       an empty canvas, which is why every way out of here ends in
+       this: the fallback, the still frame, the first animated frame,
+       and a field that opens off screen. */
+    let announced = false;
+    const ready = () => {
+      if (announced) return;
+      announced = true;
+      canvas.dataset.silkReady = "1";
+      canvas.dispatchEvent(new Event("silk:ready"));
+    };
+    const fallback = () => {
+      host.classList.add("silk-fallback");
+      ready();
+    };
+
     let gl = null;
     try {
       gl = canvas.getContext("webgl", {
@@ -704,7 +721,7 @@
     } catch (_) {
       gl = null;
     }
-    if (!gl) return host.classList.add("silk-fallback");
+    if (!gl) return fallback();
 
     const vs = compile(gl, gl.VERTEX_SHADER, VERT);
     // the accent's sharp lines need derivatives; where WebGL1 has no
@@ -712,18 +729,16 @@
     const deriv = gl.getExtension("OES_standard_derivatives")
       ? "#extension GL_OES_standard_derivatives : enable\n#define SILK_DERIV 1\n"
       : "";
-    if (!vs) return host.classList.add("silk-fallback");
+    if (!vs) return fallback();
     const stirDef = STIR ? `#define SILK_STIR 1\n#define STIR_N ${STIRRING.n}\n` : "";
     const fs = compile(gl, gl.FRAGMENT_SHADER, deriv + stirDef + FRAG);
-    if (!fs) return host.classList.add("silk-fallback");
+    if (!fs) return fallback();
 
     const prog = gl.createProgram();
     gl.attachShader(prog, vs);
     gl.attachShader(prog, fs);
     gl.linkProgram(prog);
-    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
-      return host.classList.add("silk-fallback");
-    }
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return fallback();
     gl.useProgram(prog);
 
     // one full-screen triangle — cheaper than a quad, no seam
@@ -841,6 +856,7 @@
     if (REDUCED) {
       // the field is still there — it simply stops moving
       draw(OPEN);
+      ready();
       const onResize = () => { if (resize()) draw(OPEN); };
       window.addEventListener("resize", onResize, { passive: true });
       handle.refresh = () => draw(OPEN);
@@ -855,6 +871,7 @@
       if (!running) return;
       resize();
       draw((now - T0) / 1000 + OPEN);
+      ready();
       raf = requestAnimationFrame(frame);
     }
 
@@ -878,6 +895,9 @@
         inView = e.isIntersecting;
         if (inView && !document.hidden) play();
         else pause();
+        // opened off screen (a reload restored further down): there is
+        // no frame to wait for
+        if (!inView) ready();
       }),
       { rootMargin: "120px" }
     );

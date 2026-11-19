@@ -1,0 +1,99 @@
+/* ============================================================
+   The curtain — the home page's preloader. DESIGN.md §6.
+   Pinned by the user to skiper-ui's "Stairs preloader"
+   (skiper-ui.com/v1/skiper9): the name sets word by word on a
+   dark ground, then the ground lifts away in stairs, the right
+   column leading.
+
+   Adapted to this world the way the disc was: the ground is the
+   deepest ink in the blue family rather than black, the type is
+   the display serif, and the stairs stand on the page's own four
+   columns, so the steps open along the lines its content is set
+   on.
+
+   Shown only while <html> has .curtain-up, which an inline script
+   in the head sets — so with no script there is no curtain. All
+   timings come from curtain.js as custom properties.
+   ============================================================ */
+
+.curtain {
+  position: fixed;
+  inset: 0;
+  /* over the chrome (100) and the grid (60); under the disc (250),
+     which is the pointer, and the skip link (300) */
+  z-index: 200;
+  display: none;
+}
+html.curtain-up .curtain { display: block; }
+
+/* the type goes first, so clicks fall through from then on */
+.curtain.is-lifting { pointer-events: none; }
+
+/* ---- the stairs ---- */
+.curtain-stairs {
+  position: absolute;
+  inset: 0;
+  display: flex;
+}
+.curtain-stairs > i {
+  flex: 1 1 0;
+  background: var(--ink-field);
+  /* a fractional width leaves a seam between two columns; each one
+     reaches a pixel under its neighbour */
+  box-shadow: 1px 0 0 var(--ink-field);
+  transform-origin: 50% 0;
+  transition: transform var(--stair-ms) cubic-bezier(0.215, 0.61, 0.355, 1)
+    calc(var(--stair-gap) * (3 - var(--i)));
+}
+/* the inner two are one grid column each, so the outer two take the
+   margins and the steps fall at 25, 50 and 75% of the container */
+.curtain-stairs > i:nth-child(2),
+.curtain-stairs > i:nth-child(3) {
+  flex: 0 0 calc(var(--container) / 4);
+}
+.curtain.is-open .curtain-stairs > i { transform: scaleY(0); }
+
+/* ---- the name ---- */
+.curtain-words {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.26em;
+  padding: 0 var(--gutter);
+  font-family: var(--serif);
+  font-weight: 400;
+  font-variation-settings: "opsz" 60;
+  font-size: clamp(2rem, 1.3rem + 2.4vw, 3.4rem);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--paper);
+}
+.curtain-words > span {
+  opacity: 0;
+  transition: opacity var(--word-ms) cubic-bezier(0, 0, 0.58, 1)
+    calc(var(--word-gap) * var(--i));
+}
+/* set once its face is in, word by word; out, quicker, in the same
+   order */
+.curtain.is-set .curtain-words > span { opacity: 1; }
+.curtain.is-set.is-lifting .curtain-words > span {
+  opacity: 0;
+  transition-duration: var(--word-out-ms);
+  transition-delay: calc(var(--word-out-gap) * var(--i));
+}
+
+/* No stairs and no word-by-word: the name is simply there, and the
+   whole curtain fades once the page is ready. */
+@media (prefers-reduced-motion: reduce) {
+  .curtain-words > span { transition: none; }
+  .curtain.is-set.is-lifting .curtain-words > span { opacity: 1; }
+  .curtain-stairs > i { transition: none; }
+  .curtain.is-open .curtain-stairs > i { transform: none; }
+  .curtain.is-open {
+    opacity: 0;
+    transition: opacity var(--fade-ms) linear;
+  }
+}
