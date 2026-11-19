@@ -56,6 +56,23 @@ is that he ships software *and* breaks it — development plus vulnerability wor
   The strategy search itself is simulation and search, not a trained model —
   the learned part is the fitted tyre and circuit models. RL training and the
   heuristic solver were removed from the product and are not claimed.
+
+  **Since then (read from its source, 2026-11-18):** its own homepage now
+  says thousands of pit plans are "raced against a full grid of twenty cars"
+  (still twenty copies of the visitor's car, by design), with weather, safety
+  cars, pit loss, tyres and grid pace modelled. It has accounts (free: one
+  quick report a day; Pro: the full search), and a Now tab that makes the
+  in-race call, run on replayed races. Its **2026 season re-run** (measured
+  2026-10-20: one report per dry race, called before the race, each race held
+  out of the tyre-wear fit) is the track record the site may quote:
+  - right number of stops on **5 of 7** dry races whose stops were made under
+    green flag (of 16 dry races re-run);
+  - on the **6** of those where Pirelli made a race-eve call, PoleLab and
+    Pirelli were each right on **4** — "as often as Pirelli did", never better;
+  - the Now tab's mid-race call matched most of the pit lane at **5 of 5** full
+    safety cars. Across all 22 SC and VSC periods it matched 17, one fewer than
+    the box-under-SC, stay-out-under-VSC rule of thumb, so do not headline the
+    22.
 - **CyberSci Ottawa Regional — 1st of 13 teams.** Capture-the-flag competition.
   Team: *The Off-By-Ones*. → `https://cybersecuritychallenge.ca/en/`
 
@@ -80,9 +97,11 @@ Off-By-Ones"), `carleton_logo.png`, `github.png`, `linkedin.jpg`.
 **Project screenshots (2026-09-28).** Each project's card in the work stage is a
 real capture of its most important screen, taken from the running product:
 
-- `polelab-report.webp` (2880×1800, plus a 1440 copy) — the live polelab.dev
-  strategy report for Spa-Francorchamps: the call is a one-stop, soft 1–15 /
-  hard 16–44, pit lap 16–18, tied with five other plans.
+- `polelab-home.webp` (1999×922, plus a 1440 copy) — the live polelab.dev
+  home page: "Race strategy for the next generation of Formula 1.", the
+  next-race countdown (Las Vegas Grand Prix) and the season globe. Supplied by
+  the user on 2026-11-18, used whole; its card takes the screenshot's own
+  shape rather than 16:10. It replaced the Spa strategy-report capture.
 - `carerouter-results.webp` (1456×910) — CareRouter's support pathway for a
   gambling intake: the message, the assessment summary (urgency soon, severity
   2/4), the exercise toolbox, the quick contacts, and the Kingston map. Supplied

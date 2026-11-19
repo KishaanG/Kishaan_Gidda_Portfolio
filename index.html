@@ -110,11 +110,13 @@
       <!-- ============ 01 · WORK ============ -->
       <!-- The stage. It follows the hero with no header between them,
            rising under the field already composed — PoleLab at rest,
-           its name over its card — and pins. From there scroll hands
-           each project to the next — the card leaving tips toward
-           you and drops away, the next rises from behind it, the
-           name rolls over, and the ground deepens or lifts to the
-           next blue (work.js). Each card is a real screenshot of the
+           its name and a few lines of copy at the top, its card
+           across the whole container and running off the bottom of
+           the screen — and pins. From there scroll hands each project
+           to the next: the next card comes up from under the fold
+           over the one resting, which sinks back a little; the name
+           rolls over, and the ground deepens or lifts to the next
+           blue (work.js). Each card is a real screenshot of the
            project's most important screen.
 
            Without script, on phones, and under reduced motion the
@@ -137,38 +139,37 @@
               <h3 class="stage-title"><span class="roll">PoleLab</span></h3>
               <p class="stage-meta"><span class="roll">Race strategy optimizer &middot; React &middot; Three.js &middot; FastAPI &middot; CasADi/IPOPT</span></p>
             </header>
-            <figure class="stage-frame">
-              <a class="stage-card" href="https://polelab.dev" target="_blank" rel="noreferrer" tabindex="-1" aria-hidden="true">
-                <img
-                  src="images/polelab-report-1440.webp"
-                  srcset="images/polelab-report-1440.webp 1440w, images/polelab-report.webp 2880w"
-                  sizes="(min-width: 901px) 62vw, 100vw"
-                  width="1440"
-                  height="900"
-                  alt=""
-                  decoding="async"
-                />
-              </a>
-              <figcaption class="sr-only">
-                PoleLab's strategy report for Spa-Francorchamps, from the
-                live app. The call is a one-stop: soft tyres for laps 1 to
-                15, hard for 16 to 44, pitting on lap 16 to 18, tied with
-                five other plans closer than the run's resolution. Below it,
-                one simulated race of twenty identical cars, gap to the
-                leader, with this plan's car highlighted.
-              </figcaption>
-            </figure>
             <div class="stage-caption">
               <p class="stage-text">
-                It solves the physics-optimal lap around any circuit on the
-                2026 calendar, then breeds pit-stop plans, races twenty
-                identical cars through them, and reports the plans it can't
-                separate as a tie.
+                It solves the fastest lap around any 2026 circuit, races
+                thousands of pit plans against a full grid, and calls a tie
+                when it can't split two. Called before each race of 2026, it
+                got the number of stops right as often as Pirelli did.
               </p>
               <p class="stage-links">
                 <a class="br" href="https://polelab.dev" target="_blank" rel="noreferrer">[ polelab.dev &#8599; ]</a>
               </p>
             </div>
+            <figure class="stage-frame">
+              <a class="stage-card" href="https://polelab.dev" target="_blank" rel="noreferrer" tabindex="-1" aria-hidden="true">
+                <img
+                  src="images/polelab-home-1440.webp"
+                  srcset="images/polelab-home-1440.webp 1440w, images/polelab-home.webp 1999w"
+                  sizes="(min-width: 901px) min(1320px, 100vw - 96px), 100vw"
+                  width="1999"
+                  height="922"
+                  alt=""
+                  decoding="async"
+                />
+              </a>
+              <figcaption class="sr-only">
+                PoleLab's home page, from the live app: "Race strategy for
+                the next generation of Formula 1." Beside it, a countdown to
+                the next race, the Las Vegas Grand Prix, with a door to plan
+                it, and below, a globe of the season with the circuit marked
+                on it.
+              </figcaption>
+            </figure>
           </article>
 
           <article class="stage-slide" id="work-carerouter" data-ground="care">
@@ -176,6 +177,16 @@
               <h3 class="stage-title"><span class="roll">CareRouter</span></h3>
               <p class="stage-meta"><span class="roll">AI mental-health triage &middot; FastAPI &middot; Gemini 2.5 Flash &middot; 2026</span></p>
             </header>
+            <div class="stage-caption">
+              <p class="stage-text">
+                I was the sole backend developer on a four-person team. Gemini
+                scores a six-question intake, and crisis cases route to
+                <span class="nowrap">9-1-1</span> or <span class="nowrap">9-8-8</span> without ever touching the model.
+              </p>
+              <p class="stage-links">
+                <a class="br" href="https://github.com/KishaanG/CareRouter" target="_blank" rel="noreferrer">[ Source &#8599; ]</a>
+              </p>
+            </div>
             <figure class="stage-frame">
               <a class="stage-card" href="https://github.com/KishaanG/CareRouter" target="_blank" rel="noreferrer" tabindex="-1" aria-hidden="true">
                 <img
@@ -196,16 +207,6 @@
                 Ontario, and a map of Kingston.
               </figcaption>
             </figure>
-            <div class="stage-caption">
-              <p class="stage-text">
-                I was the sole backend developer on a four-person team. Gemini
-                scores a six-question intake, and crisis cases route to
-                <span class="nowrap">9-1-1</span> or <span class="nowrap">9-8-8</span> without ever touching the model.
-              </p>
-              <p class="stage-links">
-                <a class="br" href="https://github.com/KishaanG/CareRouter" target="_blank" rel="noreferrer">[ Source &#8599; ]</a>
-              </p>
-            </div>
           </article>
 
           <article class="stage-slide" id="work-cybersci" data-ground="ctf">
@@ -213,6 +214,16 @@
               <h3 class="stage-title"><span class="roll">CyberSci Ottawa Regional</span></h3>
               <p class="stage-meta"><span class="roll">Capture the flag &middot; 1st of 13 teams</span></p>
             </header>
+            <div class="stage-caption">
+              <p class="stage-text">
+                A room full of people trying to break the same systems I spend
+                my weeks defending. <strong>The Off-By-Ones</strong> finished
+                first out of thirteen teams at the Ottawa regional.
+              </p>
+              <p class="stage-links">
+                <a class="br" href="https://cybersecuritychallenge.ca/en/" target="_blank" rel="noreferrer">[ CyberSci &#8599; ]</a>
+              </p>
+            </div>
             <figure class="stage-frame">
               <a class="stage-card stage-card--record" href="https://cybersecuritychallenge.ca/en/" target="_blank" rel="noreferrer" tabindex="-1" aria-hidden="true">
                 <img
@@ -229,16 +240,6 @@
                 University, Team "The Off-By-Ones".
               </figcaption>
             </figure>
-            <div class="stage-caption">
-              <p class="stage-text">
-                A room full of people trying to break the same systems I spend
-                my weeks defending. <strong>The Off-By-Ones</strong> finished
-                first out of thirteen teams at the Ottawa regional.
-              </p>
-              <p class="stage-links">
-                <a class="br" href="https://cybersecuritychallenge.ca/en/" target="_blank" rel="noreferrer">[ CyberSci &#8599; ]</a>
-              </p>
-            </div>
           </article>
         </div>
       </section>

@@ -224,6 +224,13 @@
     uniform float uDepth;
     uniform vec3  uWater;
 
+    /* The ground's accent (Oklab), and how much of it the sharp lines
+       take: only where the folds turn over fastest, never the broad
+       waves. Needs screen-space derivatives; without them, no lines
+       take it. */
+    uniform vec3  uAccent;
+    uniform float uAccentAmt;
+
     /* the preset — see PRESETS in the JS above */
     uniform float uScale;     // how far the domain is scaled down
     uniform vec2  uFold;      // direction the fold phase climbs
@@ -281,20 +288,10 @@
       return smoothstep(b.x - f, b.x, y) * smoothstep(b.y + f, b.y, y);
     }
 
-    void main() {
-      vec2 css = gl_FragCoord.xy / uDpr + uRef.xy;        // the frame, CSS px, y up
-      vec2 px = css / uRef.zw;                            // 0..1, y up
-      vec2 p  = (css * 2.0 - uRef.zw) / uRef.w;           // centred, aspect-true
-      vec2 pl = gl_FragCoord.xy / uRes;                   // this canvas, 0..1
-
-      float t = uTime * 0.088;
-
-      /* --------------------------------------------------------
-         Three layers of iterated sine turbulence. The domain is
-         scaled right down on purpose: the chaos comes from
-         iterating, not from spatial frequency, so the folds stay
-         enormous and long-wavelength instead of busy.
-         -------------------------------------------------------- */
+    /* The fold field at p (centred, aspect-true) and time t: the
+       value the palette is read at. A function so the depth's sharp
+       lines can sample it either side of a pixel (below). */
+    float folds(vec2 p, float t) {
       float sum = 0.0;
       float wsum = 0.0;
 
@@ -340,7 +337,31 @@
       /* Stretch the middle of the range and let both ends clip. The
          flat white plateaus and the pooled deep blues are what make
          this satin rather than a gradient. */
-      float val = clamp((sum / wsum - uWindow.x) / uWindow.y, 0.0, 1.0);
+      return clamp((sum / wsum - uWindow.x) / uWindow.y, 0.0, 1.0);
+    }
+
+    /* The water's shading at a field value: + where a crest lifts
+       the ground, - where a crease sinks it (the depth, below). */
+    float rimShade(float v, float sheen) {
+      float dev = ramp(v).x + sheen - 0.83;
+      return smoothstep(0.0, 0.14, dev) - smoothstep(0.0, 0.26, -dev);
+    }
+
+    void main() {
+      vec2 css = gl_FragCoord.xy / uDpr + uRef.xy;        // the frame, CSS px, y up
+      vec2 px = css / uRef.zw;                            // 0..1, y up
+      vec2 p  = (css * 2.0 - uRef.zw) / uRef.w;           // centred, aspect-true
+      vec2 pl = gl_FragCoord.xy / uRes;                   // this canvas, 0..1
+
+      float t = uTime * 0.088;
+
+      /* --------------------------------------------------------
+         Three layers of iterated sine turbulence. The domain is
+         scaled right down on purpose: the chaos comes from
+         iterating, not from spatial frequency, so the folds stay
+         enormous and long-wavelength instead of busy.
+         -------------------------------------------------------- */
+      float val = folds(p, t);
 
       vec3 lab = ramp(val);
       float base = lab.x;   // the cloth before any light falls on it
@@ -429,6 +450,25 @@
         vec3 deep = uGround;
         deep.x += uGrain.x * rise - uGrain.y * fall;
         deep.yz *= 1.0 + 0.30 * rise;
+        /* The sharp lines are where the water's shading turns over
+           fastest: a crest pinched against its crease, rise to fall
+           in a few pixels. That is a steepness, so it is measured as
+           one — on the shading itself, per CSS px, the same lines at
+           every render scale — and only they take the ground's
+           accent. The broad waves keep the ground's own colour. */
+        #ifdef SILK_DERIV
+          float shade = rise - fall;
+          // a 2x2-pixel estimate: blocky, so it only decides where to look
+          float near = fwidth(shade) * uDpr;
+          if (uAccentAmt > 0.0 && near > 0.03) {
+            // one CSS px, in p's units, sampled either way across
+            float e = 2.0 / uRef.w;
+            float sx = rimShade(folds(p + vec2(e, 0.0), t), sheen);
+            float sy = rimShade(folds(p + vec2(0.0, e), t), sheen);
+            float steep = length(vec2(sx - shade, sy - shade));
+            deep = mix(deep, uAccent, uAccentAmt * smoothstep(0.08, 0.26, steep));
+          }
+        #endif
         lab = mix(lab, deep, m);
       }
 
@@ -477,7 +517,12 @@
     if (!gl) return host.classList.add("silk-fallback");
 
     const vs = compile(gl, gl.VERTEX_SHADER, VERT);
-    const fs = compile(gl, gl.FRAGMENT_SHADER, FRAG);
+    // the accent's sharp lines need derivatives; where WebGL1 has no
+    // such extension the shader compiles without them, untinted
+    const deriv = gl.getExtension("OES_standard_derivatives")
+      ? "#extension GL_OES_standard_derivatives : enable\n#define SILK_DERIV 1\n"
+      : "";
+    const fs = compile(gl, gl.FRAGMENT_SHADER, deriv + FRAG);
     if (!vs || !fs) return host.classList.add("silk-fallback");
 
     const prog = gl.createProgram();
@@ -508,6 +553,8 @@
     const uGrain = loc("uGrain");
     const uDepth = loc("uDepth");
     const uWater = loc("uWater");
+    const uAccent = loc("uAccent");
+    const uAccentAmt = loc("uAccentAmt");
     const P = PRESETS[canvas.dataset.preset] || PRESETS.marble;
 
     gl.uniform1f(gl.getUniformLocation(prog, "uStrength"), strength);
@@ -535,6 +582,7 @@
     const look = {
       ref: null, bars: [0, 0, 0, 0], own: [0, 0],
       ground: [1, 0, 0], grain: [0, 0], depth: 0, water: [0, 0, 0],
+      accent: [1, 0, 0], accentAmt: 0,
     };
     const handle = { look, before: null, refresh() {}, stop() {} };
 
@@ -572,6 +620,8 @@
       gl.uniform2fv(uGrain, look.grain);
       gl.uniform1f(uDepth, look.depth);
       gl.uniform3fv(uWater, look.water);
+      gl.uniform3fv(uAccent, look.accent);
+      gl.uniform1f(uAccentAmt, look.accentAmt);
     }
 
     function draw(seconds) {

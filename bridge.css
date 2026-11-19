@@ -29,12 +29,12 @@
   /* the stand-in before the field fades up: the hero's own light,
      then the same way down */
   background:
-    linear-gradient(180deg, transparent calc(100% - var(--descent)), #0f2640 100%),
+    linear-gradient(180deg, transparent calc(100% - var(--descent)), #0b0d14 100%),
     linear-gradient(158deg, #eef5fd 0%, #c9e0f6 48%, #eef6fe 100%);
 }
 .hero > .silk-host.silk-fallback {
   background:
-    linear-gradient(180deg, transparent calc(100% - var(--descent)), #0f2640 100%),
+    linear-gradient(180deg, transparent calc(100% - var(--descent)), #0b0d14 100%),
     radial-gradient(120% 90% at 26% 6%, #ffffff 0%, rgba(255, 255, 255, 0) 54%),
     radial-gradient(85% 75% at 96% 62%, #6ba6de 0%, rgba(107, 166, 222, 0) 62%),
     linear-gradient(152deg, #e9f3fd 0%, #b9daf5 46%, #eaf4fd 100%);
