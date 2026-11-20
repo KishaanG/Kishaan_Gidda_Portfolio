@@ -47,9 +47,11 @@
   const LAB = new Float32Array(PALETTE.flatMap(hexToOklab));
 
   /* ---- GLSL shared by the world's programs ---------------------
-     silkField() is the hero's 'marble' preset, reproduced exactly;
-     only its domain is now a surface coordinate instead of the
-     screen. The lamp and the reading light become per-scene. */
+     silkField() is the hero's 'drape' preset (silk.js), with one
+     change: no turn. Its domain is a surface coordinate instead of
+     the screen, and the hero's diagonal lean is a lean on a flat
+     frame; on a length of cloth, turn 0 is what makes the folds run
+     along it. The lamp and the reading light become per-scene. */
   const CHUNK = `
     #ifdef GL_FRAGMENT_PRECISION_HIGH
       precision highp float;
@@ -93,27 +95,22 @@
       return fract(52.9829189 * fract(dot(p, vec2(0.06711056, 0.00583715))));
     }
 
+    /* One turbulence, read through a crossed, warped distance: a
+       single fold system, so the folds all run together instead of
+       three crossing sets curdling into eddies (DESIGN.md §1). */
     float silkField(vec2 p, float t) {
-      const vec2 F = vec2(0.9205, 0.3907);
-      float sum = 0.0;
-      float wsum = 0.0;
-      for (int i = 0; i < 3; i++) {
-        float fi = float(i);
-        vec2 q = p * 0.30;
-        float a =  1.7 + fi * 0.90;
-        float d = -0.6 + fi * 1.30;
-        for (int j = 2; j < 9; j++) {
-          float fj = float(j);
-          a += cos(fj + d * 1.2 + q.x * 2.0 - t);
-          d += sin(fj * q.y + a - t * 0.8);
-        }
-        vec2 w = q + vec2(a, d) * 0.21;
-        float band = dot(p, F) * 1.38 + dot(vec2(a, d), F) * 0.966 + length(w) * 0.55;
-        float weight = 1.0 - fi * 0.28;
-        sum  += (0.5 + 0.5 * sin(band + fi * fi)) * weight;
-        wsum += weight;
+      vec2 q = p * 0.28;
+      t *= 1.8;
+      float a =  1.7;
+      float d = -0.6;
+      for (int j = 2; j < 9; j++) {
+        float fj = float(j);
+        a += cos(fj + d * 1.2 + q.x * 2.0 - t);
+        d += sin(fj * q.y + a - t * 0.8);
       }
-      return clamp((sum / wsum - 0.30) / 0.42, 0.0, 1.0);
+      vec2 w = q.yx + vec2(a, d) * 0.21;
+      float v = 0.5 + 0.5 * sin(length(w) * 4.0);
+      return clamp((v - 0.18) / 0.64, 0.0, 1.0);
     }
 
     vec3 sky(float y) { return mix(uSkyLow, uSkyTop, clamp(y, 0.0, 1.0)); }
