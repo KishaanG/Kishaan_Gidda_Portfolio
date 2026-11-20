@@ -161,8 +161,8 @@ What keeps it from turning back into a layer:
 
 Tune it only through `STIRRING` in `silk.js`. The user approved the feel at gain
 0.6, 16 deposits and a 7s life (2026-11-19). On `drape` the same gain moved whole
-drapes, about half the frame per sweep, so the user had it weakened and gain is
-now 0.3 (2026-11-20). There is no stir on touch or under
+drapes, about half the frame per sweep. The user had it weakened to 0.3, then a
+little more, so gain is now 0.2 (2026-11-20). There is no stir on touch or under
 `prefers-reduced-motion`.
 
 ### The reading light
