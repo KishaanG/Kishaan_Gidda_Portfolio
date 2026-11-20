@@ -43,6 +43,7 @@
   const MAX_DT = 1 / 30; // s — a dropped frame must not fling it
   const REST = 0.05; // px (and px/s) close enough to let the loop sleep
   const SETTLE_SCROLL = 120; // ms after a scroll to look again
+  const GROUND_SCROLL = 100; // ms between reads of the ground while it scrolls
   const IDLE_MS = 3000; // still this long, and it fades out
   const PRESSED = 0.92;
 
@@ -72,6 +73,8 @@
   let target = null; // the control it is snapped to
   let targetR = 0; // that control's own corner radius
   let look = true; // whether what is under the disc needs reading again
+  let lookGround = false; // only the ground (stage or not), mid-scroll
+  let groundAt = 0; // when the ground was last read mid-scroll
   let raf = 0;
   let last = 0;
   let settle = 0;
@@ -100,10 +103,32 @@
   const around = (b, s) =>
     at.x >= b.left - s && at.x <= b.right + s && at.y >= b.top - s && at.y <= b.bottom + s;
 
+  const under = () => (at.in ? document.elementFromPoint(at.x, at.y) : null);
+  // the ground under the cursor. Over the scrollbar there is no element
+  // (elementFromPoint is null), so it reads the page's edge beside it:
+  // that is what the disc, trailing in from the left, is over.
+  const groundUnder = () => (at.in
+    ? document.elementFromPoint(Math.min(at.x, root.clientWidth - 1), Math.min(at.y, root.clientHeight - 1))
+    : null);
+
+  /* Over the work stage the disc takes the project's accent. Pinned,
+     work.js blends it on the root as the projects hand over; stacked,
+     it is the accent of the ground under the cursor. With nothing to
+     read (the cursor has left the window) it keeps the ground it had
+     while it fades, rather than flashing to the lens (user, 2026-11-19). */
+  function readGround(el) {
+    lookGround = false;
+    if (!el) return;
+    const onStage = !!(el && el.closest("[data-stage]"));
+    disc.classList.toggle("on-stage", onStage);
+    const ground = onStage && el.closest("[data-ground]");
+    if (ground) disc.style.setProperty("--disc-accent", getComputedStyle(ground).getPropertyValue("--st-accent").trim());
+  }
+
   /* What is under the cursor: a control to snap to, or not. */
   function read() {
     look = false;
-    const el = at.in ? document.elementFromPoint(at.x, at.y) : null;
+    const el = under();
     let control = el && el.closest(CONTROLS);
     if (!control && target && target.isConnected && at.in && around(boxOf(target), HOLD)) control = target;
     const was = target;
@@ -117,13 +142,7 @@
       disc.style.setProperty("--snap-ink", cs.color);
       targetR = parseFloat(cs.borderTopLeftRadius) || 0;
     }
-    // over the work stage the disc takes the project's accent. Pinned,
-    // work.js blends it on the root as the projects hand over; stacked,
-    // it is the accent of the ground under the cursor.
-    const onStage = !!(el && el.closest("[data-stage]"));
-    disc.classList.toggle("on-stage", onStage);
-    const ground = onStage && el.closest("[data-ground]");
-    if (ground) disc.style.setProperty("--disc-accent", getComputedStyle(ground).getPropertyValue("--st-accent").trim());
+    readGround(el || groundUnder());
   }
 
   /* Where the disc is headed, and in what shape: the cursor as a
@@ -174,6 +193,7 @@
     const dt = Math.min(MAX_DT, Math.max(0, (now - last) / 1000));
     last = now;
     if (look) read();
+    else if (lookGround) readGround(groundUnder());
 
     // a disc that has gone comes back under the cursor, rather than
     // flying in from wherever it last was
@@ -242,11 +262,19 @@
   window.addEventListener("pointercancel", release, { passive: true });
 
   // the page scrolls under a still disc: what it is over may have
-  // changed, so look once the scroll settles — not on every frame,
-  // which would put a hit-test inside the work stage's snap. A snapped
-  // tint follows its control meanwhile.
+  // changed. The ground is read every GROUND_SCROLL ms while it moves,
+  // so the disc takes the stage's accent as the stage arrives, not a
+  // second later when the glide ends (user, 2026-11-19); the snap waits
+  // for the scroll to settle, so it never grabs links flying past. Not
+  // on every frame, which would put a hit-test inside the work stage's
+  // snap. A snapped tint follows its control meanwhile.
   window.addEventListener("scroll", () => {
-    if (target) wake();
+    const now = performance.now();
+    if (now - groundAt >= GROUND_SCROLL) {
+      groundAt = now;
+      lookGround = true;
+      wake();
+    } else if (target) wake();
     clearTimeout(settle);
     settle = setTimeout(() => { look = true; wake(); }, SETTLE_SCROLL);
   }, { passive: true });
