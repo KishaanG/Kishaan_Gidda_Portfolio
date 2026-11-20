@@ -484,13 +484,15 @@ strong { font-weight: 500; color: var(--display); }
   z-index: 250;
   display: grid;
   place-items: center;
-  width: 60px;
-  height: 60px;
+  width: 40px; /* SIZE in follow.js */
+  height: 40px;
   border-radius: 50%;
   color: #ffffff;
   pointer-events: none;
-  -webkit-backdrop-filter: invert(1) hue-rotate(180deg);
-  backdrop-filter: invert(1) hue-rotate(180deg);
+  /* three-quarters, not a full inversion: the page's near-white
+     comes out a soft charcoal, not black (user, 2026-11-19) */
+  -webkit-backdrop-filter: invert(0.75) hue-rotate(180deg);
+  backdrop-filter: invert(0.75) hue-rotate(180deg);
   transform: translate3d(-1000px, -1000px, 0) scale(0);
   transition: color 220ms var(--ease), background-color 220ms var(--ease), opacity 200ms var(--ease);
   will-change: transform;

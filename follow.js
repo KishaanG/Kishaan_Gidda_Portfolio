@@ -32,7 +32,7 @@
   const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const root = document.documentElement;
 
-  const SIZE = 60; // CSS px, off a control
+  const SIZE = 40; // CSS px, off a control (user, 2026-11-19: was 60)
   // Off a link the disc drifts after the cursor and settles past it
   // a little; on one it closes in. ζ ≈ 0.84 and 0.94.
   const LOOSE = { k: 60, c: 13 };
