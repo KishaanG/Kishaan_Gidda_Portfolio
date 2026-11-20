@@ -6,7 +6,7 @@
   Every state the field passed through, live and side by side,
   under the real hero type so legibility is judged too.
 
-  Keys 1–5 switch. Not linked from
+  Keys 1–6 switch. Not linked from
   anywhere; delete it before deploying if you'd rather.
   ============================================================
 -->
@@ -106,7 +106,7 @@
     <main id="top">
       <section class="hero" aria-label="Silk variants">
         <div class="silk-host" id="host" aria-hidden="true">
-          <canvas id="silk" data-silk="1" data-preset="silk"></canvas>
+          <canvas id="silk" data-silk="1" data-preset="drape"></canvas>
         </div>
 
         <div class="hero-inner">
@@ -133,7 +133,7 @@
     </main>
 
     <nav class="lab-bar" aria-label="Silk variants">
-      <span class="lab-tag">Field · 1–5</span>
+      <span class="lab-tag">Field · 1–6</span>
       <p class="lab-note" id="note"></p>
     </nav>
 
@@ -142,17 +142,18 @@
       (() => {
         const ORDER = [
           ["drift", "Drift", "The first rebuild. Broad, near-horizontal sweeps, very high-key. Smooth, but it still reads closer to weather than to cloth — the folds have no consistent lean."],
-          ["marble", "Marble", "Turbulence leads instead of position, so the folds curdle into eddies. The most liquid of the five and genuinely striking, but it is marbled oil, not hanging satin."],
+          ["marble", "Marble", "Turbulence leads instead of position, so the folds curdle into eddies. Liquid and striking, but its three layers fold three ways and cross. Shipped until 2026-11-19."],
           ["ribbon", "Ribbon", "Position leads: long parallel ribbons that keep their lean. High-key palette and a wide contrast window put a lot of white on the frame — the brightest and crispest variant."],
           ["satin", "Satin", "Ribbon's structure on the deeper palette. Fewer, wider folds and real blue mass, so it sits heavier and reads more like fabric than like light."],
-          ["silk", "Silk", "Satin with the third turbulence layer pulled back, which removes the moiré ripple that three even layers beat into the lower half. Currently live on the site."],
+          ["silk", "Silk", "Satin with the third turbulence layer pulled back, which removes the moiré ripple that three even layers beat into the lower half. The closest of the first five to the reference's geometry."],
+          ["drape", "Drape", "One turbulence instead of three, read through a crossed, warped distance: a single fold system of long diagonal drapes, the reference's smoothness. Currently live on the site."],
         ];
 
         const bar = document.querySelector(".lab-bar");
         const note = document.getElementById("note");
         const host = document.getElementById("host");
         let handle = window.Silk.mount(document.getElementById("silk"));
-        let active = "silk";
+        let active = "drape";
 
         function select(name) {
           if (name === active) return;
@@ -191,12 +192,12 @@
         });
 
         addEventListener("keydown", (e) => {
-          const i = "12345".indexOf(e.key);
+          const i = "123456".indexOf(e.key);
           if (i >= 0) select(ORDER[i][0]);
         });
 
         const want = new URLSearchParams(location.search).get("preset");
-        note.innerHTML = "<b>Silk.</b> " + ORDER[4][2];
+        note.innerHTML = "<b>Drape.</b> " + ORDER[5][2];
         if (want && ORDER.some((o) => o[0] === want)) select(want);
       })();
     </script>

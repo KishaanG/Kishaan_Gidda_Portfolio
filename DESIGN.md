@@ -47,24 +47,50 @@ resumes only if it is still on screen when the tab comes back.
 The blog masthead carries the same field once, at 0.85, and the article below it
 is paper.
 
-### The committed field, and the four it was chosen against
+### The committed field, and the five it was chosen against
 
-The field's character comes down to **one ratio**: whether the fold phase is led
-by position or by the turbulence. Position-led gives parallel ribbons with a
-constant lean — woven cloth, and the closest fit to the pinned reference's
-geometry. Turbulence-led gives broad molten folds that lose that geometry
-entirely — poured liquid.
+**The site ships `drape`: one fold system, not three.** Every earlier preset
+sums three turbulences that start from three different phases, so each frame
+holds three unrelated sets of folds laid over one another. Where they cross, the
+cloth curdles into eddies. On 2026-11-19 the user called the field that shipped
+then (`marble`) "too disorganized" and asked for the pinned reference's
+smoothness.
 
-**The site ships the turbulence-led field (`marble`).** It is the smoothest and
-least structured of the variants, and it was chosen for exactly that: the brief
-asked for the reference's "video" quality above all, and this reads most like
-moving light and least like a woven material. It is a **deliberate divergence**
-from the reference's parallel-ribbon composition — picked over the closer-fitting
-`silk` with that trade understood.
+The reference gets that smoothness from structure, not from its settings. Its
+layers all run the same turbulence and differ only by a constant phase, so they
+add up to a single wave. `drape` does the same thing directly:
 
-All five states live in `PRESETS` in `silk.js` and run side by side in
-`silk-lab.html`. Switching is one word: `data-preset` on the canvas, or the
-default in `mount()`. Nothing else in the system changes.
+- **One turbulence** (`layers: 1`), so every fold in the frame belongs to the
+  same system and they all run the same way.
+- **Read through a distance, not a direction.** The band is `length()` of the
+  plane warped by the turbulence at 0.21 (`radial` 4.0). That gives long sweeping
+  arcs, where `marble` fed the turbulence straight into the phase
+  (`chaosDir` 0.966) at twice the gain.
+- **The warp crosses axes** (`cross`): each oscillator bends the other axis. This
+  is what turns closed lenses into long drapes.
+- **A wider contrast window** (`[0.18, 0.64]`). A single wave clips harder than
+  three that partly cancel. At the reference's own window the frame split into
+  flat blue and white slabs with hard edges.
+- **`turn` −1.10 and `pace` 1.8.** The turn sets the drapes' diagonal lean, and
+  the pace brings the drift close to the reference's speed.
+
+The trade is `marble`'s molten eddies, which are gone. Some stretches of the
+drift also carry broad white plateaus; that is the specular stop, as in the
+reference.
+
+All six states live in `PRESETS` in `silk.js` and run side by side in
+`silk-lab.html` (keys 1–6). Switching is one word: `data-preset` on the canvas, or
+`DEFAULT` in `silk.js`. `layers`, `turn`, `pace`, `cross` and `edge` default to
+the old behaviour, so the first five run the same maths as before. `marble` and
+`satin` measured pixel-identical; the other three differ by GPU rounding at a
+few steep edges.
+
+**The accent's threshold belongs to the field** (`edge`). The work stage's sharp
+lines (§3) take the accent wherever the water's shading turns over faster than
+`edge` per CSS px. One wave sweeps the whole palette at every fold edge, crossing
+its crease three times, so at `marble`'s threshold (0.08–0.26) each edge drew a
+triple red stripe, some across the stage's copy. `drape` sets it at 0.20–0.42,
+which brings the lines back to about the density they had before.
 
 ### How it is built, and why each choice is load-bearing
 
@@ -169,7 +195,8 @@ its section leaves the viewport. It must never run offscreen. Measured at a lock
 60fps (16.7ms median) on a 1.28M-pixel canvas, before the stir. The stir adds up
 to 16 gaussians to every `folds()` call, and the work stage's line sampling calls
 `folds()` up to three times a pixel; that cost has not yet been measured on
-integrated graphics.
+integrated graphics. `drape` runs one turbulence per `folds()` call where the
+earlier presets ran three, so the shader got cheaper with it.
 
 ## 2. The column grid
 
