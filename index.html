@@ -13,12 +13,15 @@
     the experience and About, and the close.
     Source Serif 4 at display size over Geist. [ Brackets ]
     are the only affordance; there are no filled buttons.
-  STORY: He ships software and he breaks it. TrendAI, Hydro
-    Ottawa, Ciena, a CTF win. Then: email him.
-  FIRST VIEWPORT: Silk field full-bleed. One serif line at
-    ~7vw, low and left, on the first of four columns. Beneath
-    it two sentences, then "↳ Get in touch" and [ View work ].
-    Fixed wordmark and bracket nav above; © and socials below.
+  STORY: Who he is and what he is looking for, first. Then
+    the proof: TrendAI, Hydro Ottawa, Ciena, a CTF win. Then:
+    email him.
+  FIRST VIEWPORT: A title card. Silk field full-bleed; his
+    name alone in the serif, centred, at the curtain's size and
+    on the spot it set it (≤3.4rem). One line beneath on what
+    he is looking for, then "↳ Get in touch" and [ View work ].
+    Two mono lines at the foot. Wordmark and bracket nav above;
+    © and socials below.
   FORM: Reference world pinned by the user to the register of
     sreedesigns.com — generative light field behind wide-set
     serif on near-empty paper. Staging: a pinned work stage
@@ -93,39 +96,39 @@
     <main id="top">
       <!-- ============ HERO ============ -->
       <section class="hero" aria-label="Introduction">
+        <!-- data-read: the reading light's plateau, in the hero's own
+             box, wide enough to take the foot lines in its corners -->
         <div class="silk-host" aria-hidden="true">
-          <canvas data-silk="1"></canvas>
+          <canvas data-silk="1" data-read="0.5 0.4 0.7 0.6"></canvas>
         </div>
 
-        <div class="hero-inner">
-          <p class="label rise" style="--d: 0.05s">Cybersecurity &amp; AI/ML · Ottawa</p>
+        <!-- the name is the whole middle row, so it lands where the
+             curtain set it (home.css) -->
+        <h1 class="hero-name rise">Kishaan Gidda</h1>
 
-          <h1 class="hero-line rise" style="--d: 0.12s">
-            I build the thing,<br />then I try to break it.
-          </h1>
+        <div class="hero-rest">
+          <div class="hero-follow">
+            <p class="hero-sub rise" style="--d: 0.08s">
+              Looking for my next co-op or internship in AI/ML and security
+              engineering.
+            </p>
 
-          <p class="hero-sub rise" style="--d: 0.22s">
-            Hello, I'm Kishaan. I'm a computer science co-op student at Carleton
-            University in the AI/ML stream, and most recently I was on a cloud
-            security product team at TrendAI, building agent tooling that triages
-            security alerts. I love both halves of this work: shipping the system, then
-            hunting for the way in.
-          </p>
-
-          <div class="hero-actions rise" style="--d: 0.3s">
-            <a class="turn" href="#contact">
-              <svg viewBox="0 0 12 12" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.1" aria-hidden="true">
-                <path d="M1.5 1v6.5h8M7 5l2.5 2.5L7 10" stroke-linecap="square" />
-              </svg>
-              Get in touch
-            </a>
-            <a class="br" href="#work">[ View work ]</a>
+            <div class="hero-actions rise" style="--d: 0.14s">
+              <a class="turn" href="#contact">
+                <svg viewBox="0 0 12 12" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.1" aria-hidden="true">
+                  <path d="M1.5 1v6.5h8M7 5l2.5 2.5L7 10" stroke-linecap="square" />
+                </svg>
+                Get in touch
+              </a>
+              <a class="br" href="#work">[ View work ]</a>
+            </div>
           </div>
-        </div>
 
-        <p class="hero-now rise" style="--d: 0.4s">
-          Previously · Product Team, AVTD at TrendAI
-        </p>
+          <p class="hero-now rise" style="--d: 0.22s">
+            <span>Previously · Software Engineer at TrendAI</span>
+            <span>Computer science · Carleton University</span>
+          </p>
+        </div>
       </section>
 
       <!-- ============ 01 · WORK ============ -->

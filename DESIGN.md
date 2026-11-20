@@ -151,7 +151,13 @@ instead bleaches that third of the frame flat, which is the opposite of the brie
 The zone is a **plateau**, sized to the whole type stack rather than to its centre,
 so no line of copy sits on the shoulder of the falloff. This is what holds every
 element on the field at ≥4.5:1 across the entire drift, at every breakpoint. If
-the hero's copy ever moves, `data-read` moves with it.
+the hero's copy ever moves, `data-read` moves with it. The hero's is
+`0.5 0.4 0.7 0.6`, in the hero's own box: the centred stack, and the two foot
+lines down in its corners (below 900px they stack, centred under it). A smaller
+zone around the stack alone left the foot lines on the shoulder (measured
+2026-11-19, while the field itself was being reworked: every element of the
+stack and the foot ≥5.25:1 at 1440×900 across the samples taken). Re-measure
+once the field settles.
 
 **Fallback:** if WebGL is unavailable, a layered radial-gradient standing in at the
 same colours. Under `prefers-reduced-motion`, the shader renders **one static
@@ -172,9 +178,9 @@ floats free of it. Below 900px it drops to a single centred column.
 
 **The grid is not drawn.** Until 2026-11-19 five fixed, full-height hairline
 rules marked it on every screen ≥ 900px, over all content. The user removed them.
-Don't bring them back. The columns remain as positions: the hero's type, the
-work stage, the ledger, About's river and the curtain's stairs still land on
-them.
+Don't bring them back. The columns remain as positions: the work stage, the
+ledger, About's river and the curtain's stairs still land on them. The hero is
+a centred title card and does not.
 
 Container: `min(1320px, 100% - 96px)`.
 
@@ -362,13 +368,13 @@ reference uses, the pin is the user's explicit instruction, and in this pairing
 the serif carries all the identity while the sans is deliberately neutral
 furniture. If the pin is ever lifted, this is the first thing to revisit.
 
-The display face is reserved for: the hero line, section titles, the contact
+The display face is reserved for: the hero's name, section titles, the contact
 address, project names on the work stage, and blog article titles. **It never
 sets body copy, and it is never bolded** — weight 400, occasionally 300 at the
 largest sizes. Size comes from scale, not weight.
 
 **Separator.** Mono labels separate their parts with a middle dot: `01 · Selected
-work`, `Next.js · Gemini · 2026`, `Previously · Product Team, AVTD at TrendAI`.
+work`, `Next.js · Gemini · 2026`, `Previously · Software Engineer at TrendAI`.
 One separator glyph across the whole system; em-dashes stay in prose, where they
 are punctuation rather than furniture.
 
@@ -438,6 +444,14 @@ starting 420ms into the exit. Three things are adapted:
 - **The exit fade is quicker** (560ms, 120ms apart). The stairs uncover the hero's
   heading right where the name sits, and a name still half there reads as a
   ghost over it.
+- **The hero's heading is the name, on the curtain's spot** (user, 2026-11-19,
+  when the old display line "I build the thing, then I try to break it." was
+  dropped). It is set at the curtain's size, centred by the hero's
+  `1fr auto 1fr` rows, and its word space is widened to the curtain's 0.26em
+  gap, so it lands on the curtain's words to within a couple of pixels. It
+  fades in where it stands rather than taking the 24px rise: the lift reads as
+  the name changing ink, not a second name arriving. On phones the hero is
+  92svh, so it sits about 10px above the curtain's name.
 - **It lifts on readiness, not a timer.** It waits for `load` and for the hero's
   silk to have a first frame (`silk:ready`, which fires on every path out of
   `mount`, the fallback included), and never before the name has fully set.

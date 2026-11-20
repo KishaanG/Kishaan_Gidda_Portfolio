@@ -33,7 +33,10 @@ is that he ships software *and* breaks it — development plus vulnerability wor
 one's mono label on the site (Agents, Incident, …) is not résumé wording.
 - **TrendAI** — Product Team, AVTD. *May – Aug 2026.* (The résumé names this
   role Software Engineer (Co-op), Trend Micro, Vision One Cloud Security; the
-  site keeps the names above until the user says otherwise.)
+  site keeps the names above until the user says otherwise.) **The user said
+  otherwise for the hero on 2026-11-19:** its foot line reads "Previously ·
+  Software Engineer at TrendAI". The experience ledger still says "Product
+  Team, AVTD" until the user decides that one too.
   - A lightweight, read-only agent on the Claude Agent SDK wrapping the Vision
     One API in 6 custom MCP tools, pulling only the alert data each prompt
     needs to keep token costs low.
