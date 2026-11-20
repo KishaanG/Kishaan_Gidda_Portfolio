@@ -234,10 +234,11 @@ happens where the water is already deep. On About's field the phone layout keeps
 the scrim throughout, as the stacked work stage does, because copy scrolls under
 the bars the whole way down.
 
-**The disc inverts lightness, never hue.** Its lens is `invert(1)
+**The disc inverts lightness, never hue.** Its lens is `invert(0.75)
 hue-rotate(180deg)`: the inversion turns the hue round and the rotation turns it
 back, so the site's blue stays blue inside the disc and a project's red stays
-red. That is why it can pass over the field, paper and every ground without
+red. It inverts three-quarters, not fully (user, 2026-11-19): a full inversion
+turned the page's near-white near-black; at 0.75 it is a soft charcoal. That is why it can pass over the field, paper and every ground without
 bringing a second hue onto the page. Its arrow is white on a dark keyline, so it
 reads on whatever the lens turns the ground into: a screenshot's white goes black
 in it, PoleLab's carbon goes pale. Without `backdrop-filter` it falls back to a
@@ -252,7 +253,7 @@ wider than 480×160 it takes half the tint. The lens no longer carries an arrow:
 snap is what says a thing is clickable. A press sinks the disc to 0.92. Three seconds
 without the mouse moving fades it out. Under reduced motion it snaps without a
 spring. The system cursor is hidden wherever the disc runs: the disc is the pointer
-(user, 2026-11-19), 60px off a control.
+(user, 2026-11-19), 40px off a control (it was 60px).
 
 **Over the work stage the disc is the project's accent, at 42%** (user,
 2026-11-19): PoleLab's and CyberSci's red, CareRouter's gold. There the lens
@@ -643,7 +644,7 @@ the flight does not run at all: that visitor gets the ledger.
   flight hands down. Each fact is set in the display serif in the crook of a
   bend, its label in mono above it; the toolkit's four groups sit on the page's
   four columns, marked entries carried by weight and the display blue.
-- **The disc.** A 60px lens that trails the mouse on every classic page
+- **The disc.** A 40px lens that trails the mouse on every classic page
   (`follow.js`; `.disc` in `site.css`), and is the pointer: the system cursor is
   hidden. On a link or button it snaps to the control's box (§3). The disc is `aria-hidden` and takes no pointer events, so it never
   changes what a click does. Fine pointers only: on touch there is no cursor to
