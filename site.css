@@ -391,7 +391,6 @@ strong { font-weight: 500; color: var(--display); }
    surfaces that sit on the field set their mono in --ink. The
    hierarchy is unchanged: it was already carried by size, tracking
    and case, which is where it belongs. */
-.hero .label,
 .close .label,
 .masthead .label {
   color: var(--ink);

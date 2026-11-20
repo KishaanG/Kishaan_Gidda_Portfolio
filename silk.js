@@ -57,7 +57,7 @@
      rather than left to whatever t=0 happens to land on. Reduced-motion
      visitors are held on exactly this frame: the still IS the opening,
      which is why there is one constant here and not two. */
-  const OPEN = 120.0;
+  const OPEN = 184.5;
 
   /* ------------------------------------------------------------
      The cloth, in order of increasing light. Read either as a
@@ -94,8 +94,12 @@
      that bleached the type column was a defect, not a look. So
      the choice here is purely the character of the cloth.
 
-     Pick one with data-preset on the canvas. Default: marble.
-     silk-lab.html runs all five live, side by side.
+     Pick one with data-preset on the canvas. Default: DEFAULT,
+     below. silk-lab.html runs all six live, side by side.
+
+     layers, turn, pace, cross and edge are optional; left out, they
+     are the behaviour the first five were authored against (three
+     layers, no turn, pace 1, no cross, accent from 0.08 to 0.26).
      ------------------------------------------------------------ */
   const PRESETS = {
     /* Broad, near-horizontal sweeps. Calm and very high-key — the
@@ -106,16 +110,11 @@
       wa: 0.0, wd: 0.0, fall: 0.28,
       window: [0.30, 0.42], crest: 0.60, palette: PALETTE_HIGH,
     },
-    /* LIVE — this is the field the site ships.
-
-       Turbulence leads instead of position, so the plane resolves
-       into broad molten folds rather than parallel ribbons. It is the
-       smoothest and least structured of the five, and that is exactly
-       why it is the one: the brief asked for the reference's "video"
-       quality, and this reads most like poured light and least like a
-       woven material. The trade is that it gives up the reference's
-       parallel-ribbon geometry — a deliberate divergence, chosen by
-       the user over the closer-fitting 'ribbon'. */
+    /* Shipped until 2026-11-19. Turbulence leads instead of
+       position, so the plane resolves into broad molten folds rather
+       than parallel ribbons. Its three layers fold three different
+       ways, though, and where their folds cross the cloth curdles
+       into eddies; the user found that too disorganized. */
     marble: {
       scale: 0.30, fold: [0.9205, 0.3907],
       freq: 1.38, fan: 0.0, chaosDir: 0.966, radial: 0.55,
@@ -148,7 +147,30 @@
       wa: 0.50, wd: 0.36, fall: 0.44,
       window: [0.33, 0.46], crest: 0.66, palette: PALETTE_DEEP,
     },
+    /* LIVE — this is the field the site ships.
+
+       One turbulence instead of three, so every fold in the frame
+       belongs to a single system and they all run the same way: long
+       drapes, the pinned reference's smoothness. It is read through a
+       distance rather than a direction (radial, no chaosDir), so the
+       folds sweep in arcs rather than turning over in place, and the
+       warp crosses axes (cross), which draws those arcs out into
+       drapes instead of closing them into lenses. One wave clips
+       harder than three that partly cancel, so the window is wider.
+       turn sets the drapes' lean, pace their drift.
+
+       edge: one wave sweeps the whole palette at every fold edge, so
+       at the default threshold each edge took the work stage's accent
+       as a triple stripe. This keeps only the steepest turns. */
+    drape: {
+      layers: 1, turn: -1.10, pace: 1.8, cross: true, edge: [0.20, 0.42],
+      scale: 0.28, fold: [0.9205, 0.3907],
+      freq: 0.0, fan: 0.0, chaosDir: 0.0, radial: 4.0,
+      wa: 0.0, wd: 0.0, fall: 0.0,
+      window: [0.18, 0.64], crest: 0.60, palette: PALETTE_HIGH,
+    },
   };
+  const DEFAULT = "drape";
 
   /* sRGB hex → Oklab. Ottosson's matrices; the 2.2 transfer here is
      the exact inverse of the 1/2.2 the fragment encodes with, so the
@@ -385,9 +407,13 @@
        take it. */
     uniform vec3  uAccent;
     uniform float uAccentAmt;
+    uniform vec2  uEdge;      // the steepness (per CSS px) the accent eases in over
 
     /* the preset — see PRESETS in the JS above */
     uniform float uScale;     // how far the domain is scaled down
+    uniform vec2  uTurn;      // the domain's turn: cos, sin
+    uniform float uPace;      // the turbulence's clock, as a multiple
+    uniform float uCross;     // 1: the warp pairs each oscillator with the other axis
     uniform vec2  uFold;      // direction the fold phase climbs
     uniform vec4  uBand;      // freq, fan, chaosDir, radial
     uniform vec2  uWarp;      // how much a and d bend the ribbons
@@ -481,9 +507,19 @@
       float sum = 0.0;
       float wsum = 0.0;
 
-      for (int i = 0; i < 3; i++) {
+      /* The turn sets which way the folds lean; it moves the domain
+         the turbulence reads, never p, so the stir's deposits (kept
+         in p) and the band's own uses of p are untouched by it. */
+      vec2 q = vec2(uTurn.x * p.x - uTurn.y * p.y,
+                    uTurn.y * p.x + uTurn.x * p.y) * uScale;
+      t *= uPace;
+
+      /* SILK_LAYERS is how many separate turbulences are summed. Three
+         start from three different phases and fold three different
+         ways, so their folds cross; one is a single fold system whose
+         folds all run together (see 'drape' in PRESETS). */
+      for (int i = 0; i < SILK_LAYERS; i++) {
         float fi = float(i);
-        vec2 q = p * uScale;
         float a =  1.7 + fi * 0.90;
         float d = -0.6 + fi * 1.30;
 
@@ -501,12 +537,13 @@
            woven cloth. When the turbulence leads instead (uBand.z up,
            uBand.x down) the folds go molten and lose that geometry —
            poured liquid. That one ratio is the whole difference
-           between the 'ribbon' and 'marble' presets, and the site is
-           set to the latter.
+           between the 'ribbon' and 'marble' presets. 'drape', which
+           the site ships, uses neither: only the distance term
+           (uBand.w), over a single layer.
 
            uBand.y fans the folds wider toward the bottom of the
            frame, the way weight opens cloth as it falls. */
-        vec2 w = q + vec2(a, d) * 0.21;
+        vec2 w = mix(q, q.yx, uCross) + vec2(a, d) * 0.21;
         float band = dot(p, uFold) * (uBand.x + p.y * uBand.y)
                    + dot(vec2(a, d), uFold) * uBand.z
                    + length(w) * uBand.w
@@ -656,7 +693,7 @@
             float sx = rimShade(folds(p + vec2(e, 0.0), t), sheen);
             float sy = rimShade(folds(p + vec2(0.0, e), t), sheen);
             float steep = length(vec2(sx - shade, sy - shade));
-            deep = mix(deep, uAccent, uAccentAmt * smoothstep(0.08, 0.26, steep));
+            deep = mix(deep, uAccent, uAccentAmt * smoothstep(uEdge.x, uEdge.y, steep));
           }
         #endif
         lab = mix(lab, deep, m);
@@ -730,8 +767,10 @@
       ? "#extension GL_OES_standard_derivatives : enable\n#define SILK_DERIV 1\n"
       : "";
     if (!vs) return fallback();
+    const P = PRESETS[canvas.dataset.preset] || PRESETS[DEFAULT];
     const stirDef = STIR ? `#define SILK_STIR 1\n#define STIR_N ${STIRRING.n}\n` : "";
-    const fs = compile(gl, gl.FRAGMENT_SHADER, deriv + stirDef + FRAG);
+    const layerDef = `#define SILK_LAYERS ${P.layers || 3}\n`;
+    const fs = compile(gl, gl.FRAGMENT_SHADER, deriv + stirDef + layerDef + FRAG);
     if (!fs) return fallback();
 
     const prog = gl.createProgram();
@@ -762,11 +801,15 @@
     const uWater = loc("uWater");
     const uAccent = loc("uAccent");
     const uAccentAmt = loc("uAccentAmt");
-    const P = PRESETS[canvas.dataset.preset] || PRESETS.marble;
 
     gl.uniform1f(gl.getUniformLocation(prog, "uStrength"), strength);
     gl.uniform3fv(gl.getUniformLocation(prog, "uLab[0]"), labFor(P.palette));
     gl.uniform1f(gl.getUniformLocation(prog, "uScale"), P.scale);
+    gl.uniform2f(gl.getUniformLocation(prog, "uTurn"), Math.cos(P.turn || 0), Math.sin(P.turn || 0));
+    gl.uniform1f(gl.getUniformLocation(prog, "uPace"), P.pace || 1);
+    gl.uniform1f(gl.getUniformLocation(prog, "uCross"), P.cross ? 1 : 0);
+    const edge = P.edge || [0.08, 0.26];
+    gl.uniform2f(gl.getUniformLocation(prog, "uEdge"), edge[0], edge[1]);
     gl.uniform2f(gl.getUniformLocation(prog, "uFold"), P.fold[0], P.fold[1]);
     gl.uniform4f(gl.getUniformLocation(prog, "uBand"), P.freq, P.fan, P.chaosDir, P.radial);
     gl.uniform2f(gl.getUniformLocation(prog, "uWarp"), P.wa, P.wd);

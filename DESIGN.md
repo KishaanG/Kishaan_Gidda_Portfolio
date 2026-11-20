@@ -47,24 +47,50 @@ resumes only if it is still on screen when the tab comes back.
 The blog masthead carries the same field once, at 0.85, and the article below it
 is paper.
 
-### The committed field, and the four it was chosen against
+### The committed field, and the five it was chosen against
 
-The field's character comes down to **one ratio**: whether the fold phase is led
-by position or by the turbulence. Position-led gives parallel ribbons with a
-constant lean — woven cloth, and the closest fit to the pinned reference's
-geometry. Turbulence-led gives broad molten folds that lose that geometry
-entirely — poured liquid.
+**The site ships `drape`: one fold system, not three.** Every earlier preset
+sums three turbulences that start from three different phases, so each frame
+holds three unrelated sets of folds laid over one another. Where they cross, the
+cloth curdles into eddies. On 2026-11-19 the user called the field that shipped
+then (`marble`) "too disorganized" and asked for the pinned reference's
+smoothness.
 
-**The site ships the turbulence-led field (`marble`).** It is the smoothest and
-least structured of the variants, and it was chosen for exactly that: the brief
-asked for the reference's "video" quality above all, and this reads most like
-moving light and least like a woven material. It is a **deliberate divergence**
-from the reference's parallel-ribbon composition — picked over the closer-fitting
-`silk` with that trade understood.
+The reference gets that smoothness from structure, not from its settings. Its
+layers all run the same turbulence and differ only by a constant phase, so they
+add up to a single wave. `drape` does the same thing directly:
 
-All five states live in `PRESETS` in `silk.js` and run side by side in
-`silk-lab.html`. Switching is one word: `data-preset` on the canvas, or the
-default in `mount()`. Nothing else in the system changes.
+- **One turbulence** (`layers: 1`), so every fold in the frame belongs to the
+  same system and they all run the same way.
+- **Read through a distance, not a direction.** The band is `length()` of the
+  plane warped by the turbulence at 0.21 (`radial` 4.0). That gives long sweeping
+  arcs, where `marble` fed the turbulence straight into the phase
+  (`chaosDir` 0.966) at twice the gain.
+- **The warp crosses axes** (`cross`): each oscillator bends the other axis. This
+  is what turns closed lenses into long drapes.
+- **A wider contrast window** (`[0.18, 0.64]`). A single wave clips harder than
+  three that partly cancel. At the reference's own window the frame split into
+  flat blue and white slabs with hard edges.
+- **`turn` −1.10 and `pace` 1.8.** The turn sets the drapes' diagonal lean, and
+  the pace brings the drift close to the reference's speed.
+
+The trade is `marble`'s molten eddies, which are gone. Some stretches of the
+drift also carry broad white plateaus; that is the specular stop, as in the
+reference.
+
+All six states live in `PRESETS` in `silk.js` and run side by side in
+`silk-lab.html` (keys 1–6). Switching is one word: `data-preset` on the canvas, or
+`DEFAULT` in `silk.js`. `layers`, `turn`, `pace`, `cross` and `edge` default to
+the old behaviour, so the first five run the same maths as before. `marble` and
+`satin` measured pixel-identical; the other three differ by GPU rounding at a
+few steep edges.
+
+**The accent's threshold belongs to the field** (`edge`). The work stage's sharp
+lines (§3) take the accent wherever the water's shading turns over faster than
+`edge` per CSS px. One wave sweeps the whole palette at every fold edge, crossing
+its crease three times, so at `marble`'s threshold (0.08–0.26) each edge drew a
+triple red stripe, some across the stage's copy. `drape` sets it at 0.20–0.42,
+which brings the lines back to about the density they had before.
 
 ### How it is built, and why each choice is load-bearing
 
@@ -151,7 +177,13 @@ instead bleaches that third of the frame flat, which is the opposite of the brie
 The zone is a **plateau**, sized to the whole type stack rather than to its centre,
 so no line of copy sits on the shoulder of the falloff. This is what holds every
 element on the field at ≥4.5:1 across the entire drift, at every breakpoint. If
-the hero's copy ever moves, `data-read` moves with it.
+the hero's copy ever moves, `data-read` moves with it. The hero's is
+`0.5 0.4 0.7 0.6`, in the hero's own box: the centred stack, and the two foot
+lines down in its corners (below 900px they stack, centred under it). A smaller
+zone around the stack alone left the foot lines on the shoulder (measured
+2026-11-19, while the field itself was being reworked: every element of the
+stack and the foot ≥5.25:1 at 1440×900 across the samples taken). Re-measure
+once the field settles.
 
 **Fallback:** if WebGL is unavailable, a layered radial-gradient standing in at the
 same colours. Under `prefers-reduced-motion`, the shader renders **one static
@@ -163,7 +195,8 @@ its section leaves the viewport. It must never run offscreen. Measured at a lock
 60fps (16.7ms median) on a 1.28M-pixel canvas, before the stir. The stir adds up
 to 16 gaussians to every `folds()` call, and the work stage's line sampling calls
 `folds()` up to three times a pixel; that cost has not yet been measured on
-integrated graphics.
+integrated graphics. `drape` runs one turbulence per `folds()` call where the
+earlier presets ran three, so the shader got cheaper with it.
 
 ## 2. The column grid
 
@@ -172,9 +205,9 @@ floats free of it. Below 900px it drops to a single centred column.
 
 **The grid is not drawn.** Until 2026-11-19 five fixed, full-height hairline
 rules marked it on every screen ≥ 900px, over all content. The user removed them.
-Don't bring them back. The columns remain as positions: the hero's type, the
-work stage, the ledger, About's river and the curtain's stairs still land on
-them.
+Don't bring them back. The columns remain as positions: the work stage, the
+ledger, About's river and the curtain's stairs still land on them. The hero is
+a centred title card and does not.
 
 Container: `min(1320px, 100% - 96px)`.
 
@@ -362,13 +395,13 @@ reference uses, the pin is the user's explicit instruction, and in this pairing
 the serif carries all the identity while the sans is deliberately neutral
 furniture. If the pin is ever lifted, this is the first thing to revisit.
 
-The display face is reserved for: the hero line, section titles, the contact
+The display face is reserved for: the hero's name, section titles, the contact
 address, project names on the work stage, and blog article titles. **It never
 sets body copy, and it is never bolded** — weight 400, occasionally 300 at the
 largest sizes. Size comes from scale, not weight.
 
 **Separator.** Mono labels separate their parts with a middle dot: `01 · Selected
-work`, `Next.js · Gemini · 2026`, `Previously · Product Team, AVTD at TrendAI`.
+work`, `Next.js · Gemini · 2026`, `Previously · Software Engineer at TrendAI`.
 One separator glyph across the whole system; em-dashes stay in prose, where they
 are punctuation rather than furniture.
 
@@ -438,6 +471,14 @@ starting 420ms into the exit. Three things are adapted:
 - **The exit fade is quicker** (560ms, 120ms apart). The stairs uncover the hero's
   heading right where the name sits, and a name still half there reads as a
   ghost over it.
+- **The hero's heading is the name, on the curtain's spot** (user, 2026-11-19,
+  when the old display line "I build the thing, then I try to break it." was
+  dropped). It is set at the curtain's size, centred by the hero's
+  `1fr auto 1fr` rows, and its word space is widened to the curtain's 0.26em
+  gap, so it lands on the curtain's words to within a couple of pixels. It
+  fades in where it stands rather than taking the 24px rise: the lift reads as
+  the name changing ink, not a second name arriving. On phones the hero is
+  92svh, so it sits about 10px above the curtain's name.
 - **It lifts on readiness, not a timer.** It waits for `load` and for the hero's
   silk to have a first frame (`silk:ready`, which fires on every path out of
   `mount`, the fallback included), and never before the name has fully set.
