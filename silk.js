@@ -231,7 +231,7 @@
   const STIR = !REDUCED && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
   const STIRRING = {
     n: 16, // deposits kept
-    gain: 0.6, // radians of phase per p-unit the disc travels
+    gain: 0.3, // radians of phase per p-unit the disc travels (0.6 until drape)
     sigma: 0.6, // a deposit's radius as made, p units (frame height is 2)
     grow: 0.25, // p² per second its radius² gains
     hold: 3.0, // s before it starts spreading across the whole frame
