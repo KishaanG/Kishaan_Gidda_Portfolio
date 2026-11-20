@@ -596,7 +596,9 @@ screenshot is zoomed to a readable scale around the part that matters
 **The experience flight.** Pinned by the user to the 3D timeline on
 `https://clevir.li`. Scroll carries a camera along a hairline thread — Ciena
 2023, Hydro Ottawa 2025, TrendAI 2026 — through a world built from the hero's
-own shader (`xp3d.js`, `xp3d-scenes.js`; the ribbon world). Each job is a station:
+own shader (`xp3d.js`, `xp3d-scenes.js`; the ribbon world). Its cloth runs the
+hero's `drape` field (§1) at turn 0, so on the ribbon the folds run along its
+length (user, 2026-11-20). Each job is a station:
 a wireframe cube, and a label as real text — the year in mono, the company in the
 display serif, the role. While the camera rests on a job its detail settles in
 on the right half, starting on the grid's middle rule: the date line, the job's
