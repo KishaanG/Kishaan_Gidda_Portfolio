@@ -49,17 +49,29 @@
 
   /* ---- the runway, in svh ---------------------------------------
      A rest on each project with a handover between each pair. The
-     rests are what the snap lands on. */
+     rests are what the snap lands on. The experience flight may add
+     a seam at the end (seam.js): a stretch where the stage holds on
+     the last project, pinned, while the flight takes it over. */
   const REST = 36;
   const HAND = 85;
-  const SEGS = [];
-  for (let k = 0; k < n; k++) {
-    SEGS.push({ kind: "rest", len: REST, k });
-    if (k < n - 1) SEGS.push({ kind: "hand", len: HAND, k });
+  let SEGS = [];
+  let TOTAL = 0;
+  let SEAM = 0;
+  // how much of the seam the last project takes to hand over to the
+  // flight, as a fraction of it; 0 leaves it standing
+  let LEAVE = 0;
+  function runway() {
+    SEGS = [];
+    for (let k = 0; k < n; k++) {
+      SEGS.push({ kind: "rest", len: REST, k });
+      if (k < n - 1) SEGS.push({ kind: "hand", len: HAND, k });
+    }
+    if (SEAM) SEGS.push({ kind: "seam", len: SEAM, k: n - 1 });
+    let acc = 0;
+    SEGS.forEach((s) => { s.from = acc; acc += s.len; });
+    TOTAL = acc;
   }
-  let acc = 0;
-  SEGS.forEach((s) => { s.from = acc; acc += s.len; });
-  const TOTAL = acc;
+  runway();
 
   /* ---- the handover's shape -------------------------------------
      Everything in a handover rides one sine curve, so the card, the
@@ -173,6 +185,10 @@
   let at = 0;
   let grounds = [];
   let accents = [];
+  // the seam (seam.js): how far the stage's water has stilled, and
+  // whether the stage has let the chrome go to the flight
+  let calm = 0;
+  let released = false;
 
   /* for whatever paints behind the stage (bridge.js): where the
      runway is, the ground it has blended to, and each project's own */
@@ -184,6 +200,29 @@
     // with the inks, so it changes over as the names do
     get accent() { return colours ? colours["--st-accent"] : null; },
     accentOf: (k) => accents[k] || null,
+    get pinned() { return !!geo; },
+    /* the seam: svh the stage holds on its last project after the
+       runway, while the flight takes it over. 0 takes it out. */
+    setSeam(svh, leave) {
+      const v = Math.max(0, svh || 0);
+      LEAVE = v ? clamp(leave || 0) : 0;
+      if (v === SEAM) return;
+      SEAM = v;
+      runway();
+      if (!geo) return;
+      work.style.setProperty("--runway", `calc(100svh + ${TOTAL}svh)`);
+      measure();
+      paint();
+    },
+    get calm() { return calm; },
+    set calm(v) { calm = clamp(v); },
+    /* the bars go to whatever is under them once the stage has gone
+       from under them; until then the stage's ground ink holds */
+    release(on) {
+      if (released === !!on) return;
+      released = !!on;
+      if (geo) paint();
+    },
   };
 
   /* how far the first ground reaches up past the stage. A bridge
@@ -267,13 +306,14 @@
       if (x < s.from + s.len) { seg = s; break; }
     }
     const t = clamp((x - seg.from) / seg.len);
-    const P = seg.kind === "rest" ? seg.k : seg.k + t;
+    // only a handover moves the projects; a rest and the seam hold one
+    const P = seg.kind === "hand" ? seg.k + t : seg.k;
     return { seg, t, P };
   }
 
   /* one card, at d = how far past it the stage is (-1 arriving,
      0 resting, 1 gone) */
-  function placeCard(i, d) {
+  function placeCard(i, d, alone) {
     const c = cards[i];
     let ty = 0;
     let sc = 1;
@@ -284,11 +324,12 @@
       // settling as it lands
       ty = (1 - inOut(1 + d)) * geo.rise;
     } else if (d > 0 && d < 1) {
-      // covered: sinks back under the one arriving
+      // covered: sinks back under the one arriving. Leaving for the
+      // flight nothing comes up over it, so it sinks on out of sight
       const e = inOut(d);
       sc = 1 - SINK.scale * e;
       ty = SINK.drop * e;
-      op = 1 - SINK.dim * e;
+      op = (1 - SINK.dim * e) * (alone ? 1 - e : 1);
     } else if (d !== 0) {
       op = 0;
     }
@@ -308,8 +349,10 @@
     el.style.transform = `translateY(${y.toFixed(2)}%)`;
   }
 
-  function paintSlide(i, P) {
-    const d = P - i;
+  /* leave: how far the last project has handed over to the flight
+     (the seam), played as the same handover with no project after it */
+  function paintSlide(i, P, leave) {
+    const d = P - i + (i === n - 1 ? leave : 0);
     const lit = d > -1 && d < 1;
     const s = slides[i];
     s.classList.toggle("is-live", Math.abs(d) < 0.02);
@@ -327,7 +370,7 @@
     }
     delete s.dataset.out;
 
-    placeCard(i, d);
+    placeCard(i, d, leave > 0);
     roll(titles[i], d, 0.2, 0.2);
     roll(metas[i], d, 0.35, 0.35);
 
@@ -347,7 +390,7 @@
     const above = reach();
     bars.forEach((bar, j) => {
       const mid = geo.mids[j];
-      if (mid < sr.top - above || mid > sr.bottom) return setBar(bar, null);
+      if (released || mid < sr.top - above || mid > sr.bottom) return setBar(bar, null);
       setBar(bar, colours["--st-title"], colours["--st-halo"], moving ? colours["--st-ground"] : null);
     });
   }
@@ -370,14 +413,19 @@
   function paint() {
     if (!geo) return;
     const into = -work.getBoundingClientRect().top;
-    const sr = stage.getBoundingClientRect();
-    const { P } = locate(into);
+    // in the seam the stage is fixed to the viewport and carried off in
+    // 3D (seam.js): its transformed box says nothing about the bars
+    const sr = stage.classList.contains("is-seam")
+      ? { top: 0, bottom: window.innerHeight }
+      : stage.getBoundingClientRect();
+    const { P, seg, t } = locate(into);
     at = P;
     const i = clamp(Math.floor(P), 0, n - 2);
     colours = mix(pal[i], pal[i + 1], clamp(P - i));
     writeColours();
 
-    for (let j = 0; j < n; j++) paintSlide(j, P);
+    const leave = seg.kind === "seam" && LEAVE ? clamp(t / LEAVE) : 0;
+    for (let j = 0; j < n; j++) paintSlide(j, P, leave);
 
     const on = clamp(Math.round(P), 0, n - 1);
     railLinks.forEach((a, j) => {
@@ -417,7 +465,8 @@
   function snapTo(dir, into) {
     if (!geo) return null;
     const { seg, t } = locate(into);
-    if (seg.kind === "rest" || t <= 0.002 || t >= 0.998) return null;
+    // the seam belongs to the flight, which snaps it itself
+    if (seg.kind !== "hand" || t <= 0.002 || t >= 0.998) return null;
     // how far the page has come in the direction it is going
     const come = dir > 0 ? t : 1 - t;
     const commit = come > COMMIT;

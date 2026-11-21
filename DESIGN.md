@@ -624,11 +624,20 @@ marks where you are and jumps.
   the tags are dropped from the flight (never from the ledger): each names
   something a callout already says.
 
-- **It arrives straight after the work stage.** There is no header band between
-  them. The stage rises carrying a band of CyberSci's ground across its top edge
-  that shrinks to nothing as it pins, so the two grounds meet without a cut
-  (scroll-driven, `animation-timeline: view()`; without it, the old hairline).
-  The section's heading stays in the page for screen readers.
+- **It arrives under the work stage, never after it** (`seam.js`, `seam.css`;
+  user, 2026-11-21). The work stage used to let go of CyberSci and scroll away
+  while the flight rose under it, two slabs passing with a hard line between
+  them. Now, for 120svh of scroll, both are pinned at once, the work stage on
+  top, and nothing crosses the screen. CyberSci hands over the way every
+  project hands over to the next (the name and meta roll out, the copy lifts
+  away, the card sinks back) with nothing arriving after it. The red lines
+  settle out of the water, so no accent is left over the sky. Then the ground
+  clears, and under it the flight is already gliding in, so it arrives moving
+  rather than switched on, on its opening frame at its own speed. Three 3D
+  versions of this hand-over (a doorway through the card, the page folding on
+  the grid, a dive through a sea of silk) were built and refused: the user
+  wanted a smoother hand-over, not a 3D set piece. The section's heading stays
+  in the page for screen readers.
 - **Every frame is a pure function of scroll**, so going back up flies it in
   reverse. When the wheel stops mid-flight the page is carried on to the next
   job, so the camera only ever comes to rest at one.

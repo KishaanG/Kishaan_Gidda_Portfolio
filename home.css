@@ -1004,7 +1004,8 @@ main { position: relative; z-index: 1; }
   overflow: hidden;
   isolation: isolate;
   background: linear-gradient(180deg, #fbfdff 0%, #e3effb 100%);
-  border-block: 1px solid var(--rule);
+  /* no top edge: the work stage clears over it (seam.js) */
+  border-bottom: 1px solid var(--rule);
 }
 .xp-gl,
 .xp-lines {
@@ -1013,40 +1014,6 @@ main { position: relative; z-index: 1; }
   width: 100%;
   height: 100%;
   display: block;
-}
-
-/* The work stage lets go on CyberSci's ground, and this one opens on
-   the fog. Rather than a hairline between two blues, the stage rises
-   still carrying that ground across its top edge, and the band draws
-   up into the edge as it comes, so the seam is the same colour on
-   both sides the whole way and is gone the instant the stage pins.
-   The frame it pins on is the flight's own. Where scroll-driven
-   animation isn't supported the hairline stays and does the job. */
-@supports (animation-timeline: view()) {
-  .xp-flight { view-timeline: --xp-rise block; }
-  .xp-stage { border-top: 0; }
-  .xp-stage::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto;
-    z-index: 1;
-    height: 62%;
-    pointer-events: none;
-    background: linear-gradient(
-      in oklab 180deg,
-      #f4f5f7 0%,
-      rgb(244 245 247 / 0.5) 38%,
-      rgb(244 245 247 / 0) 100%
-    );
-    transform-origin: 50% 0;
-    animation: xp-rise linear both;
-    animation-timeline: --xp-rise;
-    animation-range: entry 0% entry 100%;
-  }
-  @keyframes xp-rise {
-    from { transform: scaleY(1); }
-    to { transform: scaleY(0); }
-  }
 }
 
 /* ---- the station labels, placed by the camera's projection ---- */

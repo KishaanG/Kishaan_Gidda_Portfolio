@@ -1,0 +1,29 @@
+/* ============================================================
+   Kishaan Gidda — the seam between the work stage and the flight
+   (seam.js). Present only while the seam is mounted: desktop,
+   full motion, WebGL. Otherwise none of this matches anything.
+   ============================================================ */
+
+/* Both stages are pinned at once for the seam's length. The flight
+   is pulled up under the work stage by one screen plus the seam, so
+   its stage pins the instant the work stage's runway ends, and the
+   work stage, still pinned, sits over it. */
+.work.has-seam { z-index: 1; }
+#experience.is-flight.has-seam {
+  margin-top: calc(-100svh - var(--seam-len, 0svh));
+  /* a way in lands on the opening frame, at the seam's far end */
+  scroll-margin-top: calc(-1 * (var(--bar-top) + 16px) - var(--seam-len, 0svh));
+}
+
+/* In the seam the work stage is fixed to the viewport, so its runway
+   ending under it cannot move it while it clears. Gone, it is not
+   drawn at all. */
+.work.is-pinned .stage.is-seam {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  will-change: opacity;
+}
+.work.is-pinned .stage.is-seam-gone { visibility: hidden; }
+.work.is-pinned .stage.is-seam .stage-slide { pointer-events: none; }

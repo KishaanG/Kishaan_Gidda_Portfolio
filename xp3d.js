@@ -141,6 +141,14 @@
   const REST = 28;
   const REST_LAST = 48;
   const SEGS = [];
+  /* The seam (seam.js): wherever the work stage is pinned, the runway opens on a
+     stretch where the work stage is still pinned over the flight and
+     is carried into its world, and the camera arrives on the opening
+     frame at the flight's own speed. Without one, nothing changes. */
+  const SEAM = window.XpSeam ? window.XpSeam.pick() : null;
+  const SEAM_LEN = SEAM ? SEAM.len : 0;
+  if (SEAM_LEN) SEGS.push({ kind: "seam", len: SEAM_LEN, j: 0 });
+  let seam = null;  // attached at mount, once the camera exists
   for (let k = 0; k < n; k++) {
     SEGS.push({ kind: "fly", len: k ? FLY : FLY_IN, j: k });
     SEGS.push({ kind: "rest", len: k === n - 1 ? REST_LAST : REST, j: k + 1 });
@@ -177,6 +185,8 @@
   /* keyframe position, fractional between keyframes while flying */
   function keyAt(x) {
     const { seg, t } = locate(x);
+    // the seam runs the camera from -1 to the opening frame at 0
+    if (seg.kind === "seam") return t - 1;
     if (seg.kind !== "fly") return seg.j;
     return seg.j + (seg.j ? easeInOut(t) : easeOut(t));
   }
@@ -316,14 +326,23 @@
   /* ================================================================
      THE CAMERA
      ================================================================ */
+  /* where the camera is, what it looks at and its bank, at a key */
+  function poseAt(key) {
+    if (key < 0 && seam) return seam.pose(key + 1);
+    const k = Math.max(0, key);
+    const j = Math.min(n - 1, Math.floor(k));
+    const f = k - j;
+    const u = f >= 1 ? 2 * k : uAlong(j, f);
+    return {
+      eye: catmull(EYES, u),
+      aim: catmull(AIMS, u),
+      // a slight bank through each turn, never at rest
+      roll: Math.sin(Math.PI * Math.min(1, f)) * 0.045 * (j % 2 ? -1 : 1),
+    };
+  }
+
   function cameraAt(key) {
-    const j = Math.min(n - 1, Math.floor(key));
-    const f = key - j;
-    const u = f >= 1 ? 2 * key : uAlong(j, f);
-    const eye = catmull(EYES, u);
-    const aim = catmull(AIMS, u);
-    // a slight bank through each turn, never at rest
-    const roll = Math.sin(Math.PI * Math.min(1, f)) * 0.045 * (j % 2 ? -1 : 1);
+    const { eye, aim, roll } = poseAt(key);
     const fwd = norm(sub(aim, eye));
     const r0 = norm(cross(fwd, [0, 1, 0]));
     const u0 = cross(r0, fwd);
@@ -472,7 +491,9 @@
   function drawLines(cam, key, tagRect) {
     ctx.clearRect(0, 0, W, H);
     ctx.lineWidth = 1;
-    const drawn = key <= 1 ? lerp(0.3, 1, key) : 1 + 2 * (key - 1);
+    // through the seam the thread is as the opening frame has it
+    const kk = Math.max(0, key);
+    const drawn = kk <= 1 ? lerp(0.3, 1, kk) : 1 + 2 * (kk - 1);
     drawThread(cam, drawn);
     ST.forEach((_, k) => drawCube(cam, k, key));
     // the leaders run out from each station's own point, behind its
@@ -634,17 +655,28 @@
     return clamp(-flight.getBoundingClientRect().top / svh(), 0, TOTAL);
   }
 
+  // an opacity, written only when it has moved
+  const shownOp = new Map();
+  function setOp(el, v) {
+    const s = v.toFixed(3);
+    if (shownOp.get(el) === s) return;
+    shownOp.set(el, s);
+    el.style.opacity = s;
+  }
+  const readoutEl = readout ? readout.parentElement : null;
+  let idle = false;
+
   function paint(now) {
-    const target = runwayX();
+    const raw = -flight.getBoundingClientRect().top / svh();
+    const target = clamp(raw, 0, TOTAL);
     // the drop follows the page itself, not the camera's lag: it is
     // stroke, and the stroke has to meet About's on the same line
+    let railA = 1;
     if (EXIT) {
       exitP = easeInOut(clamp((target - (TOTAL - EXIT)) / EXIT));
       past = Math.max(0, -flight.getBoundingClientRect().top - TOTAL * svh());
       if (veil) veil.style.opacity = exitP.toFixed(3);
-      rail.style.opacity = (1 - clamp(exitP * 2.2)).toFixed(3);
-      // faded out, it is out of the tab order too, not just unclickable
-      rail.style.visibility = exitP > 0.45 ? "hidden" : "";
+      railA = 1 - clamp(exitP * 2.2);
     }
     const dt = Math.min(0.1, Math.max(0, (now - lastNow) / 1000));
     lastNow = now;
@@ -653,19 +685,43 @@
     if (Math.abs(target - shownX) < 0.02) shownX = target;
     const key = keyAt(shownX);
     const cam = cameraAt(key);
+
+    /* the seam carries the work stage into this camera's world, on
+       this frame, so the two can never drift apart */
+    let ui = 1;
+    if (seam) {
+      seam.frame(shownX / SEAM_LEN, raw / SEAM_LEN, cam);
+      const lay = seam.layers(shownX / SEAM_LEN);
+      ui = lay.ui;
+      setOp(lineCanvas, lay.world);
+      setOp(tagLayer, lay.world);
+      setOp(panel, ui);
+      if (readoutEl) setOp(readoutEl, ui);
+    }
+    setOp(rail, railA * ui);
+    // faded out, it is out of the tab order too, not just unclickable
+    rail.style.visibility = exitP > 0.45 || ui < 0.05 ? "hidden" : "";
+
+    // still under the work stage, whole: one frame is enough
+    if (seam && raw <= 0 && shownX <= 0) {
+      if (idle) return;
+      idle = true;
+    } else idle = false;
+
     const tagRect = placeTags(cam);
     placePanel(key);
     drawLines(cam, key, tagRect);
 
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    scene.draw({
+    const world = {
       vp: matrices(cam),
       eye: cam.eye,
       time: (now - t0) / 1000 + 40,
       w: glCanvas.width, h: glCanvas.height, dpr,
       zones: zones(tagRect),
-    });
+    };
+    scene.draw(world);
   }
 
   let raf = 0;
@@ -747,7 +803,9 @@
 
   function snap(fromX) {
     const { seg, t } = locate(fromX);
-    if (seg.kind !== "fly" || t <= 0.002 || t >= 0.998) return;
+    // the seam is a flight like any other: on to the first job, or
+    // back to the last project at rest (x 0, where the seam begins)
+    if ((seg.kind !== "fly" && seg.kind !== "seam") || t <= 0.002 || t >= 0.998) return;
     const x = runwayX();
     const to = dir > 0 ? restX(seg.j) : (seg.j ? restX(seg.j - 1) : 0);
     flyTo(yAt(to), secondsFor(to - x));
@@ -798,6 +856,28 @@
     veil.className = "xp-veil";
     stage.insertBefore(veil, lineCanvas);
   }
+
+  /* the seam ends on the opening frame, moving as the first flight
+     leaves it: its pose, and its speed per svh of scroll */
+  if (SEAM_LEN) {
+    const sub3 = (a, b, s) => [(a[0] - b[0]) * s, (a[1] - b[1]) * s, (a[2] - b[2]) * s];
+    const DX = 0.5;
+    const p0 = poseAt(0);
+    const p1 = poseAt(keyAt(SEAM_LEN + DX));
+    seam = window.XpSeam.attach({
+      sec,
+      stage,
+      gl,
+      scenes: Scenes,
+      sky: [Scenes.SKY_TOP, Scenes.SKY_LOW],
+      end: {
+        eye: p0.eye,
+        aim: p0.aim,
+        roll: p0.roll,
+        vel: { eye: sub3(p1.eye, p0.eye, 1 / DX), aim: sub3(p1.aim, p0.aim, 1 / DX), roll: (p1.roll - p0.roll) / DX },
+      },
+    });
+  }
   measure();
 
   // a tab coming back resumes the loop only if the flight is on
@@ -808,7 +888,11 @@
     (entries) => entries.forEach((e) => {
       inView = e.isIntersecting;
       if (inView && !document.hidden) play();
-      else pause();
+      else {
+        pause();
+        // scrolled well away: the work stage goes where scroll says
+        if (seam) seam.settle(-flight.getBoundingClientRect().top / svh() / SEAM_LEN);
+      }
     }),
     { rootMargin: "200px" }
   );
@@ -830,6 +914,8 @@
     inView = false;
     document.removeEventListener("visibilitychange", onVis);
     window.removeEventListener("resize", onResize);
+    if (seam) seam.detach();
+    seam = null;
     sec.classList.remove("is-flight");
     flight.hidden = true;
   });
