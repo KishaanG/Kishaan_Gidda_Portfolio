@@ -178,7 +178,10 @@
 
   function paintStage(h) {
     const P = Stage.at;
-    const grain = grainAt(P);
+    // the seam (seam.js) can still the water before it carries the
+    // stage off, and once the stage has gone there is nothing to draw
+    const still = stage.classList.contains("is-seam-gone") ? 1 : Stage.calm || 0;
+    const grain = grainAt(P).map((v) => v * (1 - still));
     // no folds left: the flat ground under the canvas is exactly
     // this, so stop drawing and let it show
     const flat = grain[0] < 0.0005 && grain[1] < 0.0005;
@@ -186,7 +189,11 @@
     if (flat) return false;
 
     const hr = hero.getBoundingClientRect();
-    const sr = stage.getBoundingClientRect();
+    // in the seam the stage is fixed at the viewport's corner and
+    // carried off in 3D: its folds stay where they were at the pin
+    const sr = stage.classList.contains("is-seam")
+      ? { left: 0, top: 0, width: stage.offsetWidth, height: stage.offsetHeight }
+      : stage.getBoundingClientRect();
     const wr = work.getBoundingClientRect();
     // the hero-frame row at the canvas's top edge: with the page up
     // to the pin, at a fraction of it after
@@ -197,7 +204,7 @@
     L.ground = lab(Stage.ground) || L.ground;
     L.grain = grain;
     L.accent = lab(Stage.accent) || L.accent;
-    L.accentAmt = 1;
+    L.accentAmt = 1 - still;
     L.depth = 1;
     L.water = water(hr.height);
     return true;
