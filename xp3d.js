@@ -137,7 +137,7 @@
      not a stop. After that it only ever slows to a stop at a job.
      ================================================================ */
   const FLY_IN = 180;
-  const FLY = 280;
+  const FLY = 160;
   const REST = 28;
   const REST_LAST = 48;
   const SEGS = [];
@@ -744,7 +744,7 @@
      already sine in-out across the flight, an even scroll gives an
      even flight that slows to a stop at the job. Any wheel, key or
      touch takes the page straight back. */
-  const FLIGHT_S = 4.2;
+  const FLIGHT_S = 2.7;
   let tween = 0;
 
   // a wheel that interrupts a flight must keep its own notch, so the
