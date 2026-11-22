@@ -57,9 +57,10 @@
 * { box-sizing: border-box; }
 
 html {
-  /* no scroll-behavior here: smooth-scroll.js owns anchor motion so
-     wheel and nav clicks share one easing. Under reduced motion the
-     script bows out and jumps are instant, which is correct. */
+  /* no scroll-behavior here: smooth-scroll.js owns anchor motion, so
+     a nav click takes the same timed glide as the stages' snaps.
+     Under reduced motion the script bows out and jumps are instant,
+     which is correct. */
   scroll-padding-top: calc(var(--bar-top) + 16px);
   -webkit-text-size-adjust: 100%;
 }

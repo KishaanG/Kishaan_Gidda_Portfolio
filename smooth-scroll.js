@@ -25,7 +25,19 @@
   // coarse pointers have real momentum scrolling; leave it alone
   if (window.matchMedia("(hover: none)").matches) return;
 
-  const EASE = 0.09;    // per-frame approach; lower = longer glide
+  /* The glide's time constant: every TAU ms the page closes about
+     two thirds of what is left between it and the wheel's target.
+     Higher = a longer, looser glide. It is measured in time, not
+     frames: a fixed share per frame (0.09, as this once was) closes
+     twice as fast at 120Hz as at 60Hz, and on a 120Hz screen it
+     came out at ~88ms, tight enough to read as a stop. */
+  const TAU = 190;
+  // The glide never moves slower than this, px per ms. An ease this
+  // long otherwise spends ~0.4s on its last few pixels, unseen but
+  // still scrolling, and the cursor disc waits for scrolling to stop
+  // before it takes a link. The two speeds meet ~4px out, so the
+  // change is not a seam.
+  const CRAWL = 0.02;
   const WHEEL = 0.82;   // < 1 so a notch travels less than native
   const EPS = 0.4;      // px at which the glide is called done
 
@@ -36,6 +48,12 @@
   // and its timestamp so it means the same at 60Hz and 144Hz
   let speed = 0;
   let lastT = 0;
+  // the screen's last measured frame. A glide's first frame has no
+  // frame before it to time, so it takes this rather than assuming
+  // 60Hz, which would make the first step on a 120Hz screen double.
+  // Never more than a 60Hz frame, so a hitch just before the last
+  // glide stopped is not carried into the next one's first step.
+  let frameMs = 1000 / 60;
   // a timed glide (below), or null while the page is easing freely
   let run = null;
   // where the wheel alone would have put the page. Easing freely it is
@@ -73,7 +91,9 @@
   }
 
   function frame(now) {
-    const dt = lastT ? Math.min(50, now - lastT) : 1000 / 60;
+    let dt;
+    if (lastT) dt = frameMs = Math.min(50, Math.max(1, now - lastT));
+    else dt = Math.min(frameMs, 1000 / 60);
     lastT = now;
 
     if (run) {
@@ -111,8 +131,10 @@
       stop();
       return;
     }
-    current += d * EASE;
-    speed = (d * EASE) / dt;
+    const eased = Math.abs(d) * (1 - Math.exp(-dt / TAU));
+    const step = Math.sign(d) * Math.min(Math.abs(d), Math.max(eased, CRAWL * dt));
+    current += step;
+    speed = step / dt;
     write(current);
     raf = requestAnimationFrame(frame);
   }
@@ -221,8 +243,10 @@
     { passive: false }
   );
 
-  /* same-page links glide through the same easing, so a nav click
-     and a wheel scroll feel like the same motion */
+  /* same-page links take the timed glide, not the eased one. Across
+     the page the eased glide's first frame alone jumps hundreds of
+     pixels, then it creeps for seconds; the timed glide eases in and
+     out and is never longer than 1.1s */
   document.addEventListener("click", (e) => {
     if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey) return;
     const a = e.target.closest && e.target.closest('a[href^="#"]');
@@ -235,7 +259,7 @@
       parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
     // and the target's own margin, as the browser's own jump honours it
     const margin = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
-    to(el.getBoundingClientRect().top + window.scrollY - pad - margin);
+    glide(el.getBoundingClientRect().top + window.scrollY - pad - margin);
     history.replaceState(null, "", "#" + id);
   });
 
